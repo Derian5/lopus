@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="HeroDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/hero_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 175.0
+damage = 16.0
+attack_speed = 1.0
+movement_speed = 112.0
+attack_range = 330.0
+armor = 3.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+starting_ability_ids = Array[StringName]([&"ability.frost_dart", &"ability.fire_bolt", &"ability.stunning_blow", &"ability.guardian_shield"])
+placeholder_color = Color(0.65, 0.38, 0.9, 1)
+id = &"hero.control_savant"
+display_name = "Fate Savant"
+description = "Control hero that disrupts random targets and creates openings."
+tags = Array[StringName]([&"hero", &"control", &"economy", &"ranged"])

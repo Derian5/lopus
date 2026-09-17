@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/shield_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="4"]
+
+[sub_resource type="Resource" id="Shield"]
+script = ExtResource("2")
+effect_id = &"effect.guardian_shield"
+amount = 35.0
+duration = 5.0
+
+[sub_resource type="Resource" id="ArmorModifier"]
+script = ExtResource("4")
+stat = "armor"
+value = 5.0
+
+[sub_resource type="Resource" id="ModifierEffect"]
+script = ExtResource("3")
+effect_id = &"effect.guardian_armor"
+modifier = SubResource("ArmorModifier")
+duration = 5.0
+
+[resource]
+script = ExtResource("1")
+id = &"ability.guardian_shield"
+display_name = "Guardian Shield"
+description = "Grants the caster a temporary shield."
+cooldown_seconds = 9.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Shield"), SubResource("ModifierEffect")])
+priority = 60
+presentation_color = Color(0.35, 0.55, 1, 1)

@@ -1,17 +1,17 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://ui/management/management.gd" id="1_management"]
+[ext_resource type="Script" path="res://ui/management/management.gd" id="1"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBackground"]
-bg_color = Color(0.035, 0.043, 0.059, 1)
+[sub_resource type="StyleBoxFlat" id="Background"]
+bg_color = Color(0.028, 0.035, 0.048, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleCard"]
-bg_color = Color(0.075, 0.09, 0.12, 1)
+[sub_resource type="StyleBoxFlat" id="Card"]
+bg_color = Color(0.06, 0.074, 0.1, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.2, 0.24, 0.31, 1)
+border_color = Color(0.18, 0.23, 0.31, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -24,7 +24,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_management")
+script = ExtResource("1")
 
 [node name="Background" type="Panel" parent="."]
 layout_mode = 1
@@ -33,7 +33,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBackground")
+theme_override_styles/panel = SubResource("Background")
 
 [node name="Page" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -42,94 +42,314 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 28
-theme_override_constants/margin_bottom = 24
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
 
-[node name="VBox" type="VBoxContainer" parent="Page"]
+[node name="Layout" type="VBoxContainer" parent="Page"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
-[node name="Header" type="HBoxContainer" parent="Page/VBox"]
+[node name="Header" type="HBoxContainer" parent="Page/Layout"]
 layout_mode = 2
+theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="Page/VBox/Header"]
+[node name="Title" type="Label" parent="Page/Layout/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
-theme_override_font_sizes/font_size = 28
-text = "ARMY MANAGEMENT"
+theme_override_font_sizes/font_size = 27
+text = "WAR COUNCIL"
 
-[node name="Gold" type="Label" parent="Page/VBox/Header"]
+[node name="PhaseLabel" type="Label" parent="Page/Layout/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.72, 0.31, 1)
+theme_override_colors/font_color = Color(0.48, 0.56, 0.68, 1)
+text = "PREPARATION"
+
+[node name="GoldLabel" type="Label" parent="Page/Layout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.73, 0.28, 1)
 theme_override_font_sizes/font_size = 18
 text = "GOLD  0"
 
-[node name="MenuButton" type="Button" parent="Page/VBox/Header"]
-custom_minimum_size = Vector2(100, 42)
+[node name="MenuButton" type="Button" parent="Page/Layout/Header"]
+custom_minimum_size = Vector2(96, 40)
 layout_mode = 2
 text = "MENU"
 
-[node name="Columns" type="HBoxContainer" parent="Page/VBox"]
+[node name="ColumnsScroll" type="ScrollContainer" parent="Page/Layout"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 16
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
 
-[node name="ArmyPanel" type="PanelContainer" parent="Page/VBox/Columns"]
+[node name="Columns" type="HBoxContainer" parent="Page/Layout/ColumnsScroll"]
+custom_minimum_size = Vector2(1500, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleCard")
+size_flags_vertical = 3
+theme_override_constants/separation = 12
 
-[node name="ArmyLabel" type="Label" parent="Page/VBox/Columns/ArmyPanel"]
+[node name="ArmyCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns"]
+custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.67, 0.75, 0.88, 1)
-theme_override_font_sizes/font_size = 20
-text = "ARMY\n\n3 Heroes\n9 Militia\n\n[placeholder roster]"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_styles/panel = SubResource("Card")
 
-[node name="BuildPanel" type="PanelContainer" parent="Page/VBox/Columns"]
+[node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleCard")
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
 
-[node name="BuildLabel" type="Label" parent="Page/VBox/Columns/BuildPanel"]
+[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.67, 0.75, 0.88, 1)
-theme_override_font_sizes/font_size = 20
-text = "BUILD\n\nJobs\nAbilities\nEquipment\n\n[placeholder build]"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_constants/separation = 9
 
-[node name="EncounterPanel" type="PanelContainer" parent="Page/VBox/Columns"]
+[node name="Title" type="Label" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleCard")
+theme_override_colors/font_color = Color(0.57, 0.78, 0.95, 1)
+theme_override_font_sizes/font_size = 19
+text = "ARMY  12 / 12"
 
-[node name="EncounterLabel" type="Label" parent="Page/VBox/Columns/EncounterPanel"]
+[node name="RosterScroll" type="ScrollContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.67, 0.75, 0.88, 1)
-theme_override_font_sizes/font_size = 20
-text = "NEXT ENCOUNTER\n\nEnemy composition\nReward\nThreats\n\n[placeholder card]"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="Footer" type="HBoxContainer" parent="Page/VBox"]
-layout_mode = 2
-
-[node name="Hint" type="Label" parent="Page/VBox/Footer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.48, 0.53, 0.62, 1)
-text = "Prepare the army, then commit to the fight."
-
-[node name="FightButton" type="Button" parent="Page/VBox/Footer"]
+[node name="Roster" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox/RosterScroll"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 54)
 layout_mode = 2
-text = "START BATTLE"
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
 
-[connection signal="pressed" from="Page/VBox/Header/MenuButton" to="." method="_on_menu_button_pressed"]
-[connection signal="pressed" from="Page/VBox/Footer/FightButton" to="." method="_on_fight_button_pressed"]
+[node name="CenterTabs" type="TabContainer" parent="Page/Layout/ColumnsScroll/Columns"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(760, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Selected" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SelectedTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 22
+text = "SELECT A UNIT"
+
+[node name="DetailsLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
+text = "Choose a hero or soldier from the army."
+autowrap_mode = 2
+
+[node name="JobControls" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="JobWarning" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.58, 0.35, 1)
+text = "Changing Job removes all veterancy."
+
+[node name="Row" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls"]
+layout_mode = 2
+
+[node name="JobOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChangeJobButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls/Row"]
+layout_mode = 2
+text = "CHANGE JOB"
+
+[node name="AbilitiesTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+layout_mode = 2
+text = "ABILITIES / PRIORITY"
+
+[node name="AbilityRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AbilityEditRow" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="AbilityOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/AbilityEditRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReplaceAbilityButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/AbilityEditRow"]
+layout_mode = 2
+text = "REPLACE SLOT"
+
+[node name="EquipmentLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.68, 0.78, 1)
+text = "EQUIPMENT  Empty"
+autowrap_mode = 2
+
+[node name="Jobs" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Intro" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
+text = "One shared build applies to every soldier assigned to this Job."
+autowrap_mode = 2
+
+[node name="JobBuildOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CapacityLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "CAPACITY"
+
+[node name="ActiveLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+layout_mode = 2
+text = "ACTIVE ABILITY"
+
+[node name="JobActiveOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PassiveLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+layout_mode = 2
+text = "PASSIVE ABILITIES  (UP TO 3)"
+
+[node name="JobPassiveOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="JobPassivesLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "None"
+
+[node name="JobButtons" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+layout_mode = 2
+
+[node name="ApplyJobBuildButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons"]
+layout_mode = 2
+text = "APPLY ACTIVE"
+
+[node name="TogglePassiveButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons"]
+layout_mode = 2
+text = "ADD / REMOVE PASSIVE"
+
+[node name="Inventory" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="InventoryLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Inventory"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
+text = "Inventory is empty. Equipment actions unlock with item content."
+autowrap_mode = 2
+
+[node name="Market" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="MarketRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Market"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="EncounterCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Card")
+
+[node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.48, 0.39, 1)
+theme_override_font_sizes/font_size = 19
+text = "NEXT ENCOUNTER"
+
+[node name="EncounterLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
+text = "No encounter selected."
+autowrap_mode = 2
+
+[node name="PreviewLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.68, 0.57, 1)
+text = "ARMY PREVIEW"
+autowrap_mode = 2
+
+[node name="Footer" type="HBoxContainer" parent="Page/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FeedbackLabel" type="Label" parent="Page/Layout/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.62, 0.7, 0.8, 1)
+text = "Select a unit to inspect and prepare."
+autowrap_mode = 2
+
+[node name="FightButton" type="Button" parent="Page/Layout/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 52)
+layout_mode = 2
+text = "COMMIT TO BATTLE"
+
+[connection signal="pressed" from="Page/Layout/Header/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="Page/Layout/Footer/FightButton" to="." method="_on_fight_button_pressed"]
+[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls/Row/ChangeJobButton" to="." method="_on_change_job_pressed"]
+[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/AbilityEditRow/ReplaceAbilityButton" to="." method="_on_replace_ability_pressed"]
+[connection signal="item_selected" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobBuildOption" to="." method="_on_job_build_selected"]
+[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons/ApplyJobBuildButton" to="." method="_on_apply_job_active_pressed"]
+[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons/TogglePassiveButton" to="." method="_on_toggle_job_passive_pressed"]

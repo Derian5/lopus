@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="StatusDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="2"]
+
+[sub_resource type="Resource" id="Modifier_armor"]
+script = ExtResource("2")
+stat = "armor"
+operation = 0
+value = 25.0
+
+[resource]
+script = ExtResource("1")
+id = &"status.armor_buff"
+display_name = "Armor Buff"
+description = "Temporarily increases armor."
+default_duration = 6.0
+stat_modifiers = Array[StatModifier]([SubResource("Modifier_armor")])

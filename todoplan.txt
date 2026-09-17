@@ -147,10 +147,10 @@
 ЭТАП 2. СОЗДАТЬ СЛОЙ ДАННЫХ
 ======================================================================
 
-[ ] 2.1. Создать базовый ContentDefinition Resource со стабильными полями:
+[x] 2.1. Создать базовый ContentDefinition Resource со стабильными полями:
     id, display_name, description, icon, tags.
 
-[ ] 2.2. Создать неизменяемые Resources:
+[x] 2.2. Создать неизменяемые Resources:
     HeroDefinition.
     JobDefinition.
     EnemyDefinition.
@@ -160,16 +160,16 @@
     EncounterDefinition.
     BossDefinition при необходимости отдельного типа.
 
-[ ] 2.3. Создать StatBlock с минимальными stats:
+[x] 2.3. Создать StatBlock с минимальными stats:
     max_hp, damage, attack_speed, movement_speed, attack_range, armor.
 
-[ ] 2.4. Создать ContentRegistry:
+[x] 2.4. Создать ContentRegistry:
     - Загружает definitions при старте.
     - Проверяет уникальность ID.
     - Позволяет получить Resource по ID.
     - Сообщает об отсутствующих и дублирующихся ID.
 
-[ ] 2.5. Создать runtime-модели, не наследующие Node:
+[x] 2.5. Создать runtime-модели, не наследующие Node:
     HeroState.
     SoldierState.
     JobBuildState.
@@ -178,11 +178,11 @@
     RunState.
     ExecutionSnapshot.
 
-[ ] 2.6. Для каждого runtime-состояния реализовать to_dictionary() и from_dictionary().
+[x] 2.6. Для каждого runtime-состояния реализовать to_dictionary() и from_dictionary().
 
-[ ] 2.7. Запретить хранение Node, NodePath и изменяемых gameplay-значений внутри definitions.
+[x] 2.7. Запретить хранение Node, NodePath и изменяемых gameplay-значений внутри definitions.
 
-[ ] 2.8. Создать тестовые definitions-заглушки:
+[x] 2.8. Создать тестовые definitions-заглушки:
     1 герой, Militia, 1 melee enemy, 1 ranged enemy, 1 encounter.
 
 Критерий завершения этапа 2
@@ -195,45 +195,45 @@
 ЭТАП 3. СОЗДАТЬ COMBAT SANDBOX
 ======================================================================
 
-[ ] 3.1. Создать отдельную сцену Combat Sandbox.
+[x] 3.1. Создать отдельную сцену Combat Sandbox.
 
-[ ] 3.2. Добавить выбор тестовой армии игрока и армии противника.
+[x] 3.2. Добавить выбор тестовой армии игрока и армии противника.
 
-[ ] 3.3. Создать CombatSession, принимающий snapshots обеих армий и combat seed.
+[x] 3.3. Создать CombatSession, принимающий snapshots обеих армий и combat seed.
 
-[ ] 3.4. Создать Combatant на основе CharacterBody2D.
+[x] 3.4. Создать Combatant на основе CharacterBody2D.
 
-[ ] 3.5. Реализовать команды и состояния Combatant:
+[x] 3.5. Реализовать команды и состояния Combatant:
     Idle, AcquireTarget, MoveIntoRange, AttackWindup, AttackRecovery, Dead.
 
-[ ] 3.6. Реализовать team и фильтрацию valid targets.
+[x] 3.6. Реализовать team и фильтрацию valid targets.
 
-[ ] 3.7. Реализовать выбор ближайшей допустимой цели.
+[x] 3.7. Реализовать выбор ближайшей допустимой цели.
 
-[ ] 3.8. При равной дистанции выбирать цель по стабильному runtime ID.
+[x] 3.8. При равной дистанции выбирать цель по стабильному runtime ID.
 
-[ ] 3.9. Реализовать melee movement и остановку в attack range.
+[x] 3.9. Реализовать melee movement и остановку в attack range.
 
-[ ] 3.10. Реализовать ranged movement с попыткой удерживать требуемую дистанцию.
+[x] 3.10. Реализовать ranged movement с попыткой удерживать требуемую дистанцию.
 
-[ ] 3.11. Реализовать простое separation steering между соседними юнитами.
+[x] 3.11. Реализовать простое separation steering между соседними юнитами.
 
-[ ] 3.12. Добавить stuck timeout, после которого юнит повторно выбирает цель или разрешает частичный overlap.
+[x] 3.12. Добавить stuck timeout, после которого юнит повторно выбирает цель или разрешает частичный overlap.
 
-[ ] 3.13. Реализовать attack pipeline:
+[x] 3.13. Реализовать attack pipeline:
     Acquire Target -> Move Into Range -> Windup -> Resolve Hit -> Cooldown.
 
-[ ] 3.14. Реализовать armor и получение damage по одной централизованной формуле.
+[x] 3.14. Реализовать armor и получение damage по одной централизованной формуле.
 
-[ ] 3.15. Реализовать death, удаление из targeting и завершение боя.
+[x] 3.15. Реализовать death, удаление из targeting и завершение боя.
 
-[ ] 3.16. Реализовать один generic projectile для ranged attacks.
+[x] 3.16. Реализовать один generic projectile для ranged attacks.
 
-[ ] 3.17. Реализовать pause и скорости x1, x2 и x4 для игрока.
+[x] 3.17. Реализовать pause и скорости x1, x2 и x4 для игрока.
 
-[ ] 3.18. Добавить Restart Battle в Sandbox.
+[x] 3.18. Добавить Restart Battle в Sandbox.
 
-[ ] 3.19. Использовать placeholder-графику:
+[x] 3.19. Использовать placeholder-графику:
     - Герои: крупные круги разных цветов.
     - Солдаты: синие квадраты.
     - Враги: красные квадраты.
@@ -254,10 +254,10 @@ GATE 1. COMBAT PROTOTYPE
 ЭТАП 4. СОЗДАТЬ COMBAT EVENTS И СТАТИСТИКУ
 ======================================================================
 
-[ ] 4.1. Создать CombatEvent с полями:
+[x] 4.1. Создать CombatEvent с полями:
     timestamp, event_type, source_id, target_id, ability_id, effect_id, value.
 
-[ ] 4.2. Генерировать события:
+[x] 4.2. Генерировать события:
     attack_started.
     damage_applied.
     healing_applied.
@@ -266,9 +266,9 @@ GATE 1. COMBAT PROTOTYPE
     unit_died.
     battle_finished.
 
-[ ] 4.3. Сделать CombatStatistics независимой от UI.
+[x] 4.3. Сделать CombatStatistics независимой от UI.
 
-[ ] 4.4. Собирать минимум:
+[x] 4.4. Собирать минимум:
     Damage Dealt.
     Damage Taken.
     Healing.
@@ -277,13 +277,13 @@ GATE 1. COMBAT PROTOTYPE
     Ability Uses.
     Battles Survived для солдат.
 
-[ ] 4.5. Поддержать агрегацию по unit, hero, Job и ability.
+[x] 4.5. Поддержать агрегацию по unit, hero, Job и ability.
 
-[ ] 4.6. Сохранять killer и последний effect для каждого death.
+[x] 4.6. Сохранять killer и последний effect для каждого death.
 
-[ ] 4.7. Создать простую Post Battle панель со сводкой внутри Combat scene.
+[x] 4.7. Создать простую Post Battle панель со сводкой внутри Combat scene.
 
-[ ] 4.8. Добавить debug-панель текущих target, state и cooldown выбранного юнита.
+[x] 4.8. Добавить debug-панель текущих target, state и cooldown выбранного юнита.
 
 Критерий завершения этапа 4
 
@@ -295,46 +295,46 @@ GATE 1. COMBAT PROTOTYPE
 ЭТАП 5. РЕАЛИЗОВАТЬ EFFECT, STATUS И ABILITY
 ======================================================================
 
-[ ] 5.1. Создать AbilityDefinition с полями:
+[x] 5.1. Создать AbilityDefinition с полями:
     cooldown, targeting_policy, delivery_method, effects, priority и presentation data.
 
-[ ] 5.2. Реализовать targeting policies:
+[x] 5.2. Реализовать targeting policies:
     Self.
     Closest Enemy.
     Lowest HP Ally.
     Random Valid Enemy с использованием combat RNG.
 
-[ ] 5.3. Реализовать delivery methods:
+[x] 5.3. Реализовать delivery methods:
     Instant.
     Melee Hit.
     Projectile.
     Area Around Target.
 
-[ ] 5.4. Реализовать минимальные effects:
+[x] 5.4. Реализовать минимальные effects:
     DamageEffect.
     HealEffect.
     StatModifierEffect.
     ApplyStatusEffect.
     ShieldEffect.
 
-[ ] 5.5. Реализовать StatusInstance:
+[x] 5.5. Реализовать StatusInstance:
     duration, stacks, source_id, periodic timer и stat modifiers.
 
-[ ] 5.6. Для Demo сначала поддержать только две stack policies:
+[x] 5.6. Для Demo сначала поддержать только две stack policies:
     Refresh Duration и Add Stacks до заданного лимита.
 
-[ ] 5.7. Реализовать базовые statuses:
+[x] 5.7. Реализовать базовые statuses:
     Burn, Stun, Slow, Armor Buff и Damage Buff.
 
-[ ] 5.8. Реализовать ordered ability priority для героев.
+[x] 5.8. Реализовать ordered ability priority для героев.
 
-[ ] 5.9. AI проверяет способности сверху вниз и использует первую доступную способность с valid target.
+[x] 5.9. AI проверяет способности сверху вниз и использует первую доступную способность с valid target.
 
-[ ] 5.10. Реализовать до 1 active и до 3 passive slots для Job build.
+[x] 5.10. Реализовать до 1 active и до 3 passive slots для Job build.
 
-[ ] 5.11. Создать 6-8 тестовых способностей, покрывающих все реализованные primitives.
+[x] 5.11. Создать 6-8 тестовых способностей, покрывающих все реализованные primitives.
 
-[ ] 5.12. Не реализовывать Summon, Knockback, Piercing и сложные triggers до прохождения Gate 2.
+[x] 5.12. Не реализовывать Summon, Knockback, Piercing и сложные triggers до прохождения Gate 2.
 
 Критерий завершения этапа 5
 
@@ -347,34 +347,34 @@ GATE 1. COMBAT PROTOTYPE
 ЭТАП 6. РЕАЛИЗОВАТЬ HERO, SOLDIER И JOB
 ======================================================================
 
-[ ] 6.1. Реализовать HeroState:
+[x] 6.1. Реализовать HeroState:
     definition_id, level, xp, runtime status, ability IDs, item IDs, priority order.
 
-[ ] 6.2. Реализовать SoldierState:
+[x] 6.2. Реализовать SoldierState:
     unique_id, generated_name, current_job_id, veterancy XP/level, item IDs, lifetime statistics.
 
-[ ] 6.3. Реализовать JobDefinition:
+[x] 6.3. Реализовать JobDefinition:
     stat modifiers, attack definition, AI behavior, available abilities и restrictions.
 
-[ ] 6.4. Реализовать JobBuildState с выбранной active и тремя passive abilities.
+[x] 6.4. Реализовать JobBuildState с выбранной active и тремя passive abilities.
 
-[ ] 6.5. Реализовать общую сборку combat snapshot из HeroState, SoldierState и JobBuildState.
+[x] 6.5. Реализовать общую сборку combat snapshot из HeroState, SoldierState и JobBuildState.
 
-[ ] 6.6. Реализовать 4 ability slots и 6 item slots героя.
+[x] 6.6. Реализовать 4 ability slots и 6 item slots героя.
 
-[ ] 6.7. Реализовать 2 item slots солдата.
+[x] 6.7. Реализовать 2 item slots солдата.
 
-[ ] 6.8. Создать первые 3 placeholder Heroes с различными ролями:
+[x] 6.8. Создать первые 3 placeholder Heroes с различными ролями:
     Carry Hero.
     Army Support Hero.
     Control/Economy Hero.
 
-[ ] 6.9. Создать первые 3 Jobs:
+[x] 6.9. Создать первые 3 Jobs:
     Warrior.
     Archer.
     Priest/Support.
 
-[ ] 6.10. Создать стартовую армию: 3 Heroes + 9 Militia.
+[x] 6.10. Создать стартовую армию: 3 Heroes + 9 Militia.
 
 GATE 2. BUILD PROTOTYPE
 
@@ -388,9 +388,9 @@ GATE 2. BUILD PROTOTYPE
 ЭТАП 7. СОЗДАТЬ MANAGEMENT UI
 ======================================================================
 
-[ ] 7.1. Создать один основной Management экран.
+[x] 7.1. Создать один основной Management экран.
 
-[ ] 7.2. Добавить области:
+[x] 7.2. Добавить области:
     Army.
     Heroes.
     Jobs.
@@ -400,25 +400,25 @@ GATE 2. BUILD PROTOTYPE
     Gold.
     Navigation/Continue.
 
-[ ] 7.3. Реализовать выбор героя и просмотр его stats, abilities, equipment, level и state.
+[x] 7.3. Реализовать выбор героя и просмотр его stats, abilities, equipment, level и state.
 
-[ ] 7.4. Реализовать выбор солдата и просмотр Job, veterancy, equipment и statistics.
+[x] 7.4. Реализовать выбор солдата и просмотр Job, veterancy, equipment и statistics.
 
-[ ] 7.5. Реализовать смену Job с предварительным показом потери veterancy.
+[x] 7.5. Реализовать смену Job с предварительным показом потери veterancy.
 
-[ ] 7.6. Запретить назначение Job сверх купленной capacity.
+[x] 7.6. Запретить назначение Job сверх купленной capacity.
 
-[ ] 7.7. Реализовать настройку Job abilities для всех солдат этой Job.
+[x] 7.7. Реализовать настройку Job abilities для всех солдат этой Job.
 
-[ ] 7.8. Реализовать настройку abilities героя и изменение priority кнопками вверх/вниз.
+[x] 7.8. Реализовать настройку abilities героя и изменение priority кнопками вверх/вниз.
 
-[ ] 7.9. Drag-and-drop оставить необязательным улучшением после feature lock.
+[x] 7.9. Drag-and-drop оставить необязательным улучшением после feature lock.
 
-[ ] 7.10. Создать единый Tooltip UI для Ability, Item, Job, Status и Market Offer.
+[x] 7.10. Создать единый Tooltip UI для Ability, Item, Job, Status и Market Offer.
 
-[ ] 7.11. Показывать в tooltip реальные значения из gameplay definitions, а не отдельный текст с числами.
+[x] 7.11. Показывать в tooltip реальные значения из gameplay definitions, а не отдельный текст с числами.
 
-[ ] 7.12. Добавить placeholder-иконки с цветом и буквенным обозначением типа контента.
+[x] 7.12. Добавить placeholder-иконки с цветом и буквенным обозначением типа контента.
 
 Критерий завершения этапа 7
 
@@ -430,28 +430,28 @@ GATE 2. BUILD PROTOTYPE
 ЭТАП 8. РЕАЛИЗОВАТЬ VETERANCY И ПОСЛЕДСТВИЯ БОЯ
 ======================================================================
 
-[ ] 8.1. Начать с простой модели veterancy:
+[x] 8.1. Начать с простой модели veterancy:
     XP за пережитый бой -> Veterancy Level -> stat multiplier.
 
-[ ] 8.2. Начать с полной потери veterancy при смене Job; изменить формулу только после playtesting.
+[x] 8.2. Начать с полной потери veterancy при смене Job; изменить формулу только после playtesting.
 
-[ ] 8.3. Начислять veterancy только выжившим обычным солдатам.
+[x] 8.3. Начислять veterancy только выжившим обычным солдатам.
 
-[ ] 8.4. Применять permanent death к погибшим солдатам.
+[x] 8.4. Применять permanent death к погибшим солдатам.
 
-[ ] 8.5. Возвращать equipment погибшего солдата в Inventory.
+[x] 8.5. Возвращать equipment погибшего солдата в Inventory.
 
-[ ] 8.6. Создавать replacement Militia по правилам этапа 0.
+[x] 8.6. Создавать replacement Militia по правилам этапа 0.
 
-[ ] 8.7. Начислять Hero XP непосредственно из combat events, пока герой жив.
+[x] 8.7. Начислять Hero XP непосредственно из combat events, пока герой жив.
 
-[ ] 8.8. Реализовать level thresholds через данные.
+[x] 8.8. Реализовать level thresholds через данные.
 
-[ ] 8.9. Для Demo level-up дает фиксированный рост stats; отдельный выбор level-up upgrades не создавать.
+[x] 8.9. Для Demo level-up дает фиксированный рост stats; отдельный выбор level-up upgrades не создавать.
 
-[ ] 8.10. Применять CombatResult к RunState одной операцией после окончания боя.
+[x] 8.10. Применять CombatResult к RunState одной операцией после окончания боя.
 
-[ ] 8.11. Показать на Post Battle панели Combat scene:
+[x] 8.11. Показать на Post Battle панели Combat scene:
     Victory/Defeat, Gold, deaths, XP, veterancy changes, top damage и top healing.
 
 Критерий завершения этапа 8
@@ -459,6 +459,43 @@ GATE 2. BUILD PROTOTYPE
 - Потеря ветерана ощущается и корректно сохраняется.
 - Замена погибшего солдата не наследует его ID, veterancy или equipment.
 - Повторное применение CombatResult невозможно.
+
+======================================================================
+ЭТАП 8A. ПЕРЕВЕСТИ XP НА ЛИЧНЫЙ ВКЛАД В БОЙ
+======================================================================
+
+[x] 8A.1. После каждого боя рассчитывать вклад каждого Hero и Soldier по трём метрикам:
+    Damage Dealt, Effective Healing и Damage Tanked.
+
+[x] 8A.2. Рассчитывать личный XP как сумму XP за каждую метрику:
+    XP = Damage Dealt * damage_xp_rate
+       + Effective Healing * healing_xp_rate
+       + Damage Tanked * tanking_xp_rate.
+
+[x] 8A.3. Хранить damage_xp_rate, healing_xp_rate, tanking_xp_rate, правила округления и возможные лимиты в ProgressionDefinition.
+
+[x] 8A.4. Не учитывать overhealing, overkill damage, self-damage и friendly fire. Для Demo считать Damage Tanked как фактически потерянное HP от зарегистрированного вражеского источника; shields и предотвращённый armor-урон не учитывать.
+
+[x] 8A.5. Заменить плоский XP за участие или пережитый бой:
+    - Hero XP определяется личным вкладом до момента смерти или окончания боя.
+    - Veterancy XP выжившего Soldier определяется его личным вкладом.
+    - Для погибшего Soldier вклад и потенциальный XP отображаются в статистике, но прогресс теряется вместе с Soldier из-за permanent death.
+
+[x] 8A.6. Добавить contribution breakdown в CombatResult для каждого участника:
+    Damage Dealt, Effective Healing, Damage Tanked, XP за каждую метрику и Total XP.
+
+[x] 8A.7. На Post Battle показывать каждому Hero и Soldier его contribution breakdown и итоговый XP, включая погибших участников.
+
+[x] 8A.8. Обновить lifetime statistics Soldier данными о нанесённом уроне, эффективном лечении и принятом уроне.
+
+[x] 8A.9. Добавить тесты формулы, округления, нулевого вклада, смерти в середине боя, отсутствия XP за overhealing/overkill/self-damage/friendly fire и one-shot применения CombatResult.
+
+Критерий завершения этапа 8A
+
+- Два участника с разным вкладом получают предсказуемо разный XP.
+- Damage-dealer, healer и tank получают XP за выполнение своей роли.
+- Post Battle полностью объясняет, из каких метрик сложился XP каждого участника.
+- XP невозможно увеличить событиями, которые не принесли реальной пользы в бою.
 
 ======================================================================
 ЭТАП 9. РЕАЛИЗОВАТЬ ITEMS И INVENTORY

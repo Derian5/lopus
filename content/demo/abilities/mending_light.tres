@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/heal_effect.gd" id="2"]
+
+[sub_resource type="Resource" id="Heal"]
+script = ExtResource("2")
+effect_id = &"effect.mending_light_heal"
+amount = 28.0
+
+[resource]
+script = ExtResource("1")
+id = &"ability.mending_light"
+display_name = "Mending Light"
+description = "Heals the ally with the lowest health ratio."
+cooldown_seconds = 6.0
+targeting_policy = 2
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Heal")])
+priority = 90
+presentation_color = Color(0.35, 1, 0.55, 1)

@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="3"]
+[ext_resource type="Resource" path="res://content/demo/statuses/stun.tres" id="4"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("2")
+effect_id = &"effect.stunning_blow_damage"
+amount = 14.0
+
+[sub_resource type="Resource" id="Stun"]
+script = ExtResource("3")
+effect_id = &"effect.stunning_blow_stun"
+status = ExtResource("4")
+
+[resource]
+script = ExtResource("1")
+id = &"ability.stunning_blow"
+display_name = "Stunning Blow"
+description = "A melee hit that damages and stuns."
+cooldown_seconds = 7.0
+targeting_policy = 1
+delivery_method = 1
+effects = Array[AbilityEffect]([SubResource("Damage"), SubResource("Stun")])
+priority = 80
+presentation_color = Color(1, 0.85, 0.25, 1)

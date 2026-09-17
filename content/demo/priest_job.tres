@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="JobDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/job_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Modifiers"]
+script = ExtResource("2")
+max_hp = 15.0
+damage = 0.0
+attack_speed = 0.05
+movement_speed = 2.0
+attack_range = 210.0
+armor = 1.0
+
+[resource]
+script = ExtResource("1")
+stat_modifiers = SubResource("Modifiers")
+attack_type = &"ranged"
+attack_definition_id = &"attack.basic_ranged"
+ai_behavior = &"support"
+available_ability_ids = Array[StringName]([&"ability.mending_light", &"ability.fortify", &"ability.guardian_shield"])
+restriction_tags = Array[StringName]([&"soldier"])
+capacity_price = 120
+placeholder_color = Color(0.82, 0.74, 0.42, 1)
+id = &"job.priest"
+display_name = "Priest"
+description = "Backline support role focused on healing and protection."
+tags = Array[StringName]([&"job", &"ranged", &"support"])

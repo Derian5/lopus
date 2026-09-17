@@ -1,0 +1,126 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/post_battle/post_battle_panel.gd" id="1_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.045, 0.052, 0.068, 0.97)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.45, 0.24, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="PostBattlePanel" type="PanelContainer"]
+custom_minimum_size = Vector2(800, 560)
+theme_override_styles/panel = SubResource("StylePanel")
+script = ExtResource("1_panel")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ResultTitle" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="DurationLabel" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.69, 0.76, 1)
+horizontal_alignment = 1
+
+[node name="RewardLabel" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.73, 0.28, 1)
+theme_override_font_sizes/font_size = 18
+text = "GOLD  +0"
+horizontal_alignment = 1
+
+[node name="Metrics" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="DamageBox" type="VBoxContainer" parent="Margin/VBox/Metrics"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="Margin/VBox/Metrics/DamageBox"]
+layout_mode = 2
+text = "TOP DAMAGE"
+horizontal_alignment = 1
+
+[node name="TopDamageValue" type="Label" parent="Margin/VBox/Metrics/DamageBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.46, 0.38, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="HealingBox" type="VBoxContainer" parent="Margin/VBox/Metrics"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="Margin/VBox/Metrics/HealingBox"]
+layout_mode = 2
+text = "TOP HEALING"
+horizontal_alignment = 1
+
+[node name="TopHealingValue" type="Label" parent="Margin/VBox/Metrics/HealingBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.82, 0.58, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="DeathsTitle" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "PLAYER LOSSES"
+
+[node name="DeathsValue" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.74, 0.76, 0.8, 1)
+text = "No player losses"
+vertical_alignment = 1
+
+[node name="ProgressionTitle" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "PROGRESSION"
+
+[node name="ProgressionScroll" type="ScrollContainer" parent="Margin/VBox"]
+custom_minimum_size = Vector2(0, 190)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ProgressionValue" type="Label" parent="Margin/VBox/ProgressionScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.57, 0.78, 0.65, 1)
+text = "No progression changes"
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.54, 0.62, 1)
+text = "Use Continue below to return to management."
+horizontal_alignment = 1

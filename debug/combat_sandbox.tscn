@@ -1,0 +1,130 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://debug/combat_sandbox.gd" id="1_sandbox"]
+[ext_resource type="PackedScene" path="res://combat/combat_session.tscn" id="2_session"]
+
+[node name="CombatSandbox" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sandbox")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.029, 0.039, 1)
+
+[node name="Page" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="Page"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="Page/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 24
+text = "COMBAT SANDBOX"
+
+[node name="Spacer" type="Control" parent="Page/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HeroLabel" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+text = "Heroes"
+
+[node name="HeroCount" type="SpinBox" parent="Page/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(74, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 3.0
+value = 3.0
+
+[node name="SoldierLabel" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+text = "Soldiers"
+
+[node name="SoldierCount" type="SpinBox" parent="Page/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(74, 0)
+layout_mode = 2
+max_value = 9.0
+value = 9.0
+
+[node name="MeleeLabel" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+text = "Melee enemies"
+
+[node name="MeleeCount" type="SpinBox" parent="Page/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(74, 0)
+layout_mode = 2
+min_value = 1.0
+max_value = 20.0
+value = 8.0
+
+[node name="RangedLabel" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+text = "Ranged enemies"
+
+[node name="RangedCount" type="SpinBox" parent="Page/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(74, 0)
+layout_mode = 2
+max_value = 20.0
+value = 4.0
+
+[node name="StartButton" type="Button" parent="Page/VBox/Header"]
+layout_mode = 2
+text = "START"
+
+[node name="RestartButton" type="Button" parent="Page/VBox/Header"]
+layout_mode = 2
+text = "RESTART"
+
+[node name="SpeedButton" type="Button" parent="Page/VBox/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SPEED x1"
+
+[node name="ArenaFrame" type="PanelContainer" parent="Page/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CombatSession" parent="Page/VBox/ArenaFrame" instance=ExtResource("2_session")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ResultLabel" type="Label" parent="Page/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Page/VBox/Header/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Page/VBox/Header/RestartButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="Page/VBox/Header/SpeedButton" to="." method="_on_speed_button_pressed"]

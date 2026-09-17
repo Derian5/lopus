@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="3"]
+[ext_resource type="Resource" path="res://content/demo/statuses/burn.tres" id="4"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("2")
+effect_id = &"effect.fire_bolt_damage"
+amount = 4.0
+
+[sub_resource type="Resource" id="Burn"]
+script = ExtResource("3")
+effect_id = &"effect.fire_bolt_burn"
+status = ExtResource("4")
+
+[resource]
+script = ExtResource("1")
+id = &"ability.fire_bolt"
+display_name = "Fire Bolt"
+description = "A projectile that damages and burns its target."
+cooldown_seconds = 6.0
+targeting_policy = 1
+delivery_method = 2
+effects = Array[AbilityEffect]([SubResource("Damage"), SubResource("Burn")])
+priority = 100
+presentation_color = Color(1, 0.35, 0.12, 1)
+presentation_text = "Fire Bolt"

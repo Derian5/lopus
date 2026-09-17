@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+
+[sub_resource type="Resource" id="Damage"]
+script = ExtResource("2")
+effect_id = &"effect.whirlwind_damage"
+amount = 12.0
+
+[resource]
+script = ExtResource("1")
+id = &"ability.whirlwind"
+display_name = "Whirlwind"
+description = "Damages enemies around the closest target."
+cooldown_seconds = 8.0
+targeting_policy = 1
+delivery_method = 3
+area_radius = 100.0
+effects = Array[AbilityEffect]([SubResource("Damage")])
+priority = 30
+presentation_color = Color(0.9, 0.9, 0.95, 1)

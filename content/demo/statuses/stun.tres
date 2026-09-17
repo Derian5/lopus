@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatusDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"status.stun"
+display_name = "Stun"
+description = "Prevents actions for a short duration."
+default_duration = 1.5
+max_stacks = 1
+stack_policy = 0
+prevents_actions = true

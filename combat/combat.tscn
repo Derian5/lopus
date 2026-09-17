@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://combat/combat.gd" id="1_combat"]
+[ext_resource type="PackedScene" path="res://combat/combat_session.tscn" id="2_session"]
+[ext_resource type="PackedScene" path="res://ui/post_battle/post_battle_panel.tscn" id="3_post_battle"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBackground"]
 bg_color = Color(0.09, 0.075, 0.065, 1)
@@ -16,6 +18,18 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleDebug"]
+bg_color = Color(0.025, 0.03, 0.04, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.68, 0.54, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="Combat" type="Control"]
 layout_mode = 3
@@ -61,10 +75,21 @@ theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
 theme_override_font_sizes/font_size = 26
 text = "BATTLE"
 
-[node name="Speed" type="Label" parent="Page/VBox/Header"]
+[node name="SpeedDownButton" type="Button" parent="Page/VBox/Header"]
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+text = "−"
+
+[node name="SpeedLabel" type="Label" parent="Page/VBox/Header"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.75, 0.8, 1)
 text = "SPEED  x1"
+
+[node name="SpeedUpButton" type="Button" parent="Page/VBox/Header"]
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+text = "+"
 
 [node name="MenuButton" type="Button" parent="Page/VBox/Header"]
 custom_minimum_size = Vector2(100, 42)
@@ -76,13 +101,9 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleArena")
 
-[node name="Placeholder" type="Label" parent="Page/VBox/Arena"]
+[node name="CombatSession" parent="Page/VBox/Arena" instance=ExtResource("2_session")]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.73, 0.68, 0.58, 1)
-theme_override_font_sizes/font_size = 22
-text = "COMBAT ARENA\n\nPlayer Army     versus     Enemy Army\n\n[placeholder combat simulation]"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="Footer" type="HBoxContainer" parent="Page/VBox"]
 layout_mode = 2
@@ -93,10 +114,62 @@ size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.52, 0.5, 0.46, 1)
 text = "Esc: menu    - / =: speed    S: statistics"
 
+[node name="RestartButton" type="Button" parent="Page/VBox/Footer"]
+custom_minimum_size = Vector2(130, 48)
+layout_mode = 2
+text = "RESTART"
+
 [node name="ManagementButton" type="Button" parent="Page/VBox/Footer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
-text = "FINISH PLACEHOLDER BATTLE"
+disabled = true
+text = "CONTINUE"
 
+[node name="PostBattleCenter" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PostBattlePanel" parent="PostBattleCenter" instance=ExtResource("3_post_battle")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="DebugPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -350.0
+offset_top = 78.0
+offset_right = -26.0
+offset_bottom = 260.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleDebug")
+
+[node name="Margin" type="MarginContainer" parent="DebugPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="DebugLabel" type="Label" parent="DebugPanel/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.9, 0.72, 1)
+text = "Click a unit to inspect it."
+
+[connection signal="pressed" from="Page/VBox/Header/SpeedDownButton" to="." method="_on_speed_down_button_pressed"]
+[connection signal="pressed" from="Page/VBox/Header/SpeedUpButton" to="." method="_on_speed_up_button_pressed"]
 [connection signal="pressed" from="Page/VBox/Header/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="Page/VBox/Footer/RestartButton" to="." method="_on_restart_button_pressed"]
 [connection signal="pressed" from="Page/VBox/Footer/ManagementButton" to="." method="_on_management_button_pressed"]

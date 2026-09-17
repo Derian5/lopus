@@ -12,6 +12,7 @@ const GAME_MENU_SCENE := preload("res://ui/game_menu/game_menu.tscn")
 var current_screen: Control
 var game_menu: Control
 var can_open_game_menu := false
+var active_run: RunState
 
 
 func _ready() -> void:
@@ -31,7 +32,7 @@ func show_main_menu() -> void:
 	close_game_menu()
 	can_open_game_menu = false
 	var screen = _replace_screen(MAIN_MENU_SCENE)
-	screen.new_game_requested.connect(show_management)
+	screen.new_game_requested.connect(_start_new_game)
 	screen.quit_requested.connect(get_tree().quit)
 
 
@@ -39,6 +40,9 @@ func show_management() -> void:
 	close_game_menu()
 	can_open_game_menu = true
 	var screen = _replace_screen(MANAGEMENT_SCENE)
+	if active_run == null:
+		active_run = DemoRunFactory.create_starting_run()
+	screen.setup(active_run)
 	screen.combat_requested.connect(show_combat)
 	screen.menu_requested.connect(open_game_menu)
 
@@ -47,6 +51,9 @@ func show_combat() -> void:
 	close_game_menu()
 	can_open_game_menu = true
 	var screen = _replace_screen(COMBAT_SCENE)
+	if active_run == null:
+		active_run = DemoRunFactory.create_starting_run()
+	screen.setup_run(active_run)
 	screen.management_requested.connect(show_management)
 	screen.menu_requested.connect(open_game_menu)
 
@@ -77,3 +84,8 @@ func _replace_screen(scene: PackedScene):
 	current_screen = scene.instantiate()
 	screen_root.add_child(current_screen)
 	return current_screen
+
+
+func _start_new_game() -> void:
+	active_run = DemoRunFactory.create_starting_run(Time.get_ticks_msec())
+	show_management()

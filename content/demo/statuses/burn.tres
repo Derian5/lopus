@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="StatusDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+
+[sub_resource type="Resource" id="Damage_burn"]
+script = ExtResource("2")
+effect_id = &"effect.burn_tick"
+amount = 1.0
+
+[resource]
+script = ExtResource("1")
+id = &"status.burn"
+display_name = "Burn"
+description = "Deals periodic damage and adds stacks."
+default_duration = 4.0
+max_stacks = 3
+stack_policy = 1
+periodic_interval = 1.0
+periodic_effects = Array[AbilityEffect]([SubResource("Damage_burn")])

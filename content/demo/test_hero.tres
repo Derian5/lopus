@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3 uid="uid://3md4ud2h76cn"]
+
+[ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="1_hero"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2_stats"]
+
+[sub_resource type="Resource" id="StatBlock_hero"]
+script = ExtResource("2_stats")
+max_hp = 240.0
+damage = 24.0
+attack_speed = 0.9
+movement_speed = 105.0
+attack_range = 52.0
+armor = 8.0
+
+[resource]
+script = ExtResource("1_hero")
+base_stats = SubResource("StatBlock_hero")
+id = &"hero.test_vanguard"
+display_name = "Test Vanguard"
+description = "Carry hero focused on direct damage and finishing clustered enemies."
+tags = Array[StringName]([&"hero", &"carry", &"test"])
+starting_ability_ids = Array[StringName]([&"ability.fire_bolt", &"ability.stunning_blow", &"ability.whirlwind", &"ability.battle_fury"])

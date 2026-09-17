@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="JobDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/job_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Modifiers"]
+script = ExtResource("2")
+max_hp = 0.0
+damage = 10.0
+attack_speed = 0.5
+movement_speed = 8.0
+attack_range = 300.0
+armor = 0.0
+
+[resource]
+script = ExtResource("1")
+stat_modifiers = SubResource("Modifiers")
+attack_type = &"ranged"
+attack_definition_id = &"attack.basic_ranged"
+ai_behavior = &"keep_distance"
+available_ability_ids = Array[StringName]([&"ability.fire_bolt", &"ability.frost_dart", &"ability.battle_fury"])
+restriction_tags = Array[StringName]([&"soldier"])
+capacity_price = 110
+placeholder_color = Color(0.28, 0.58, 0.88, 1)
+id = &"job.archer"
+display_name = "Archer"
+description = "Mobile ranged role that trades durability for pressure."
+tags = Array[StringName]([&"job", &"ranged", &"damage"])

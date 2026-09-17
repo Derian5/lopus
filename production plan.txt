@@ -515,7 +515,19 @@ Alive/Dead State
 
 # 17. HERO LEVELING
 
-XP приходит непосредственно из combat events.
+Combat events собирают личный вклад героя, а XP рассчитывается после завершения боя.
+
+Вклад состоит из:
+
+Damage Dealt
+Effective Healing
+Damage Tanked
+
+Каждая метрика имеет отдельный data-driven XP rate. Итоговый XP равен сумме XP за три метрики.
+
+Герой получает XP только за вклад, сделанный до его смерти или окончания боя. Его накопленный за бой XP сохраняется независимо от исхода боя.
+
+Не учитывать overhealing, overkill damage, self-damage и friendly fire. Для Demo Damage Tanked равен фактически потерянному HP от зарегистрированного вражеского источника; shields и предотвращённый armor-урон в эту метрику не входят.
 
 Level thresholds — data-driven.
 
@@ -609,6 +621,16 @@ Veterancy XP
 Veterancy Level
 →
 Stat multiplier.
+
+Veterancy XP начисляется после боя за личный вклад Soldier:
+
+Damage Dealt
+Effective Healing
+Damage Tanked
+
+Плоской награды только за участие или выживание нет. Выживший Soldier сохраняет заработанный Veterancy XP. Для погибшего Soldier вклад и потенциальный XP остаются в отчёте боя, но сам прогресс теряется из-за permanent death.
+
+Hero XP и Veterancy XP используют один общий contribution calculator и общие data-driven коэффициенты Demo. Разделять коэффициенты следует только при подтверждённой необходимости после playtesting.
 
 Не делать отдельное talent tree ветерана для Demo.
 
@@ -769,12 +791,23 @@ Combat собирает данные независимо от UI.
 
 Damage Dealt
 Damage Taken
+Damage Tanked
 Healing
+Effective Healing
 Kills
 Deaths
 Ability Uses
 
 Statistics сохраняются до следующего боя либо в history текущего run.
+
+После боя Combat Statistics формирует contribution breakdown каждого Hero и Soldier:
+
+* XP за Damage Dealt;
+* XP за Effective Healing;
+* XP за Damage Tanked;
+* Total XP.
+
+Damage Taken остаётся диагностической метрикой. Для XP используется Damage Tanked: фактически потерянное HP от зарегистрированного вражеского источника, пока получатель жив. Self-damage, friendly fire, overkill, shields и предотвращённый armor-урон не учитываются.
 
 ---
 
@@ -791,6 +824,8 @@ Top Damage
 Top Healing [if relevant]
 
 Должна быть возможность открыть более подробную статистику.
+
+Подробная статистика должна объяснять XP каждого участника: три contribution metrics, XP за каждую из них и итоговую сумму. Погибшие участники также отображаются; потерянный из-за permanent death Soldier XP явно помечается.
 
 ---
 

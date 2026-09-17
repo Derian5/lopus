@@ -1,11 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://cf0n2ajdm7q87"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://bugojxcndvh51" path="res://main.gd" id="1_main"]
 
-[node name="Main" type="Node"]
+[node name="Main" type="Node" unique_id=54210981]
 script = ExtResource("1_main")
 
-[node name="ScreenRoot" type="Control" parent="."]
+[node name="ScreenRoot" type="Control" parent="." unique_id=510750057]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,5 +13,5 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="OverlayLayer" type="CanvasLayer" parent="."]
+[node name="OverlayLayer" type="CanvasLayer" parent="." unique_id=1361340099]
 layer = 100
