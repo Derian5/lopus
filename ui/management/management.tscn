@@ -1,0 +1,135 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://ui/management/management.gd" id="1_management"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBackground"]
+bg_color = Color(0.035, 0.043, 0.059, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleCard"]
+bg_color = Color(0.075, 0.09, 0.12, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.24, 0.31, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="Management" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_management")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBackground")
+
+[node name="Page" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="Page"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Header" type="HBoxContainer" parent="Page/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 28
+text = "ARMY MANAGEMENT"
+
+[node name="Gold" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.72, 0.31, 1)
+theme_override_font_sizes/font_size = 18
+text = "GOLD  0"
+
+[node name="MenuButton" type="Button" parent="Page/VBox/Header"]
+custom_minimum_size = Vector2(100, 42)
+layout_mode = 2
+text = "MENU"
+
+[node name="Columns" type="HBoxContainer" parent="Page/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ArmyPanel" type="PanelContainer" parent="Page/VBox/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleCard")
+
+[node name="ArmyLabel" type="Label" parent="Page/VBox/Columns/ArmyPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.75, 0.88, 1)
+theme_override_font_sizes/font_size = 20
+text = "ARMY\n\n3 Heroes\n9 Militia\n\n[placeholder roster]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BuildPanel" type="PanelContainer" parent="Page/VBox/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleCard")
+
+[node name="BuildLabel" type="Label" parent="Page/VBox/Columns/BuildPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.75, 0.88, 1)
+theme_override_font_sizes/font_size = 20
+text = "BUILD\n\nJobs\nAbilities\nEquipment\n\n[placeholder build]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EncounterPanel" type="PanelContainer" parent="Page/VBox/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleCard")
+
+[node name="EncounterLabel" type="Label" parent="Page/VBox/Columns/EncounterPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.75, 0.88, 1)
+theme_override_font_sizes/font_size = 20
+text = "NEXT ENCOUNTER\n\nEnemy composition\nReward\nThreats\n\n[placeholder card]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Footer" type="HBoxContainer" parent="Page/VBox"]
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Page/VBox/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.48, 0.53, 0.62, 1)
+text = "Prepare the army, then commit to the fight."
+
+[node name="FightButton" type="Button" parent="Page/VBox/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 54)
+layout_mode = 2
+text = "START BATTLE"
+
+[connection signal="pressed" from="Page/VBox/Header/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="Page/VBox/Footer/FightButton" to="." method="_on_fight_button_pressed"]

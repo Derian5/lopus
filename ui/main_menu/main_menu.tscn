@@ -1,0 +1,116 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://ui/main_menu/main_menu.gd" id="1_menu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBackground"]
+bg_color = Color(0.027, 0.035, 0.051, 1)
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.071, 0.086, 0.118, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.31, 0.37, 0.48, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBackground")
+
+[node name="Content" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+
+[node name="Center" type="CenterContainer" parent="Content"]
+layout_mode = 2
+
+[node name="Panel" type="PanelContainer" parent="Content/Center"]
+custom_minimum_size = Vector2(520, 400)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="Margin" type="MarginContainer" parent="Content/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 44
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 44
+
+[node name="VBox" type="VBoxContainer" parent="Content/Center/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Eyebrow" type="Label" parent="Content/Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.69, 0.76, 0.89, 1)
+theme_override_font_sizes/font_size = 14
+text = "TACTICAL AUTOBATTLER"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Content/Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 38
+text = "CAN BE ONLY\nONE HERO"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Content/Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.69, 0.72, 0.79, 1)
+text = "Build the army. Watch it fight. Choose who remains."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="Content/Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+
+[node name="NewGameButton" type="Button" parent="Content/Center/Panel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "NEW GAME"
+
+[node name="QuitButton" type="Button" parent="Content/Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "QUIT"
+
+[node name="DebugBadge" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 18.0
+offset_top = 16.0
+offset_right = 132.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.45, 0.9, 0.72, 1)
+text = "DEBUG BUILD"
+
+[connection signal="pressed" from="Content/Center/Panel/Margin/VBox/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="Content/Center/Panel/Margin/VBox/QuitButton" to="." method="_on_quit_button_pressed"]

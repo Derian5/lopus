@@ -1,0 +1,102 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://combat/combat.gd" id="1_combat"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBackground"]
+bg_color = Color(0.09, 0.075, 0.065, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleArena"]
+bg_color = Color(0.16, 0.14, 0.115, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.3, 0.22, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="Combat" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_combat")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBackground")
+
+[node name="Page" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="Page"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="Page/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 26
+text = "BATTLE"
+
+[node name="Speed" type="Label" parent="Page/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.75, 0.8, 1)
+text = "SPEED  x1"
+
+[node name="MenuButton" type="Button" parent="Page/VBox/Header"]
+custom_minimum_size = Vector2(100, 42)
+layout_mode = 2
+text = "MENU"
+
+[node name="Arena" type="PanelContainer" parent="Page/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleArena")
+
+[node name="Placeholder" type="Label" parent="Page/VBox/Arena"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73, 0.68, 0.58, 1)
+theme_override_font_sizes/font_size = 22
+text = "COMBAT ARENA\n\nPlayer Army     versus     Enemy Army\n\n[placeholder combat simulation]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Footer" type="HBoxContainer" parent="Page/VBox"]
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Page/VBox/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.52, 0.5, 0.46, 1)
+text = "Esc: menu    - / =: speed    S: statistics"
+
+[node name="ManagementButton" type="Button" parent="Page/VBox/Footer"]
+custom_minimum_size = Vector2(220, 48)
+layout_mode = 2
+text = "FINISH PLACEHOLDER BATTLE"
+
+[connection signal="pressed" from="Page/VBox/Header/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="Page/VBox/Footer/ManagementButton" to="." method="_on_management_button_pressed"]

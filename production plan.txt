@@ -1,0 +1,1593 @@
+# CAN BE ONLY ONE HERO
+
+## Demo Technical / Production Scope v0.1
+
+**Engine:** Godot
+**Target:** PC / Steam Demo
+**Development:** Solo + AI
+**Production budget:** ~40 hours/week
+**Available production window:** ~8 weeks / ~320 hours
+**Visuals:** 2D sprites
+**Camera:** Fixed
+**Combat:** Real-time autonomous simulation
+**Demo content:** Act I + Execution + short Act II continuation
+
+---
+
+# 1. PURPOSE OF THE DEMO
+
+Demo должна доказать работоспособность core game, а не количество контента.
+
+К концу Demo игрок должен успеть:
+
+1. познакомиться с тремя героями;
+2. начать формировать любимого героя;
+3. построить несколько Jobs;
+4. потерять и заменить солдат;
+5. почувствовать ценность Veterancy;
+6. несколько раз адаптировать армию под известного противника;
+7. увидеть работу Market Bias;
+8. победить босса Act I;
+9. принять решение о казни;
+10. начать Act II и почувствовать последствия решения.
+
+Главный climax Demo:
+
+**First Execution.**
+
+Act II после него является коротким payoff/teaser.
+
+---
+
+# 2. TARGET DEMO STRUCTURE
+
+## Start
+
+3 Heroes
+9 Militia
+
+↓
+
+Tutorial encounters
+
+↓
+
+Основная карта Act I
+
+↓
+
+~10 Battles
+
+↓
+
+Act I Boss
+
+↓
+
+Execution
+
+↓
+
+Short Act II
+
+↓
+
+~2–3 Battles
+
+↓
+
+Demo End Screen
+
+---
+
+# 3. TARGET CONTENT
+
+## Heroes
+
+**Target: 5**
+
+В одном забеге участвуют 3.
+
+Каждый герой должен иметь:
+
+* уникальные базовые характеристики;
+* уникальную identity;
+* собственный ability pool;
+* item interactions;
+* визуальную идентичность.
+
+---
+
+## Jobs
+
+**Target: 5**
+
+Предварительные archetypes:
+
+1. Warrior
+2. Archer
+3. Support/Priest
+4. [TBD]
+5. [TBD]
+
+Каждая Job должна менять поведение солдата достаточно сильно, чтобы изменение состава армии ощущалось стратегическим решением.
+
+---
+
+## Enemies
+
+**Target: 10 regular enemy types**
+
+Враг является более простой сущностью, чем player unit.
+
+Enemy не обязан использовать ту же систему equipment/jobs.
+
+Предпочтительно использовать общий combat framework, но enemy content должен быть максимально дешёвым в производстве.
+
+---
+
+## Bosses
+
+**Target: 4 enemy boss types**
+
+[RISK]
+
+Для Demo непосредственно необходим только Act I Boss.
+
+Остальные боссы могут использоваться как miniboss/elite либо быть подготовкой для full release.
+
+**MVP requirement: 1 polished boss.**
+
+**Target: 4.**
+
+---
+
+## Hero Abilities
+
+**Target: 40**
+
+Не считать это 40 уникальными системами.
+
+Большинство abilities должны собираться из reusable effects.
+
+Пример:
+
+Damage
++
+AoE
++
+Burn
+
+или:
+
+Heal
++
+Temporary Armor.
+
+---
+
+## Job Abilities
+
+**Target: 20**
+
+На Job:
+
+до 1 Active
+до 3 Passive одновременно.
+
+Общий pool может быть больше доступных слотов.
+
+---
+
+## Hero Items
+
+**Target: 40**
+
+Основная часть должна использовать существующие modifiers/triggers.
+
+Избегать item-specific code.
+
+---
+
+## Soldier Items
+
+**Target: 10**
+
+Редкие и сильные.
+
+До двух предметов на конкретного солдата.
+
+---
+
+# 4. PRODUCTION PHILOSOPHY
+
+Основное правило разработки:
+
+# BUILD SYSTEMS ONCE. PRODUCE CONTENT THROUGH DATA.
+
+Нельзя реализовывать:
+
+`Fire Sword.gd`
+
+`Ice Sword.gd`
+
+`Poison Sword.gd`
+
+как отдельные независимые системы.
+
+Вместо этого должен существовать generic Item/Effect framework.
+
+---
+
+# 5. HIGH-LEVEL ARCHITECTURE
+
+Проект условно разделяется на следующие системы:
+
+### Run Layer
+
+Run State
+Map
+Encounter Selection
+Economy
+Market
+Progression
+Execution
+Save/Load
+
+### Army Layer
+
+Heroes
+Soldiers
+Jobs
+Veterancy
+Equipment
+Abilities
+Army Composition
+
+### Combat Layer
+
+Combatants
+Stats
+Movement
+Targeting
+Attacks
+Abilities
+Effects
+Status Effects
+Collision
+Death
+Combat Statistics
+
+### Presentation Layer
+
+Sprites
+Animation
+VFX
+SFX
+UI
+Tooltips
+Combat Feedback
+
+Системы должны зависеть друг от друга через данные и понятные интерфейсы, а не через большое количество прямых ссылок между nodes.
+
+---
+
+# 6. DATA ARCHITECTURE
+
+Godot Resources должны использоваться как основной способ описания контента.
+
+Примерные data resources:
+
+HeroData
+JobData
+EnemyData
+AbilityData
+ItemData
+EffectData
+EncounterData
+BossData
+
+Конкретные названия могут измениться.
+
+---
+
+# 7. EFFECT SYSTEM
+
+Это одна из самых важных технических систем проекта.
+
+Большая часть abilities/items должна собираться из универсальных effects.
+
+Минимальный набор:
+
+DamageEffect
+HealEffect
+StatModifierEffect
+StatusEffect
+SpawnEffect
+KnockbackEffect
+ShieldEffect
+CooldownEffect
+
+[TBD] Требуемый набор определяется во время первых content prototypes.
+
+---
+
+## Effect Composition
+
+Ability должна иметь возможность содержать несколько effects.
+
+Пример:
+
+### Fireball
+
+Targeting:
+Enemy
+
+Effects:
+
+Damage(50)
+
+ApplyStatus:
+Burn(5 sec)
+
+AoE:
+Radius 100
+
+Таким образом создание Fireball не требует отдельной боевой системы.
+
+---
+
+# 8. STATUS SYSTEM
+
+Минимальный generic status framework.
+
+Возможные статусы:
+
+Burn
+Poison
+Bleed
+Stun
+Slow
+Haste
+Armor Buff
+Damage Buff
+Damage Reduction
+
+Не все обязаны попасть в Demo.
+
+Framework должен позволять:
+
+Duration
+Stacks
+Periodic Effect
+Stat Modifier
+Visual Indicator
+
+---
+
+# 9. STAT SYSTEM
+
+Все боевые сущности должны использовать общий набор базовых характеристик.
+
+Предварительно:
+
+Max HP
+Damage
+Attack Speed
+Movement Speed
+Attack Range
+Armor
+[TBD]
+
+Не добавлять новые stats без необходимости.
+
+Чем меньше базовых параметров — тем проще баланс.
+
+---
+
+# 10. COMBATANT ARCHITECTURE
+
+Hero, Soldier и Enemy должны использовать общий фундамент боевого объекта.
+
+Общие функции:
+
+* movement;
+* targeting;
+* receiving damage;
+* attacks;
+* statuses;
+* death;
+* statistics;
+* collision.
+
+Различия должны добавляться компонентами/data.
+
+Не создавать три полностью независимые combat implementations.
+
+---
+
+# 11. MOVEMENT
+
+Arena не содержит сложной геометрии.
+
+Pathfinding не является core requirement.
+
+Combatants:
+
+1. выбирают target;
+2. двигаются к необходимой позиции;
+3. атакуют при достижении range.
+
+Ranged units пытаются поддерживать необходимую дистанцию.
+
+Melee units стремятся приблизиться.
+
+---
+
+# 12. COLLISION
+
+Юниты имеют collision между собой.
+
+Цель:
+
+* ощущение физической массы армии;
+* невозможность полного stacking;
+* естественное формирование фронта;
+* визуально читаемые столкновения.
+
+[RISK]
+
+Не превращать collision avoidance в отдельный многонедельный AI-проект.
+
+Допустимы небольшие визуальные несовершенства.
+
+---
+
+# 13. TARGETING
+
+Начальная версия должна использовать простые правила.
+
+Например:
+
+**Closest Valid Enemy.**
+
+Дополнительные правила добавляются только если они нужны Job/Hero identity.
+
+Targeting должен быть:
+
+**предсказуемым > интеллектуальным.**
+
+Игрок должен понимать, почему юнит выбрал конкретную цель.
+
+---
+
+# 14. ATTACK SYSTEM
+
+Generic attack pipeline:
+
+Acquire Target
+↓
+Move Into Range
+↓
+Attack Windup
+↓
+Resolve Hit / Spawn Projectile
+↓
+Damage
+↓
+Cooldown
+
+Melee и ranged используют один общий pipeline с различными delivery methods.
+
+---
+
+# 15. PROJECTILES
+
+Generic projectile system.
+
+Параметры:
+
+Speed
+Target
+Damage/Effects
+Lifetime
+Piercing [optional]
+AoE [optional]
+
+Не создавать отдельные projectile scripts для каждого ability.
+
+---
+
+# 16. HERO SYSTEM
+
+Hero содержит:
+
+HeroData
+Runtime Stats
+XP
+Level
+4 Ability Slots
+6 Item Slots
+Ability Priority
+Alive/Dead State
+
+---
+
+# 17. HERO LEVELING
+
+XP приходит непосредственно из combat events.
+
+Level thresholds — data-driven.
+
+При level-up игрок получает возможность развития.
+
+Точная система выбора улучшений — [TBD].
+
+Необходимо решить до полноценного производства hero content.
+
+---
+
+# 18. ABILITY PRIORITY
+
+Для Active abilities героя существует ordered list.
+
+Например:
+
+[Heal, Stun, Fireball, Dash]
+
+AI проходит список сверху вниз и использует первую доступную способность, которая имеет valid target.
+
+После применения процесс повторяется согласно cooldown/AI update.
+
+Drag-and-drop UI желательно, но не является технической необходимостью.
+
+---
+
+# 19. SOLDIER SYSTEM
+
+Soldier содержит:
+
+Unique ID
+Name [optional/generated]
+Base Stats
+Current Job
+Veterancy
+2 Item Slots
+Lifetime Statistics
+
+Lifetime statistics минимум:
+
+Battles Survived
+Kills
+
+Дополнительная статистика — только если дешёвая.
+
+---
+
+# 20. JOB SYSTEM
+
+Job определяет:
+
+Stats modifiers
+AI behavior
+Attack type
+1 Active Slot
+3 Passive Slots
+Equipment restrictions [optional]
+
+Job abilities принадлежат Job build.
+
+Все солдаты одной Job получают одинаковые Job abilities.
+
+---
+
+# 21. JOB REASSIGNMENT
+
+Между боями:
+
+Soldier.current_job может быть изменён.
+
+При изменении:
+
+* применяются новые Job stats;
+* меняется AI behavior;
+* меняется attack;
+* применяется правило потери Veterancy.
+
+Операция не требует Gold.
+
+---
+
+# 22. VETERANCY SYSTEM
+
+Veterancy хранится на конкретном Soldier.
+
+Минимальная реализация:
+
+Veterancy XP
+→
+Veterancy Level
+→
+Stat multiplier.
+
+Не делать отдельное talent tree ветерана для Demo.
+
+Veterancy должна быть простой числовой системой.
+
+---
+
+# 23. EQUIPMENT
+
+Один generic Item framework обслуживает Hero и Soldier items.
+
+Item содержит:
+
+Allowed Target Type
+Restrictions
+Passive Effects
+Triggered Effects [if required]
+
+Hero:
+
+6 slots.
+
+Soldier:
+
+2 slots.
+
+---
+
+# 24. INVENTORY
+
+Необходим единый inventory/run storage.
+
+Предметы, которые не экипированы, остаются у игрока.
+
+После смерти Soldier его equipment возвращается в inventory.
+
+Execution rules для Hero equipment — [TBD].
+
+---
+
+# 25. MARKET
+
+После каждого battle создаётся Market inventory.
+
+Предварительно:
+
+**5–7 offers.**
+
+Каждый Offer:
+
+Content
+Price
+Rarity
+Target Hero/Job if applicable.
+
+Игрок может:
+
+Buy
+Sell
+Reroll.
+
+---
+
+# 26. MARKET GENERATOR
+
+Pipeline:
+
+Collect Eligible Content
+↓
+Determine Offer Types
+↓
+Determine Rarity
+↓
+Apply Hero Main Bias
+↓
+Generate Offers
+↓
+Calculate Prices
+
+Generation должна быть seed-compatible для Save/Load.
+
+---
+
+# 27. MAIN SCORE
+
+Для Demo достаточно простой формулы.
+
+Например:
+
+Hero Level Weight
++
+Ability Value
++
+Equipment Value.
+
+Main Score используется Market Generator.
+
+Не пытаться создать идеальную формулу до playtesting.
+
+---
+
+# 28. MAP SYSTEM
+
+Demo использует branching node graph.
+
+Node содержит:
+
+Encounter
+Known Enemy Composition
+Reward
+Connections
+Completion State
+
+Игрок почти всегда видит enemy composition до выбора.
+
+---
+
+# 29. MAP GENERATION
+
+Для Demo допустим **semi-procedural generation**.
+
+Не требуется сложный универсальный генератор.
+
+Например:
+
+Layer 1 → 2 choices
+Layer 2 → 2–3 choices
+Layer 3 → merge
+...
+Boss
+
+Главное:
+
+каждый run предоставляет несколько разных маршрутов.
+
+---
+
+# 30. ENCOUNTER SYSTEM
+
+EncounterData содержит:
+
+Enemy composition
+Arena
+Gold Reward
+Special Rules [optional]
+
+Для Demo избегать большого количества специальных правил.
+
+Разнообразие должно в первую очередь возникать из **разных комбинаций врагов**.
+
+---
+
+# 31. COMBAT STATISTICS
+
+Combat собирает данные независимо от UI.
+
+Минимум:
+
+Damage Dealt
+Damage Taken
+Healing
+Kills
+Deaths
+Ability Uses
+
+Statistics сохраняются до следующего боя либо в history текущего run.
+
+---
+
+# 32. POST-BATTLE SCREEN
+
+После battle игрок получает:
+
+Victory/Defeat
+Gold Earned
+Deaths
+Hero XP
+Veterancy changes
+Top Damage
+Top Healing [if relevant]
+
+Должна быть возможность открыть более подробную статистику.
+
+---
+
+# 33. EXECUTION
+
+Для Demo необходима **First Execution**.
+
+Технически:
+
+Choose Hero
+↓
+Confirmation
+↓
+Narrative/visual sequence
+↓
+Hero state = Executed
+↓
+Remove from active army
+↓
+Persist execution state
+↓
+Start Act II
+
+Необходим отдельный polished presentation pass.
+
+Это climax Demo и не должно выглядеть как обычное удаление персонажа из списка.
+
+---
+
+# 34. ACT II DEMO TEASER
+
+После Execution игрок проходит примерно:
+
+**2–3 encounters.**
+
+Цель:
+
+дать почувствовать:
+
+* освободившееся место в армии;
+* отсутствие героя;
+* изменение рынка;
+* последствия сделанного выбора.
+
+После этого:
+
+Demo End Screen.
+
+---
+
+# 35. SAVE SYSTEM
+
+**MUST HAVE.**
+
+Autosave:
+
+* после боя;
+* после Market actions [или transactional state];
+* после выбора map node;
+* после Execution.
+
+[TBD] Возможно проще сохранять после любого значимого management action.
+
+---
+
+## Save Data
+
+Минимум:
+
+Run Seed
+Map State
+Current Node
+Gold
+Heroes
+Hero Levels/XP
+Hero Abilities
+Hero Items
+Hero Death State
+Soldiers
+Jobs
+Veterancy
+Soldier Items
+Unlocked Jobs
+Job Builds
+Inventory
+Market State
+Executed Heroes
+Act
+Tutorial Flags
+
+---
+
+# 36. SAVE VERSIONING
+
+С самого начала добавить:
+
+**save_version**
+
+Пока проект быстро меняется, старые development saves можно инвалидировать.
+
+Но структура должна позволить понимать версию файла.
+
+---
+
+# 37. UI ARCHITECTURE
+
+Management UI остаётся в основном на одном экране.
+
+Это хорошее scope-ограничение.
+
+Основные зоны:
+
+**Army**
+
+**Heroes**
+
+**Jobs**
+
+**Inventory/Equipment**
+
+**Market**
+
+**Next Encounter**
+
+**Gold**
+
+**Navigation**
+
+Не все панели должны быть одновременно раскрыты.
+
+---
+
+# 38. TOOLTIP SYSTEM
+
+Generic Tooltip System — MUST.
+
+Он должен уметь показывать:
+
+Name
+Rarity
+Description
+Stats
+Effects
+Price
+Restrictions.
+
+Один framework используется для:
+
+Abilities
+Items
+Jobs
+Statuses.
+
+---
+
+# 39. TUTORIAL
+
+Отдельного tutorial level нет.
+
+Обучение встроено в начало первого run.
+
+Используются:
+
+* contextual popups;
+* highlighting UI;
+* короткие подсказки;
+* постепенное открытие систем.
+
+Пример:
+
+Battle 1 → только наблюдение.
+
+После Battle 1 → Market.
+
+Battle 2 → Job.
+
+Battle 3 → Ability priority.
+
+И т.д.
+
+Не показывать игроку все системы одновременно.
+
+---
+
+# 40. AUDIO
+
+Минимальный Demo requirement:
+
+Attack sounds
+Hit sounds
+Death
+Ability sounds
+UI feedback
+Purchase
+Level-up
+Execution
+Boss
+
+Music:
+
+минимум несколько loop tracks либо достаточный набор для:
+
+Management
+Combat
+Boss/Execution.
+
+Audio не должен блокировать gameplay production.
+
+---
+
+# 41. VFX
+
+Generic VFX framework.
+
+Минимальный набор reusable effects:
+
+Hit
+Heal
+Buff
+Debuff
+Projectile impact
+Death
+Level-up.
+
+Hero abilities могут комбинировать/модифицировать базовые VFX.
+
+Не делать 40 полностью уникальных VFX для 40 abilities.
+
+---
+
+# 42. CONTENT TIERS
+
+Весь контент делится на три уровня.
+
+## Tier A — Required
+
+Без этого Demo не работает.
+
+3 playable heroes
+3 Jobs
+6 regular enemies
+1 Boss
+~15 Hero Abilities
+~9 Job Abilities
+~15 Hero Items
+~4 Soldier Items
+
+## Tier B — Target
+
+Желаемый Demo.
+
+5 Heroes
+5 Jobs
+10 Enemies
+1–2 relevant bosses
+40 Hero Abilities
+20 Job Abilities
+40 Hero Items
+10 Soldier Items
+
+## Tier C — Stretch
+
+Оставшиеся boss content
+Extra abilities
+Extra items
+Extra encounter variety
+Additional polish.
+
+**Tier A должен быть закончен раньше, чем производство Tier B становится приоритетом.**
+
+---
+
+# 43. HARD CUT LIST
+
+Если сроки начинают гореть, резать в таком порядке:
+
+1. Extra bosses.
+2. Soldier items beyond minimum.
+3. Hero items beyond minimum.
+4. Hero abilities beyond minimum.
+5. Jobs #4–5.
+6. Heroes #4–5.
+7. Enemy types beyond minimum.
+8. Elite encounters.
+9. Events.
+10. Extra combat statistics.
+11. Extra VFX variety.
+12. Extra tutorial polish.
+
+Не резать без крайней необходимости:
+
+Combat readability
+Market
+Veterancy
+Job reassignment
+Execution
+Save/Load
+Known enemy compositions
+Hero vs Army economy.
+
+Это core identity.
+
+---
+
+# 44. FORBIDDEN SCOPE BEFORE DEMO
+
+До Demo не начинать:
+
+Meta progression
+Second Execution
+Act III
+Necromancer final battle
+PvP
+Achievements
+Multiple arenas/biomes ради визуального разнообразия
+Complex events
+Dialogue system
+Crafting
+Alternative currencies
+Complex conditional AI
+Manual positioning
+Advanced pathfinding
+Procedural dungeon exploration.
+
+Даже если система кажется «быстрой».
+
+---
+
+# 45. DEVELOPMENT DEPENDENCIES
+
+Критическая цепочка:
+
+**Combatant**
+
+↓
+
+**Movement / Targeting / Attack / Death**
+
+↓
+
+**Stats / Effects**
+
+↓
+
+**Abilities / Items**
+
+↓
+
+**Heroes / Jobs**
+
+↓
+
+**Army Building**
+
+↓
+
+**Combat Statistics**
+
+↓
+
+**Economy / Market**
+
+↓
+
+**Encounter**
+
+↓
+
+**Map**
+
+↓
+
+**Run**
+
+↓
+
+**Execution**
+
+↓
+
+**Tutorial / Polish**
+
+Save system развивается параллельно после появления Run State.
+
+---
+
+# 46. FIRST PLAYABLE DEFINITION
+
+Первый playable НЕ требует:
+
+карты;
+рынка;
+казни;
+красивого UI;
+пяти героев.
+
+Первый playable:
+
+**3 Heroes + 9 Soldiers**
+
+против
+
+**Enemy Army**
+
+↓
+
+нажать Fight
+
+↓
+
+юниты самостоятельно двигаются, выбирают цели, атакуют, используют способности и умирают
+
+↓
+
+одна сторона побеждает
+
+↓
+
+показывается статистика.
+
+Если это неинтересно наблюдать — остановить production остальных систем и исправлять combat.
+
+---
+
+# 47. VERTICAL SLICE DEFINITION
+
+Vertical Slice:
+
+3 Heroes
+3 Jobs
+~5 Enemy Types
+Basic Equipment
+Basic Abilities
+Veterancy
+Market
+1 short map branch
+3–4 Battles
+Save/Load
+Basic Tutorial
+Basic UI
+First Execution.
+
+Это практически вся игра в миниатюре.
+
+**Vertical Slice должен появиться значительно раньше конца восьмой недели.**
+
+---
+
+# 48. CONTENT PIPELINE REQUIREMENT
+
+После Vertical Slice разработчик должен иметь возможность добавить:
+
+### New Item
+
+без изменения core code.
+
+### New Basic Ability
+
+без изменения core code.
+
+### New Enemy
+
+через существующие components.
+
+### New Encounter
+
+через данные.
+
+### New Job
+
+в основном через data/configuration.
+
+### New Hero
+
+через data + ограниченное количество hero-specific logic.
+
+Если это невозможно, content framework необходимо исправить **до массового производства контента.**
+
+---
+
+# 49. DEBUG TOOLS
+
+Для автобаттлера debug tools являются обязательной частью production.
+
+Минимум:
+
+God Mode
+Kill Selected Unit
+Spawn Unit
+Change Game Speed
+Give Gold
+Give XP
+Unlock Job
+Give Item/Ability
+Restart Battle
+Skip Encounter
+Jump to Boss
+Force Market Reroll.
+
+Debug tools не требуют красивого UI.
+
+---
+
+# 50. COMBAT TEST SCENE
+
+Создать отдельную developer scene:
+
+**Combat Sandbox.**
+
+В ней можно быстро:
+
+выбрать Player Army;
+выбрать Enemy Army;
+запустить бой;
+перезапустить;
+изменить скорость.
+
+Это позволит тестировать combat без прохождения run.
+
+---
+
+# 51. BALANCE SIMULATION — STRETCH TECH FEATURE
+
+Желательно архитектурно отделить combat logic от presentation настолько, чтобы позднее можно было запускать массовые симуляции.
+
+Не является обязательным для Demo.
+
+Не тратить на это несколько дней до появления потребности.
+
+---
+
+# 52. PERFORMANCE TARGET
+
+На экране обычно:
+
+~12 player units
++
+~5–20 enemies
++
+projectiles
++
+particles.
+
+Это небольшой масштаб.
+
+Не заниматься преждевременной оптимизацией.
+
+Оптимизировать только после profiler evidence.
+
+---
+
+# 53. PRODUCTION BUDGET
+
+Общий бюджет:
+
+**~320 часов.**
+
+Нельзя планировать все 320 часов на feature development.
+
+Предварительное распределение:
+
+Core Systems — ~100h
+
+Game Systems / Run — ~60h
+
+Content — ~60h
+
+UI/UX — ~35h
+
+Art/VFX/Audio — ~30h
+
+Testing/Balance/Bugs — ~25h
+
+Contingency — ~10h
+
+Это не расписание, а ограничитель мышления.
+
+Точные часы будут пересмотрены после первой недели.
+
+---
+
+# 54. SCOPE GATES
+
+Проект проходит через четыре gates.
+
+## GATE 1 — COMBAT
+
+Вопрос:
+
+**Интересно ли смотреть на бой?**
+
+Если нет — не строить Map.
+
+---
+
+## GATE 2 — BUILD
+
+Вопрос:
+
+**Можно ли заметно изменить результат боя изменением билда?**
+
+Если нет — не производить десятки items.
+
+---
+
+## GATE 3 — RUN
+
+Вопрос:
+
+**Интересно ли принимать последовательность решений в течение 3–5 encounters?**
+
+Если нет — не делать 10 encounters.
+
+---
+
+## GATE 4 — CONTENT
+
+Вопрос:
+
+**Достаточно ли быстро производится новый контент?**
+
+Только после ответа «да» производить Target Content.
+
+---
+
+# 55. DEFINITION OF DEMO COMPLETE
+
+Demo считается feature complete, когда игрок может:
+
+New Game
+
+↓
+
+получить трёх героев
+
+↓
+
+пройти встроенное обучение
+
+↓
+
+увидеть потенциальных противников
+
+↓
+
+выбрать маршрут
+
+↓
+
+перестроить Jobs
+
+↓
+
+настроить abilities
+
+↓
+
+экипировать units/heroes
+
+↓
+
+запустить autobattle
+
+↓
+
+понять результат через визуал и statistics
+
+↓
+
+потерять солдат
+
+↓
+
+получить новых Militia
+
+↓
+
+получить Gold
+
+↓
+
+купить upgrades на Market
+
+↓
+
+reroll Market
+
+↓
+
+повысить Heroes
+
+↓
+
+потерять Hero
+
+↓
+
+воскресить Hero
+
+↓
+
+набрать Veterancy
+
+↓
+
+пройти ~10 encounters
+
+↓
+
+победить Act I Boss
+
+↓
+
+казнить одного Hero
+
+↓
+
+пройти несколько боёв Act II
+
+↓
+
+увидеть Demo End.
+
+В любой момент между ключевыми состояниями игру можно закрыть и продолжить через Save.
+
+---
+
+# 56. PRODUCTION NORTH STAR
+
+При выборе между:
+
+**ещё пятью предметами**
+
+и
+
+**улучшением понятности боя**
+
+выбирать понятность боя.
+
+При выборе между:
+
+**новой системой**
+
+и
+
+**улучшением существующей дилеммы**
+
+выбирать существующую дилемму.
+
+При выборе между:
+
+**идеальной архитектурой**
+
+и
+
+**достаточно чистой архитектурой, позволяющей быстро производить контент**
+
+выбирать второе.
+
+При выборе между:
+
+**40 посредственными abilities**
+
+и
+
+**20 abilities, реально меняющими билд**
+
+выбирать 20.
+
+---
+
+# 57. FINAL SCOPE PRIORITY
+
+В порядке важности:
+
+**1. Combat feels good.**
+
+**2. Combat is understandable.**
+
+**3. Building changes combat.**
+
+**4. Army losses matter.**
+
+**5. Adapting to known enemies matters.**
+
+**6. Market creates difficult choices.**
+
+**7. Heroes compete for investment.**
+
+**8. Execution hurts.**
+
+**9. Run has enough variety to replay.**
+
+**10. Content quantity.**
+
+Количество контента находится намеренно на последнем месте.
+
+---
+
+# END OF TECHNICAL / PRODUCTION SCOPE v0.1
