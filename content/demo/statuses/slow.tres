@@ -16,3 +16,4 @@ display_name = "Slow"
 description = "Reduces movement speed."
 default_duration = 4.0
 stat_modifiers = Array[StatModifier]([SubResource("Modifier_slow")])
+polarity = 2

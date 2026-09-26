@@ -2,22 +2,27 @@ class_name MarketState
 extends RefCounted
 
 
-var offers: Array[Dictionary] = []
+var offers: Array[MarketOffer] = []
 var reroll_count := 0
-var rng_state := 0
+var next_offer_serial := 1
 
 
 func to_dictionary() -> Dictionary:
+	var offer_data: Array = []
+	for offer in offers:
+		offer_data.append(offer.to_dictionary())
 	return {
-		"offers": StateSerialization.dictionaries_to_data(offers),
+		"offers": offer_data,
 		"reroll_count": reroll_count,
-		"rng_state": rng_state,
+		"next_offer_serial": next_offer_serial,
 	}
 
 
 static func from_dictionary(data: Dictionary) -> MarketState:
 	var state := MarketState.new()
-	state.offers = StateSerialization.data_to_dictionaries(data.get("offers", []))
+	for offer_data in data.get("offers", []):
+		if offer_data is Dictionary:
+			state.offers.append(MarketOffer.from_dictionary(offer_data))
 	state.reroll_count = int(data.get("reroll_count", 0))
-	state.rng_state = int(data.get("rng_state", 0))
+	state.next_offer_serial = maxi(1, int(data.get("next_offer_serial", 1)))
 	return state

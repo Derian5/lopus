@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://combat/combat.gd" id="1_combat"]
 [ext_resource type="PackedScene" path="res://combat/combat_session.tscn" id="2_session"]
 [ext_resource type="PackedScene" path="res://ui/post_battle/post_battle_panel.tscn" id="3_post_battle"]
+[ext_resource type="PackedScene" path="res://ui/combat/combat_statistics_panel.tscn" id="4_statistics"]
+[ext_resource type="PackedScene" path="res://ui/combat/selected_unit_panel.tscn" id="5_selected"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBackground"]
 bg_color = Color(0.09, 0.075, 0.065, 1)
@@ -18,18 +20,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleDebug"]
-bg_color = Color(0.025, 0.03, 0.04, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.3, 0.68, 0.54, 0.8)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 
 [node name="Combat" type="Control"]
 layout_mode = 3
@@ -96,12 +86,18 @@ custom_minimum_size = Vector2(100, 42)
 layout_mode = 2
 text = "MENU"
 
-[node name="Arena" type="PanelContainer" parent="Page/VBox"]
+[node name="BattleArea" type="VBoxContainer" parent="Page/VBox"]
 layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="Arena" type="PanelContainer" parent="Page/VBox/BattleArea"]
+layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleArena")
 
-[node name="CombatSession" parent="Page/VBox/Arena" instance=ExtResource("2_session")]
+[node name="CombatSession" parent="Page/VBox/BattleArea/Arena" instance=ExtResource("2_session")]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -112,7 +108,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.52, 0.5, 0.46, 1)
-text = "Esc: menu    - / =: speed    S: statistics"
+text = "Esc: menu    - / =: speed    Click a unit: details"
 
 [node name="RestartButton" type="Button" parent="Page/VBox/Footer"]
 custom_minimum_size = Vector2(130, 48)
@@ -121,52 +117,60 @@ text = "RESTART"
 
 [node name="ManagementButton" type="Button" parent="Page/VBox/Footer"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
 disabled = true
 text = "CONTINUE"
 
-[node name="PostBattleCenter" type="CenterContainer" parent="."]
+[node name="PlayerStatistics" parent="." instance=ExtResource("4_statistics")]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 15
+anchor_top = 0.1
+anchor_bottom = 0.433333
+offset_left = 24.0
+offset_right = 284.0
+grow_vertical = 2
+
+[node name="EnemyStatistics" parent="." instance=ExtResource("4_statistics")]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 0.1
 anchor_right = 1.0
+anchor_bottom = 0.433333
+offset_left = -284.0
+offset_right = -24.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="SelectedUnitPanel" parent="." instance=ExtResource("5_selected")]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.15
+anchor_top = 1.0
+anchor_right = 0.85
 anchor_bottom = 1.0
+offset_top = -262.0
+offset_bottom = -78.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="PostBattlePanel" parent="." instance=ExtResource("3_post_battle")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -260.0
+offset_right = 380.0
+offset_bottom = 260.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-
-[node name="PostBattlePanel" parent="PostBattleCenter" instance=ExtResource("3_post_battle")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-
-[node name="DebugPanel" type="PanelContainer" parent="."]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -350.0
-offset_top = 78.0
-offset_right = -26.0
-offset_bottom = 260.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleDebug")
-
-[node name="Margin" type="MarginContainer" parent="DebugPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 12
-
-[node name="DebugLabel" type="Label" parent="DebugPanel/Margin"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.9, 0.72, 1)
-text = "Click a unit to inspect it."
 
 [connection signal="pressed" from="Page/VBox/Header/SpeedDownButton" to="." method="_on_speed_down_button_pressed"]
 [connection signal="pressed" from="Page/VBox/Header/SpeedUpButton" to="." method="_on_speed_up_button_pressed"]

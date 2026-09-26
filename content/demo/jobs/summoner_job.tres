@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="JobDefinition" format=3 uid="uid://3i60gt82o0ga"]
+
+[ext_resource type="Script" uid="uid://b8ihwtri18wmf" path="res://content/definitions/job_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Modifiers"]
+script = ExtResource("2")
+max_hp = 120.0
+damage = -2.0
+attack_speed = 0.0
+movement_speed = 0.0
+attack_range = 170.0
+
+[resource]
+script = ExtResource("1")
+stat_modifiers = SubResource("Modifiers")
+attack_type = &"ranged"
+attack_definition_id = &"attack.basic_ranged"
+ai_behavior = &"support"
+innate_ability_ids = Array[StringName]([&"ability.summoner_job_summon"])
+available_ability_ids = Array[StringName]([&"ability.fortify", &"ability.guardian_shield", &"ability.battle_fury"])
+restriction_tags = Array[StringName]([&"soldier"])
+capacity_price = 130
+unlock_price = 220
+placeholder_color = Color(0.44, 0.62, 0.38, 1)
+id = &"job.summoner"
+display_name = "Summoner"
+description = "A backline profession with an innate ability that calls temporary fighters."
+tags = Array[StringName]([&"job", &"ranged", &"support", &"summoner"])

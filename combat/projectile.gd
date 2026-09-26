@@ -41,7 +41,7 @@ func setup_ability(
 
 func _physics_process(delta: float) -> void:
 	lifetime -= delta
-	if lifetime <= 0.0 or not is_instance_valid(target) or not target.is_alive():
+	if lifetime <= 0.0 or not is_instance_valid(target) or not target.is_targetable():
 		queue_free()
 		return
 
@@ -51,7 +51,8 @@ func _physics_process(delta: float) -> void:
 		if ability != null:
 			source.session._apply_ability_effects(source, target, ability)
 		else:
-			target.take_damage(damage, source)
+			var damage_dealt := target.take_damage(damage, source)
+			source.apply_basic_attack_lifesteal(damage_dealt)
 		queue_free()
 		return
 

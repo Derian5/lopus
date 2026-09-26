@@ -647,7 +647,7 @@ Item содержит:
 Allowed Target Type
 Restrictions
 Passive Effects
-Triggered Effects [if required]
+Triggered Effects [только после общего trigger pipeline; не входят в Demo Stage 9]
 
 Hero:
 
@@ -888,6 +888,8 @@ Autosave:
 * после Execution.
 
 [TBD] Возможно проще сохранять после любого значимого management action.
+
+Реализация использует versioned JSON generation journal: новое поколение сначала записывается во временный файл, затем публикуется атомарным rename. Активный Combat не сериализуется; pre-combat Management save остаётся точкой восстановления до возвращения на Management screen.
 
 ---
 

@@ -16,3 +16,4 @@ display_name = "Armor Buff"
 description = "Temporarily increases armor."
 default_duration = 6.0
 stat_modifiers = Array[StatModifier]([SubResource("Modifier_armor")])
+polarity = 1

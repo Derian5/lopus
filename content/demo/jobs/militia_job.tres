@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="JobDefinition" format=3 uid="uid://b8xmd7m2q51eg"]
+
+[ext_resource type="Script" uid="uid://b8ihwtri18wmf" path="res://content/definitions/job_definition.gd" id="1_job"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2_stats"]
+
+[sub_resource type="Resource" id="StatBlock_militia"]
+script = ExtResource("2_stats")
+max_hp = 150.0
+damage = 2.0
+attack_speed = 0.09999999999999999
+movement_speed = 0.0
+attack_range = 0.0
+armor = 4.0
+
+[resource]
+script = ExtResource("1_job")
+stat_modifiers = SubResource("StatBlock_militia")
+id = &"job.militia"
+display_name = "Militia"
+description = "The renewable baseline role for unassigned soldiers."
+tags = Array[StringName]([&"job", &"militia", &"test"])

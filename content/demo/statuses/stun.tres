@@ -11,3 +11,4 @@ default_duration = 1.5
 max_stacks = 1
 stack_policy = 0
 prevents_actions = true
+polarity = 2

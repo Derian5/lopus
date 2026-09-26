@@ -7,4 +7,4 @@ extends AbilityEffect
 
 func apply(source, target, ability: AbilityDefinition) -> void:
 	if is_instance_valid(target):
-		target.take_damage(amount, source, ability.id, effect_id)
+		target.take_damage(amount, source, ability.id, effect_id, ability.delivery_method == AbilityDefinition.DeliveryMethod.MELEE_HIT)

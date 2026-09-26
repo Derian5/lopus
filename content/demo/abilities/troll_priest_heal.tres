@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/heal_effect.gd" id="2"]
+
+[sub_resource type="Resource" id="Heal"]
+script = ExtResource("2")
+effect_id = &"effect.troll_priest_heal"
+amount = 50.0
+
+[resource]
+script = ExtResource("1")
+id = &"ability.troll_priest_heal"
+display_name = "Trollish Restoration"
+description = "Restores 50 health to the ally with the lowest health ratio."
+cooldown_seconds = 3.0
+targeting_policy = 2
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Heal")])
+priority = 120
+presentation_color = Color(0.38, 0.88, 0.34, 1)
+presentation_text = "Trollish Restoration"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"active", &"heal", &"enemy"])

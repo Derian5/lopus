@@ -91,11 +91,25 @@ autowrap_mode = 2
 custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 
+[node name="ContinueButton" type="Button" parent="Content/Center/Panel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+disabled = true
+text = "CONTINUE"
+
 [node name="NewGameButton" type="Button" parent="Content/Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 text = "NEW GAME"
+
+[node name="StatusLabel" type="Label" parent="Content/Center/Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.58, 0.42, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="QuitButton" type="Button" parent="Content/Center/Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 44)
@@ -112,5 +126,13 @@ offset_bottom = 42.0
 theme_override_colors/font_color = Color(0.45, 0.9, 0.72, 1)
 text = "DEBUG BUILD"
 
+[node name="OverwriteConfirmation" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "Replace saved run?"
+dialog_text = "Starting a New Game permanently replaces the existing run."
+ok_button_text = "NEW GAME"
+
+[connection signal="pressed" from="Content/Center/Panel/Margin/VBox/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="Content/Center/Panel/Margin/VBox/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="Content/Center/Panel/Margin/VBox/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="confirmed" from="OverwriteConfirmation" to="." method="_on_overwrite_confirmed"]

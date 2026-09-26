@@ -88,7 +88,7 @@
     - Militia не требует открытия и capacity.
     - Capacity сохраняется в save-файле.
 
-[ ] 0.8. Зафиксировать границы сохранения:
+[x] 0.8. Зафиксировать границы сохранения:
     - Autosave выполняется только на management screen между боями.
     - Autosave выполняется после применения результатов боя и refill.
     - Autosave выполняется после покупки, продажи, reroll, resurrection, смены Job, изменения equipment и Execution.
@@ -501,22 +501,22 @@ GATE 2. BUILD PROTOTYPE
 ЭТАП 9. РЕАЛИЗОВАТЬ ITEMS И INVENTORY
 ======================================================================
 
-[ ] 9.1. Создать единый ItemDefinition для hero и soldier items.
+[x] 9.1. Создать единый ItemDefinition для hero и soldier items.
 
-[ ] 9.2. Добавить поля:
+[x] 9.2. Добавить поля:
     allowed_target_type, allowed_job_ids, passive_effects, rarity, price и sell_price.
 
-[ ] 9.3. Реализовать Inventory как список item instance IDs и definition IDs.
+[x] 9.3. Реализовать Inventory как список item instance IDs и definition IDs.
 
-[ ] 9.4. Реализовать equip, unequip и swap.
+[x] 9.4. Реализовать equip, unequip и swap.
 
-[ ] 9.5. Проверять slot type и restrictions до изменения RunState.
+[x] 9.5. Проверять slot type и restrictions до изменения RunState.
 
-[ ] 9.6. Реализовать пассивные stat/effect modifiers предметов через существующий effect framework.
+[x] 9.6. Реализовать пассивные stat/effect modifiers предметов через существующий effect framework.
 
-[ ] 9.7. Не добавлять item-specific scripts для обычных предметов.
+[x] 9.7. Не добавлять item-specific scripts для обычных предметов.
 
-[ ] 9.8. Triggered items разрешить только после появления доказанной потребности и общего trigger pipeline.
+[x] 9.8. Triggered items разрешить только после появления доказанной потребности и общего trigger pipeline.
 
 Критерий завершения этапа 9
 
@@ -528,9 +528,9 @@ GATE 2. BUILD PROTOTYPE
 ЭТАП 10. РЕАЛИЗОВАТЬ RUN STATE И SAVE/LOAD
 ======================================================================
 
-[ ] 10.1. Сделать RunState единственным источником постоянного состояния текущего забега.
+[x] 10.1. Сделать RunState единственным источником постоянного состояния текущего забега.
 
-[ ] 10.2. Хранить минимум:
+[x] 10.2. Хранить минимум:
     save_version.
     run_seed.
     run_phase.
@@ -548,28 +548,28 @@ GATE 2. BUILD PROTOTYPE
     tutorial flags.
     RNG states/counters.
 
-[ ] 10.3. Использовать отдельные RNG streams:
+[x] 10.3. Использовать отдельные RNG streams:
     run_rng, market_rng и combat_rng.
 
-[ ] 10.4. Сохранять состояние или счетчик каждого RNG stream.
+[x] 10.4. Сохранять состояние или счетчик каждого RNG stream.
 
-[ ] 10.5. Сохранять текущие Market Offers целиком, а не генерировать их заново при Load.
+[x] 10.5. Сохранять текущие Market Offers целиком, а не генерировать их заново при Load.
 
-[ ] 10.6. Реализовать SaveManager с JSON или другой явно контролируемой схемой.
+[x] 10.6. Реализовать SaveManager с JSON или другой явно контролируемой схемой.
 
-[ ] 10.7. Сначала записывать временный файл, затем атомарно заменять основной save.
+[x] 10.7. Сначала записывать временный файл, затем атомарно заменять основной save.
 
-[ ] 10.8. Проверять save_version перед загрузкой.
+[x] 10.8. Проверять save_version перед загрузкой.
 
-[ ] 10.9. Development saves неизвестной версии можно отклонять с понятным сообщением.
+[x] 10.9. Development saves неизвестной версии можно отклонять с понятным сообщением.
 
-[ ] 10.10. Поврежденный save не должен вызывать crash; предложить New Game.
+[x] 10.10. Поврежденный save не должен вызывать crash; предложить New Game.
 
-[ ] 10.11. Реализовать Autosave по правилам этапа 0.
+[x] 10.11. Реализовать Autosave по правилам этапа 0.
 
-[ ] 10.12. Не сериализовать активную CombatSession.
+[x] 10.12. Не сериализовать активную CombatSession.
 
-[ ] 10.13. Добавить тесты round-trip для RunState и каждого management action.
+[x] 10.13. Добавить тесты round-trip для RunState и каждого management action.
 
 Критерий завершения этапа 10
 
@@ -582,13 +582,13 @@ GATE 2. BUILD PROTOTYPE
 ЭТАП 11. РЕАЛИЗОВАТЬ ECONOMY И MARKET
 ======================================================================
 
-[ ] 11.1. Начислять Gold только после Victory.
+[x] 11.1. Начислять Gold только после Victory.
 
-[ ] 11.2. Создать MarketOffer с content ID, type, rarity, price и target restrictions.
+[x] 11.2. Создать MarketOffer с content ID, type, rarity, price и target restrictions.
 
-[ ] 11.3. Генерировать 5-7 offers через market RNG.
+[x] 11.3. Генерировать 5-7 offers через market RNG.
 
-[ ] 11.4. Реализовать offer types:
+[x] 11.4. Реализовать offer types:
     Hero Ability.
     Hero Item.
     Job Unlock.
@@ -596,23 +596,23 @@ GATE 2. BUILD PROTOTYPE
     Job Ability.
     Soldier Item.
 
-[ ] 11.5. Реализовать Buy.
+[x] 11.5. Реализовать Buy.
 
-[ ] 11.6. Реализовать Reroll с возрастающей ценой в рамках одного Market visit.
+[x] 11.6. Реализовать Reroll с возрастающей ценой в рамках одного Market visit.
 
-[ ] 11.7. Реализовать Sell только после стабильной работы Buy и Reroll.
+[x] 11.7. Реализовать Sell только после стабильной работы Buy и Reroll.
 
-[ ] 11.8. Не генерировать контент для Executed heroes.
+[x] 11.8. Не генерировать контент для Executed heroes.
 
-[ ] 11.9. Не предлагать бесполезный Job Capacity Upgrade, если он не может быть применен.
+[x] 11.9. Не предлагать бесполезный Job Capacity Upgrade, если он не может быть применен.
 
-[ ] 11.10. Реализовать простой Main Score из level, abilities и equipment value.
+[x] 11.10. Реализовать простой Main Score из level, abilities и equipment value.
 
-[ ] 11.11. Применить мягкий Market Bias: neglected heroes получают повышенный шанс качественных предложений, но результат не гарантируется.
+[x] 11.11. Применить мягкий Market Bias: neglected heroes получают повышенный шанс качественных предложений, но результат не гарантируется.
 
-[ ] 11.12. Показывать влияние bias только через предложения; не раскрывать скрытую формулу игроку.
+[x] 11.12. Показывать влияние bias только через предложения; не раскрывать скрытую формулу игроку.
 
-[ ] 11.13. Каждую покупку и reroll применять как транзакцию: Gold, inventory, offer и RNG state меняются вместе.
+[x] 11.13. Каждую покупку и reroll применять как транзакцию: Gold, inventory, offer и RNG state меняются вместе.
 
 Критерий завершения этапа 11
 
@@ -624,26 +624,26 @@ GATE 2. BUILD PROTOTYPE
 ЭТАП 12. РЕАЛИЗОВАТЬ ENCOUNTER CARDS И ЦИКЛ ЗАБЕГА
 ======================================================================
 
-[ ] 12.1. После Market генерировать 2-3 Encounter Cards.
+[x] 12.1. После Market генерировать 2-3 Encounter Cards.
 
-[ ] 12.2. Карточка показывает:
+[x] 12.2. Карточка показывает:
     enemy composition, ключевые свойства врагов, difficulty hint и Gold reward.
 
-[ ] 12.3. Добавить ограниченный тип Unknown Encounter с повышенной наградой.
+[x] 12.3. Добавить ограниченный тип Unknown Encounter с повышенной наградой.
 
-[ ] 12.4. После выбора карточки разрешить игроку перестроить армию под выбранного противника.
+[x] 12.4. После выбора карточки разрешить игроку перестроить армию под выбранного противника.
 
-[ ] 12.5. Заблокировать смену encounter после начала боя.
+[x] 12.5. Заблокировать смену encounter после начала боя.
 
-[ ] 12.6. Создать последовательность Act I из 6-8 боев, включая tutorial и boss.
+[x] 12.6. Создать последовательность Act I из 6-8 боев, включая tutorial и boss.
 
-[ ] 12.7. Гарантировать появление Boss Encounter в конце Act I.
+[x] 12.7. Гарантировать появление Boss Encounter в конце Act I.
 
-[ ] 12.8. Создать New Game flow со стартовыми 3 Heroes и 9 Militia.
+[x] 12.8. Создать New Game flow со стартовыми 3 Heroes и 9 Militia.
 
-[ ] 12.9. Создать Run Defeat screen и возможность начать новый забег.
+[x] 12.9. Создать Run Defeat screen и возможность начать новый забег.
 
-[ ] 12.10. Добавить Demo End screen после третьего боя Act II.
+[x] 12.10. Добавить Demo End screen после третьего боя Act II.
 
 GATE 3. RUN PROTOTYPE
 
@@ -657,21 +657,21 @@ GATE 3. RUN PROTOTYPE
 ЭТАП 13. РЕАЛИЗОВАТЬ RESURRECTION
 ======================================================================
 
-[ ] 13.1. После смерти Hero установить state = Dead.
+[x] 13.1. После смерти Hero установить state = Dead.
 
-[ ] 13.2. Dead Hero сохраняет build и hero slot, но не участвует в бою.
+[x] 13.2. Dead Hero сохраняет build и hero slot, но не участвует в бою.
 
-[ ] 13.3. Добавить Resurrection action на Management screen.
+[x] 13.3. Добавить Resurrection action на Management screen.
 
-[ ] 13.4. Проверять достаточность Gold до транзакции.
+[x] 13.4. Проверять достаточность Gold до транзакции.
 
-[ ] 13.5. После Resurrection герой получает state = Alive и полное HP для следующего боя.
+[x] 13.5. После Resurrection герой получает state = Alive и полное HP для следующего боя.
 
-[ ] 13.6. Executed Hero никогда не появляется в Resurrection UI.
+[x] 13.6. Executed Hero никогда не появляется в Resurrection UI.
 
-[ ] 13.7. Начать с фиксированной стоимости и вынести ее в balance data.
+[x] 13.7. Начать с фиксированной стоимости и вынести ее в balance data.
 
-[ ] 13.8. Проверить возможность выиграть бой без живых героев силами солдат.
+[x] 13.8. Проверить возможность выиграть бой без живых героев силами солдат.
 
 Критерий завершения этапа 13
 
@@ -682,36 +682,36 @@ GATE 3. RUN PROTOTYPE
 ЭТАП 14. РЕАЛИЗОВАТЬ BOSS И EXECUTION
 ======================================================================
 
-[ ] 14.1. Создать одного Act I Boss на существующем combat framework.
+[x] 14.1. Создать одного Act I Boss на существующем combat framework.
 
-[ ] 14.2. Boss должен проверять минимум две части билда, но не требовать отдельной боевой системы.
+[x] 14.2. Boss должен проверять минимум две части билда, но не требовать отдельной боевой системы.
 
-[ ] 14.3. Сделать его attacks и phases читаемыми с placeholder VFX и telegraph indicators.
+[x] 14.3. Сделать его attacks и phases читаемыми с placeholder VFX и telegraph indicators.
 
-[ ] 14.4. После Victory над Boss перевести Run State в Execution phase.
+[x] 14.4. После Victory над Boss перевести Run State в Execution phase.
 
-[ ] 14.5. Создать Execution screen со сравнением трех героев:
+[x] 14.5. Создать Execution screen со сравнением трех героев:
     level, abilities, equipment, вклад в бой и связанные bonuses.
 
-[ ] 14.6. Позволить выбрать Alive или Dead героя.
+[x] 14.6. Позволить выбрать Alive или Dead героя.
 
-[ ] 14.7. Добавить отдельное необратимое confirmation.
+[x] 14.7. Добавить отдельное необратимое confirmation.
 
-[ ] 14.8. Создать ExecutionSnapshot до удаления героя из active roster.
+[x] 14.8. Создать ExecutionSnapshot до удаления героя из active roster.
 
-[ ] 14.9. Заблокировать items и abilities snapshot от дальнейшего использования.
+[x] 14.9. Заблокировать items и abilities snapshot от дальнейшего использования.
 
-[ ] 14.10. Установить state = Executed и сохранить hero ID в истории забега.
+[x] 14.10. Установить state = Executed и сохранить hero ID в истории забега.
 
-[ ] 14.11. Добавить одного нового Militia в освободившийся слот.
+[x] 14.11. Добавить одного нового Militia в освободившийся слот.
 
-[ ] 14.12. Пересчитать Market eligibility и Main Scores.
+[x] 14.12. Пересчитать Market eligibility и Main Scores.
 
-[ ] 14.13. Начать Act II с двумя героями и десятью солдатами.
+[x] 14.13. Начать Act II с двумя героями и десятью солдатами.
 
-[ ] 14.14. Выполнить autosave сразу после завершения Execution transaction.
+[x] 14.14. Выполнить autosave сразу после завершения Execution transaction.
 
-[ ] 14.15. Создать функциональную placeholder-подачу казни до производства финальной графики.
+[x] 14.15. Создать функциональную placeholder-подачу казни до производства финальной графики.
 
 Критерий завершения этапа 14
 
@@ -723,7 +723,7 @@ GATE 3. RUN PROTOTYPE
 ЭТАП 15. СОБРАТЬ VERTICAL SLICE
 ======================================================================
 
-[ ] 15.1. Собрать последовательность:
+[x] 15.1. Собрать последовательность:
     New Game.
     Tutorial Battle.
     Market.
@@ -732,16 +732,16 @@ GATE 3. RUN PROTOTYPE
     2-3 дополнительных battles.
     Boss.
     Execution.
-    Первый battle Act II.
+    3 battles Act II.
     Временный End Screen.
 
-[ ] 15.2. Проверить весь slice без debug-команд.
+[x] 15.2. Проверить весь slice без debug-команд.
 
-[ ] 15.3. Проверить закрытие и продолжение игры на каждом management checkpoint.
+[x] 15.3. Проверить закрытие и продолжение игры на каждом management checkpoint.
 
-[ ] 15.4. Провести минимум 3 полных тестовых прохождения разными билдами.
+[x] 15.4. Провести минимум 3 полных тестовых прохождения разными билдами.
 
-[ ] 15.5. Записать проблемы combat readability, economy, pacing и UX отдельно от обычных bugs.
+[x] 15.5. Записать проблемы combat readability, economy, pacing и UX отдельно от обычных bugs.
 
 GATE 4. VERTICAL SLICE
 

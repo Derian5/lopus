@@ -1,28 +1,98 @@
-[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=7 format=3 uid="uid://b2y02vcj22pc6"]
 
-[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
-[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="2"]
-[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="3"]
+[ext_resource type="Script" uid="uid://dbpyny7dkpanj" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c47iqedtnympj" path="res://content/definitions/effects/ability_effect.gd" id="1_pr7ww"]
+[ext_resource type="Script" uid="uid://cdwb8b50iykkg" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+[ext_resource type="Script" uid="uid://cse71h5ixvfjr" path="res://content/definitions/effects/apply_status_effect.gd" id="3"]
 [ext_resource type="Resource" path="res://content/demo/statuses/stun.tres" id="4"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="5"]
 
 [sub_resource type="Resource" id="Damage"]
 script = ExtResource("2")
-effect_id = &"effect.stunning_blow_damage"
 amount = 14.0
+effect_id = &"effect.stunning_blow_damage"
 
 [sub_resource type="Resource" id="Stun"]
 script = ExtResource("3")
-effect_id = &"effect.stunning_blow_stun"
 status = ExtResource("4")
+effect_id = &"effect.stunning_blow_stun"
+
+[sub_resource type="Resource" id="HeroDamage1"]
+script = ExtResource("2")
+amount = 14.0
+effect_id = &"effect.stunning_blow_damage"
+
+[sub_resource type="Resource" id="HeroStun1"]
+script = ExtResource("3")
+status = ExtResource("4")
+effect_id = &"effect.stunning_blow_stun"
+
+[sub_resource type="Resource" id="HeroLevel1"]
+script = ExtResource("5")
+cooldown_seconds = 7.0
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroDamage1"), SubResource("HeroStun1")])
+
+[sub_resource type="Resource" id="HeroDamage2"]
+script = ExtResource("2")
+amount = 16.8
+effect_id = &"effect.stunning_blow_damage"
+
+[sub_resource type="Resource" id="HeroStun2"]
+script = ExtResource("3")
+status = ExtResource("4")
+effect_id = &"effect.stunning_blow_stun"
+
+[sub_resource type="Resource" id="HeroLevel2"]
+script = ExtResource("5")
+cooldown_seconds = 6.8
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroDamage2"), SubResource("HeroStun2")])
+
+[sub_resource type="Resource" id="HeroDamage3"]
+script = ExtResource("2")
+amount = 20.2
+effect_id = &"effect.stunning_blow_damage"
+
+[sub_resource type="Resource" id="HeroStun3"]
+script = ExtResource("3")
+status = ExtResource("4")
+effect_id = &"effect.stunning_blow_stun"
+
+[sub_resource type="Resource" id="HeroLevel3"]
+script = ExtResource("5")
+cooldown_seconds = 6.6
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroDamage3"), SubResource("HeroStun3")])
+
+[sub_resource type="Resource" id="HeroDamage4"]
+script = ExtResource("2")
+amount = 24.2
+effect_id = &"effect.stunning_blow_damage"
+
+[sub_resource type="Resource" id="HeroStun4"]
+script = ExtResource("3")
+status = ExtResource("4")
+effect_id = &"effect.stunning_blow_stun"
+
+[sub_resource type="Resource" id="HeroLevel4"]
+script = ExtResource("5")
+cooldown_seconds = 6.4
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroDamage4"), SubResource("HeroStun4")])
 
 [resource]
 script = ExtResource("1")
+cooldown_seconds = 7.0
+delivery_method = 1
+effects = Array[ExtResource("1_pr7ww")]([SubResource("Damage"), SubResource("Stun")])
+priority = 80
+presentation_color = Color(1, 0.85, 0.25, 1)
+presentation_text = "STUNNING BLOW - CONTROL"
+rarity = "uncommon"
+price = 130
+allowed_hero_ids = Array[StringName]([&"hero.test_vanguard"])
 id = &"ability.stunning_blow"
 display_name = "Stunning Blow"
 description = "A melee hit that damages and stuns."
-cooldown_seconds = 7.0
-targeting_policy = 1
-delivery_method = 1
-effects = Array[AbilityEffect]([SubResource("Damage"), SubResource("Stun")])
-priority = 80
-presentation_color = Color(1, 0.85, 0.25, 1)
+hero_levels = Array[AbilityLevelDefinition]([SubResource("HeroLevel1"), SubResource("HeroLevel2"), SubResource("HeroLevel3"), SubResource("HeroLevel4")])

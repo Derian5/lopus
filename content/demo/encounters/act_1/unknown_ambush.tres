@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" format=3 uid="uid://d3dg8x0iym1av"]
+
+[ext_resource type="Script" uid="uid://4tuimq2q6q86" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 220
+min_encounter_index = 5
+max_encounter_index = 10
+difficulty_hint = "High"
+key_properties = Array[String](["Composition concealed"])
+is_unknown = true
+id = &"encounter.unknown_ambush"
+display_name = "Unknown Ambush"
+description = "Scout reports are incomplete, but the bounty is exceptional."
+tags = Array[StringName]([&"encounter", &"act1", &"unknown"])

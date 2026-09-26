@@ -9,15 +9,30 @@ enum XpRounding {
 }
 
 
-@export var hero_level_xp_thresholds := PackedInt32Array([0, 100, 250, 500, 900])
-@export_range(0.0, 1.0, 0.01) var hero_stat_growth_per_level := 0.08
-@export var veterancy_xp_thresholds := PackedInt32Array([0, 40, 100, 180, 300])
-@export_range(0.0, 1.0, 0.01) var veterancy_stat_growth_per_level := 0.05
+@export var hero_level_xp_thresholds := PackedInt32Array([0, 50, 100, 150, 250])
+@export_group("Hero Growth Per Level")
+@export_range(0.0, 1.0, 0.01) var hero_max_hp_growth_per_level := 0.08
+@export_range(0.0, 1.0, 0.01) var hero_damage_growth_per_level := 0.08
+@export_range(0.0, 1.0, 0.01) var hero_attack_speed_growth_per_level := 0.08
+@export_range(0.0, 1.0, 0.01) var hero_movement_speed_growth_per_level := 0.08
+@export_range(0.0, 1.0, 0.01) var hero_attack_range_growth_per_level := 0.08
+@export_range(0.0, 1.0, 0.01) var hero_armor_growth_per_level := 0.08
+@export_group("")
+@export var veterancy_xp_thresholds := PackedInt32Array([0, 10, 25, 50, 100])
+@export_group("Veterancy Growth Per Level")
+@export_range(0.0, 1.0, 0.01) var veterancy_max_hp_growth_per_level := 0.05
+@export_range(0.0, 1.0, 0.01) var veterancy_damage_growth_per_level := 0.05
+@export_range(0.0, 1.0, 0.01) var veterancy_attack_speed_growth_per_level := 0.05
+@export_range(0.0, 1.0, 0.01) var veterancy_movement_speed_growth_per_level := 0.05
+@export_range(0.0, 1.0, 0.01) var veterancy_attack_range_growth_per_level := 0.05
+@export_range(0.0, 1.0, 0.01) var veterancy_armor_growth_per_level := 0.05
+@export_group("")
 @export_range(0.0, 1000.0, 0.01) var damage_xp_rate := 0.1
 @export_range(0.0, 1000.0, 0.01) var healing_xp_rate := 0.1
 @export_range(0.0, 1000.0, 0.01) var tanking_xp_rate := 0.1
 @export var xp_rounding_mode := XpRounding.FLOOR
 @export_range(0, 1000000, 1) var max_contribution_xp := 0
+@export_range(0, 1000000, 1) var resurrection_cost := 150
 
 
 func hero_level_for_xp(xp: int) -> int:

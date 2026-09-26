@@ -69,6 +69,7 @@ func _run() -> void:
 		_check(statistics.get_event_count(event_type) > 0, "Event type is consumed: %s" % event_type)
 
 	_test_contribution_filters()
+	_test_summon_contribution_attribution()
 	await _test_effective_health_changes()
 
 	if failures == 0:
@@ -105,6 +106,42 @@ func _test_contribution_filters() -> void:
 	_check(is_equal_approx(float(hero_data.effective_healing), 10.0), "Same-team effective healing grants contribution.")
 	_check(is_equal_approx(float(enemy_data.damage_dealt), 9.0), "A living hostile source receives Damage Dealt contribution.")
 	_check(is_equal_approx(float(enemy_data.damage_tanked), 5.0), "A delayed hostile hit still grants tanking contribution to its living target.")
+
+
+func _test_summon_contribution_attribution() -> void:
+	var statistics := CombatStatistics.new()
+	var summoner := CombatDemoFactory.create_player_army(0, 1)[0]
+	var enemy := CombatDemoFactory.create_enemy_army(1, 0)[0]
+	var summon := CombatUnitSnapshot.new()
+	summon.runtime_id = "summon-attribution-test"
+	summon.definition_id = &"enemy.summoned_brawler"
+	summon.display_name = "Summoned Brawler"
+	summon.team = summoner.team
+	summon.unit_kind = CombatUnitSnapshot.UnitKind.SUMMON
+	summon.summoner_runtime_id = summoner.runtime_id
+	summon.summoner_contribution_percent = 50.0
+	for snapshot in [summoner, summon, enemy]:
+		statistics.register_unit(snapshot)
+	statistics.consume(CombatEvent.new(0.1, CombatEvent.DAMAGE_APPLIED, summon.runtime_id, enemy.runtime_id, &"attack.basic", &"attack.basic", 20.0))
+	statistics.consume(CombatEvent.new(0.2, CombatEvent.DAMAGE_APPLIED, enemy.runtime_id, summon.runtime_id, &"attack.basic", &"attack.basic", 15.0))
+	statistics.consume(CombatEvent.new(0.3, CombatEvent.HEALING_APPLIED, summon.runtime_id, summoner.runtime_id, &"ability.test_heal", &"effect.heal", 10.0))
+	var summoner_data: Dictionary = statistics.unit_stats[summoner.runtime_id]
+	var summon_data: Dictionary = statistics.unit_stats[summon.runtime_id]
+	_check(
+		is_equal_approx(float(summoner_data.damage_dealt), 10.0)
+		and is_equal_approx(float(summoner_data.damage_tanked), 7.5)
+		and is_equal_approx(float(summoner_data.effective_healing), 5.0),
+		"Summon damage, tanking, and healing contribution are attributed to its summoner at the configured percentage."
+	)
+	_check(
+		is_zero_approx(float(summon_data.damage_dealt))
+		and is_zero_approx(float(summon_data.damage_tanked))
+		and is_zero_approx(float(summon_data.effective_healing))
+		and is_equal_approx(float(summon_data.damage_taken), 15.0),
+		"Summon contribution is not duplicated while its diagnostic damage taken remains visible."
+	)
+	var job_data: Dictionary = statistics.job_stats[String(summoner.job_id)]
+	_check(is_equal_approx(float(job_data.damage_dealt), 10.0) and is_equal_approx(float(job_data.damage_tanked), 7.5) and is_equal_approx(float(job_data.effective_healing), 5.0), "Scaled summon contribution rolls into the summoner's Job aggregate.")
 
 
 func _test_effective_health_changes() -> void:

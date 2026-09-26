@@ -1,0 +1,49 @@
+VERTICAL SLICE PLAYTEST REPORT
+Date: 2026-09-19
+
+Scope
+
+- Release-like headless flow with DevMode disabled.
+- The battles configured in `content/demo/routes/demo_route.tres`: currently Tutorial, three regular Act I battles, Boss, Execution, and three Act II battles.
+- Real combat simulation; no synthetic victory results or debug commands.
+- Save/Load at every management checkpoint, the Execution checkpoint, post-Execution, and Demo End.
+
+Playthroughs
+
+1. Hero investment, seed 15001
+   Battles: 8. Simulated combat time: 214.7 seconds. Market purchases: 1.
+   Soldier deaths: 1. Hero deaths: 0. Ending Gold: 1835.
+
+2. Frontline, seed 15101
+   Battles: 8. Simulated combat time: 208.2 seconds. Market purchases: 1.
+   Soldier deaths: 0. Hero deaths: 0. Ending Gold: 1825.
+
+3. Mixed equipment, seed 15201
+   Battles: 8. Simulated combat time: 212.0 seconds. Market purchases: 1.
+   Soldier deaths: 0. Hero deaths: 0. Ending Gold: 1835.
+
+Functional Bugs
+
+- No blocker or broken transition was reproduced.
+- Every run reached Demo End and Continue restored the End Screen.
+- Every management and mandatory Execution checkpoint survived Save/Load.
+
+Combat Readability
+
+- Combat event, contribution, death-source, and post-battle summary assertions pass in the regression suites.
+- Automated runs cannot establish whether a new player understands deaths and build performance. Keep this as a human playtest item for Stage 18 and Stage 20.
+
+Economy
+
+- Every run made an affordable post-tutorial Market purchase and remained completable.
+- Runs ended with 1825-1835 Gold after only one purchase. This indicates low economic pressure in the acceptance routes; investigate during balance testing rather than changing Stage 15 systems.
+
+Pacing
+
+- Total simulated combat time was 208-215 seconds for eight battles.
+- Average battle time was approximately 26 seconds, below the 30-90 second target. Record as a balance issue for Stage 20.
+
+UX
+
+- The player-facing route supports encounter selection, preparation, combat continuation, irreversible Execution, and terminal outcome without debug commands.
+- Automated tests verify controls and transitions, but cannot assess tutorial comprehension or emotional impact of Execution. These require external playtests in Stage 17, Stage 19, and Stage 20.

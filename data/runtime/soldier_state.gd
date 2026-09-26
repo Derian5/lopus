@@ -15,16 +15,13 @@ var lifetime_statistics: Dictionary = {}
 var current_hp := 0.0
 var cooldowns: Dictionary = {}
 var statuses: Array[Dictionary] = []
-
-
-func equip_item(item_id: StringName) -> bool:
-	if String(item_id).is_empty() or item_ids.size() >= MAX_ITEM_SLOTS:
-		return false
-	item_ids.append(item_id)
-	return true
+var stat_modifiers: Array[RuntimeStatModifier] = []
 
 
 func to_dictionary() -> Dictionary:
+	var modifier_data: Array = []
+	for modifier in stat_modifiers:
+		modifier_data.append(modifier.to_dictionary())
 	return {
 		"unique_id": unique_id,
 		"definition_id": String(definition_id),
@@ -37,6 +34,7 @@ func to_dictionary() -> Dictionary:
 		"current_hp": current_hp,
 		"cooldowns": cooldowns.duplicate(true),
 		"statuses": StateSerialization.dictionaries_to_data(statuses),
+		"stat_modifiers": modifier_data,
 	}
 
 
@@ -54,4 +52,7 @@ static func from_dictionary(data: Dictionary) -> SoldierState:
 	state.current_hp = float(data.get("current_hp", 0.0))
 	state.cooldowns = Dictionary(data.get("cooldowns", {})).duplicate(true)
 	state.statuses = StateSerialization.data_to_dictionaries(data.get("statuses", []))
+	for modifier_data in data.get("stat_modifiers", []):
+		if modifier_data is Dictionary:
+			state.stat_modifiers.append(RuntimeStatModifier.from_dictionary(modifier_data))
 	return state

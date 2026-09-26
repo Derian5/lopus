@@ -1,18 +1,19 @@
-[gd_resource type="Resource" script_class="StatusDefinition" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="StatusDefinition" format=3 uid="uid://ca05d7a0oukg7"]
 
-[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="1"]
-[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="2"]
+[ext_resource type="Script" uid="uid://vxoj4qgo7rwe" path="res://content/definitions/status_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c47iqedtnympj" path="res://content/definitions/effects/ability_effect.gd" id="1_m7pjo"]
+[ext_resource type="Script" uid="uid://cvpxbdvecnh7k" path="res://content/definitions/effects/stat_modifier.gd" id="2"]
 
 [sub_resource type="Resource" id="Modifier_damage"]
 script = ExtResource("2")
-stat = "damage"
 operation = 1
 value = 1.35
 
 [resource]
 script = ExtResource("1")
+default_duration = 6.0
+stat_modifiers = Array[ExtResource("2")]([SubResource("Modifier_damage")])
 id = &"status.damage_buff"
 display_name = "Damage Buff"
 description = "Temporarily increases damage."
-default_duration = 6.0
-stat_modifiers = Array[StatModifier]([SubResource("Modifier_damage")])
+polarity = 1

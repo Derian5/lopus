@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://di5wbvkwa0avh"]
+
+[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 500.0
+damage = 21.0
+attack_range = 250.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"ranged"
+ability_ids = Array[StringName]([&"ability.troll_priest_heal", &"ability.troll_priest_poison"])
+placeholder_color = Color(0.34, 0.58, 0.2, 1)
+id = &"enemy.troll_priest"
+display_name = "Troll Priest"
+description = "A durable ranged support that heals allies and spreads lasting venom across new targets."
+tags = Array[StringName]([&"enemy", &"ranged", &"support", &"troll", &"priest"])

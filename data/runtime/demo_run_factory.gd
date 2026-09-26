@@ -9,23 +9,30 @@ const HERO_IDS: Array[StringName] = [
 ]
 
 
-static func create_starting_run(seed := 1) -> RunState:
+static func create_starting_run(seed := 1, selected_hero_ids: Array[StringName] = []) -> RunState:
 	var run := RunState.new()
 	run.run_seed = seed
+	run.initialize_rng_streams(seed)
 	run.gold = 300
-	run.available_encounter_ids = [&"encounter.training_skirmish"]
+	run.unlocked_job_ids = [&"job.militia", &"job.warrior"]
 	run.job_capacities = {
 		"job.warrior": 3,
-		"job.archer": 3,
-		"job.priest": 3,
 	}
-	for index in HERO_IDS.size():
+	var hero_ids := HERO_IDS.duplicate() if selected_hero_ids.is_empty() else selected_hero_ids.duplicate()
+	var valid_hero_ids := hero_ids.size() == HERO_IDS.size()
+	var seen_hero_ids: Dictionary = {}
+	for hero_id in hero_ids:
+		var definition := _registry().get_definition(hero_id, false) as HeroDefinition
+		if definition == null or not definition.available_in_new_game or seen_hero_ids.has(hero_id):
+			valid_hero_ids = false
+		seen_hero_ids[hero_id] = true
+	if not valid_hero_ids:
+		push_error("Starting run requires exactly three unique selectable Hero IDs; using the default trio.")
+		hero_ids = HERO_IDS.duplicate()
+	for index in hero_ids.size():
 		var hero := HeroState.new()
 		hero.unique_id = "hero-%02d" % index
-		hero.definition_id = HERO_IDS[index]
-		var definition := _registry().get_definition(hero.definition_id) as HeroDefinition
-		for ability_id in definition.starting_ability_ids:
-			hero.equip_ability(ability_id)
+		hero.definition_id = hero_ids[index]
 		run.heroes.append(hero)
 	for index in 9:
 		var soldier := SoldierState.new()
@@ -33,8 +40,22 @@ static func create_starting_run(seed := 1) -> RunState:
 		soldier.generated_name = "Militia %d" % (index + 1)
 		run.soldiers.append(soldier)
 	run.job_builds.append(_job_build(&"job.warrior", &"ability.stunning_blow", [&"ability.battle_fury"]))
-	run.job_builds.append(_job_build(&"job.archer", &"ability.fire_bolt", [&"ability.battle_fury"]))
-	run.job_builds.append(_job_build(&"job.priest", &"ability.mending_light", []))
+	for item_id in [
+		&"item.hero.vanguard_blade",
+		&"item.hero.titan_seal",
+	]:
+		run.inventory.create_item(item_id)
+	var generated := MarketGenerator.generate_offers(run, _registry(), run.market_rng, run.market.next_offer_serial)
+	if generated.ok:
+		for offer in generated.offers:
+			run.market.offers.append(offer)
+		run.market.next_offer_serial = generated.next_offer_serial
+	else:
+		push_error(generated.error)
+	run.available_encounter_ids = [&"encounter.training_skirmish"]
+	var encounter_result := EncounterService.select_encounter(run, &"encounter.training_skirmish")
+	if not encounter_result.ok:
+		push_error(encounter_result.error)
 	return run
 
 

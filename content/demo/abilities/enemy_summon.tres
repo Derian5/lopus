@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" format=3 uid="uid://cxxuopx0ogskt"]
+
+[ext_resource type="Script" uid="uid://dbpyny7dkpanj" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c47iqedtnympj" path="res://content/definitions/effects/ability_effect.gd" id="1_kq684"]
+[ext_resource type="Script" uid="uid://bi4fljsuauvyk" path="res://content/definitions/effects/summon_effect.gd" id="2"]
+[ext_resource type="Resource" uid="uid://bhdpj8d8brgat" path="res://content/demo/enemies/summoned_shooter.tres" id="3"]
+
+[sub_resource type="Resource" id="Summon"]
+script = ExtResource("2")
+summoned_unit = ExtResource("3")
+max_active_summons = 6
+effect_id = &"effect.enemy_summon"
+
+[resource]
+script = ExtResource("1")
+cooldown_seconds = 4.0
+targeting_policy = 0
+effects = Array[ExtResource("1_kq684")]([SubResource("Summon")])
+priority = 100
+presentation_color = Color(0.58, 0.35, 0.78, 1)
+available_to_heroes = false
+id = &"ability.enemy_summon"
+display_name = "Call Lesser Shooters"
+description = "Creates one weak ranged creature near the caster while below its active summon limit."
+tags = Array[StringName]([&"ability", &"active", &"summon", &"enemy"])

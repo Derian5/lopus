@@ -14,17 +14,17 @@ static func build_player_army(run_state: RunState, registry: Node) -> Array[Comb
 	var result: Array[CombatUnitSnapshot] = []
 	for hero in run_state.heroes:
 		if hero.life_state == HeroState.ALIVE:
-			var snapshot := build_hero(hero, registry)
+			var snapshot := build_hero(hero, run_state.inventory, registry)
 			if snapshot != null:
 				result.append(snapshot)
 	for soldier in run_state.soldiers:
-		var snapshot := build_soldier(soldier, _find_job_build(run_state, soldier.current_job_id), registry)
+		var snapshot := build_soldier(soldier, _find_job_build(run_state, soldier.current_job_id), run_state.inventory, registry)
 		if snapshot != null:
 			result.append(snapshot)
 	return result
 
 
-static func build_hero(hero: HeroState, registry: Node) -> CombatUnitSnapshot:
+static func build_hero(hero: HeroState, inventory: InventoryState, registry: Node) -> CombatUnitSnapshot:
 	var definition := registry.get_definition(hero.definition_id, false) as HeroDefinition
 	if definition == null:
 		return null
@@ -38,17 +38,33 @@ static func build_hero(hero: HeroState, registry: Node) -> CombatUnitSnapshot:
 	snapshot.stats = CombatStats.from_stat_block(definition.base_stats)
 	var progression := registry.get_definition(&"progression.demo", false) as ProgressionDefinition
 	if progression != null:
-		snapshot.stats.multiply(1.0 + maxf(hero.level - 1, 0) * progression.hero_stat_growth_per_level)
+		var gained_levels := maxf(hero.level - 1, 0)
+		snapshot.stats.max_hp *= 1.0 + gained_levels * progression.hero_max_hp_growth_per_level
+		snapshot.stats.damage *= 1.0 + gained_levels * progression.hero_damage_growth_per_level
+		snapshot.stats.attack_speed *= 1.0 + gained_levels * progression.hero_attack_speed_growth_per_level
+		snapshot.stats.movement_speed *= 1.0 + gained_levels * progression.hero_movement_speed_growth_per_level
+		snapshot.stats.attack_range *= 1.0 + gained_levels * progression.hero_attack_range_growth_per_level
+		snapshot.stats.armor *= 1.0 + gained_levels * progression.hero_armor_growth_per_level
 	snapshot.placeholder_color = definition.placeholder_color
-	_apply_items(snapshot.stats, hero.item_ids, &"hero", &"", registry)
+	var modifiers := _runtime_modifiers(hero.stat_modifiers)
+	modifiers.append_array(_collect_item_modifiers(snapshot, hero.item_ids, inventory, &"hero", &"", registry))
+	snapshot.stats.apply_modifiers(modifiers)
 	var ordered_ids := hero.ability_priority if not hero.ability_priority.is_empty() else hero.ability_ids
-	_add_abilities(snapshot, ordered_ids.slice(0, HeroState.MAX_ABILITY_SLOTS), registry)
+	for ability_id in ordered_ids:
+		if not hero.ability_ids.has(ability_id) or not hero.owned_ability_ids.has(ability_id):
+			continue
+		var ability := registry.get_definition(ability_id, false) as AbilityDefinition
+		if ability != null and ability.is_allowed_for_hero(definition.id) and not snapshot.abilities.has(ability):
+			snapshot.abilities.append(ability.for_hero_level(hero.ability_level(ability.id)))
+			if snapshot.abilities.size() >= HeroState.MAX_ABILITY_SLOTS:
+				break
 	return snapshot
 
 
 static func build_soldier(
 	soldier: SoldierState,
 	job_build: JobBuildState,
+	inventory: InventoryState,
 	registry: Node
 ) -> CombatUnitSnapshot:
 	var job := registry.get_definition(soldier.current_job_id, false) as JobDefinition
@@ -61,6 +77,7 @@ static func build_soldier(
 	snapshot.team = CombatUnitSnapshot.Team.PLAYER
 	snapshot.unit_kind = CombatUnitSnapshot.UnitKind.SOLDIER
 	snapshot.job_id = job.id
+	snapshot.veterancy_level = soldier.veterancy_level
 	snapshot.attack_type = job.attack_type
 	snapshot.stats.max_hp = MILITIA_BASE_HP
 	snapshot.stats.damage = MILITIA_BASE_DAMAGE
@@ -69,11 +86,15 @@ static func build_soldier(
 	snapshot.stats.attack_range = MILITIA_BASE_ATTACK_RANGE
 	snapshot.stats.armor = MILITIA_BASE_ARMOR
 	snapshot.stats.add_stat_block(job.stat_modifiers)
-	var progression := registry.get_definition(&"progression.demo", false) as ProgressionDefinition
-	if progression != null:
-		snapshot.stats.multiply(1.0 + soldier.veterancy_level * progression.veterancy_stat_growth_per_level)
+	apply_veterancy_growth(snapshot.stats, snapshot.veterancy_level, registry)
 	snapshot.placeholder_color = job.placeholder_color
-	_apply_items(snapshot.stats, soldier.item_ids, &"soldier", job.id, registry)
+	var modifiers: Array[StatModifier] = []
+	if job_build != null:
+		modifiers.append_array(_runtime_modifiers(job_build.stat_modifiers))
+	modifiers.append_array(_runtime_modifiers(soldier.stat_modifiers))
+	modifiers.append_array(_collect_item_modifiers(snapshot, soldier.item_ids, inventory, &"soldier", job.id, registry))
+	snapshot.stats.apply_modifiers(modifiers)
+	_add_abilities(snapshot, job.innate_ability_ids, registry)
 	if job_build != null:
 		var ability_ids: Array[StringName] = []
 		if job.available_ability_ids.has(job_build.active_ability_id):
@@ -97,6 +118,15 @@ static func build_enemy(definition: EnemyDefinition, runtime_id: String, display
 	snapshot.attack_type = definition.attack_type
 	snapshot.stats = CombatStats.from_stat_block(definition.base_stats)
 	snapshot.placeholder_color = definition.placeholder_color
+	if definition is BossDefinition:
+		var boss := definition as BossDefinition
+		snapshot.is_boss = true
+		snapshot.boss_phase_count = boss.phase_count
+		snapshot.boss_phase_health_thresholds = boss.phase_health_thresholds.duplicate()
+		snapshot.boss_phase_damage_multiplier = boss.phase_damage_multiplier
+		snapshot.boss_phase_attack_speed_multiplier = boss.phase_attack_speed_multiplier
+		snapshot.boss_telegraph_color = boss.telegraph_color
+		snapshot.boss_phase_telegraph_text = boss.phase_telegraph_text
 	_add_abilities(snapshot, definition.ability_ids, registry)
 	return snapshot
 
@@ -108,6 +138,19 @@ static func _find_job_build(run_state: RunState, job_id: StringName) -> JobBuild
 	return null
 
 
+static func apply_veterancy_growth(stats: CombatStats, veterancy_level: int, registry: Node) -> void:
+	var progression := registry.get_definition(&"progression.demo", false) as ProgressionDefinition
+	if progression == null or veterancy_level <= 0:
+		return
+	var level := float(veterancy_level)
+	stats.max_hp *= 1.0 + level * progression.veterancy_max_hp_growth_per_level
+	stats.damage *= 1.0 + level * progression.veterancy_damage_growth_per_level
+	stats.attack_speed *= 1.0 + level * progression.veterancy_attack_speed_growth_per_level
+	stats.movement_speed *= 1.0 + level * progression.veterancy_movement_speed_growth_per_level
+	stats.attack_range *= 1.0 + level * progression.veterancy_attack_range_growth_per_level
+	stats.armor *= 1.0 + level * progression.veterancy_armor_growth_per_level
+
+
 static func _add_abilities(snapshot: CombatUnitSnapshot, ability_ids: Array[StringName], registry: Node) -> void:
 	for ability_id in ability_ids:
 		var ability := registry.get_definition(ability_id, false) as AbilityDefinition
@@ -115,17 +158,33 @@ static func _add_abilities(snapshot: CombatUnitSnapshot, ability_ids: Array[Stri
 			snapshot.abilities.append(ability)
 
 
-static func _apply_items(
-	stats: CombatStats,
+static func _collect_item_modifiers(
+	snapshot: CombatUnitSnapshot,
 	item_ids: Array[StringName],
+	inventory: InventoryState,
 	target_type: StringName,
 	job_id: StringName,
 	registry: Node
-) -> void:
-	for item_id in item_ids:
-		var item := registry.get_definition(item_id, false) as ItemDefinition
+) -> Array[StatModifier]:
+	var modifiers: Array[StatModifier] = []
+	if inventory == null:
+		return modifiers
+	for instance_id in item_ids:
+		var definition_id := inventory.get_definition_id(instance_id)
+		var item := registry.get_definition(definition_id, false) as ItemDefinition
 		if item == null or item.allowed_target_type != target_type:
 			continue
 		if not item.allowed_job_ids.is_empty() and not item.allowed_job_ids.has(job_id):
 			continue
-		stats.add_stat_block(item.stat_modifiers)
+		snapshot.equipped_item_instance_ids.append(instance_id)
+		snapshot.equipped_item_definition_ids.append(definition_id)
+		modifiers.append_array(item.passive_effects)
+	return modifiers
+
+
+static func _runtime_modifiers(runtime_modifiers: Array[RuntimeStatModifier]) -> Array[StatModifier]:
+	var result: Array[StatModifier] = []
+	for modifier in runtime_modifiers:
+		if modifier != null:
+			result.append(modifier.to_stat_modifier())
+	return result

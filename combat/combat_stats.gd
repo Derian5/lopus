@@ -57,3 +57,25 @@ func multiply(multiplier: float) -> void:
 	movement_speed *= multiplier
 	attack_range *= multiplier
 	armor *= multiplier
+
+
+func apply_modifiers(modifiers: Array[StatModifier]) -> void:
+	for operation in [StatModifier.Operation.ADD, StatModifier.Operation.MULTIPLY]:
+		for modifier in modifiers:
+			if modifier == null or modifier.operation != operation or not _has_stat(modifier.stat):
+				continue
+			set(modifier.stat, modifier.apply_to(float(get(modifier.stat))))
+	_clamp_values()
+
+
+func _has_stat(stat: String) -> bool:
+	return stat in ["max_hp", "damage", "attack_speed", "movement_speed", "attack_range", "armor"]
+
+
+func _clamp_values() -> void:
+	max_hp = maxf(max_hp, 1.0)
+	damage = maxf(damage, 0.0)
+	attack_speed = maxf(attack_speed, 0.01)
+	movement_speed = maxf(movement_speed, 0.0)
+	attack_range = maxf(attack_range, 0.0)
+	armor = maxf(armor, 0.0)

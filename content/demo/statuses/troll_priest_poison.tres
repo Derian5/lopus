@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="StatusDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+
+[sub_resource type="Resource" id="PoisonDamage"]
+script = ExtResource("2")
+effect_id = &"effect.troll_priest_poison_tick"
+amount = 20.0
+
+[resource]
+script = ExtResource("1")
+id = &"status.troll_priest_poison"
+display_name = "Troll Venom"
+description = "Deals 20 damage every second until the battle ends."
+default_duration = 0.0
+max_stacks = 1
+stack_policy = 0
+periodic_interval = 1.0
+periodic_effects = Array[AbilityEffect]([SubResource("PoisonDamage")])
+polarity = 2

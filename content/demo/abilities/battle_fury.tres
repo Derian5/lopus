@@ -1,23 +1,101 @@
-[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=8 format=3 uid="uid://7yf4ofc034qc"]
 
-[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
-[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="2"]
-[ext_resource type="Resource" path="res://content/demo/statuses/damage_buff.tres" id="3"]
+[ext_resource type="Script" uid="uid://dbpyny7dkpanj" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c47iqedtnympj" path="res://content/definitions/effects/ability_effect.gd" id="1_vn1jj"]
+[ext_resource type="Script" uid="uid://cse71h5ixvfjr" path="res://content/definitions/effects/apply_status_effect.gd" id="2"]
+[ext_resource type="Resource" uid="uid://ca05d7a0oukg7" path="res://content/demo/statuses/damage_buff.tres" id="3"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier_effect.gd" id="5"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="6"]
 
 [sub_resource type="Resource" id="Status"]
 script = ExtResource("2")
-effect_id = &"effect.battle_fury_status"
 status = ExtResource("3")
+effect_id = &"effect.battle_fury_status"
+
+[sub_resource type="Resource" id="HeroDamageModifier1"]
+script = ExtResource("6")
+stat = "damage"
+operation = 1
+value = 1.35
+
+[sub_resource type="Resource" id="HeroModifierEffect1"]
+script = ExtResource("5")
+effect_id = &"effect.battle_fury_damage"
+modifier = SubResource("HeroDamageModifier1")
+duration = 6.0
+
+[sub_resource type="Resource" id="HeroLevel1"]
+script = ExtResource("4")
+cooldown_seconds = 10.0
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroModifierEffect1")])
+
+[sub_resource type="Resource" id="HeroDamageModifier2"]
+script = ExtResource("6")
+stat = "damage"
+operation = 1
+value = 1.42
+
+[sub_resource type="Resource" id="HeroModifierEffect2"]
+script = ExtResource("5")
+effect_id = &"effect.battle_fury_damage"
+modifier = SubResource("HeroDamageModifier2")
+duration = 6.0
+
+[sub_resource type="Resource" id="HeroLevel2"]
+script = ExtResource("4")
+cooldown_seconds = 10.0
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroModifierEffect2")])
+
+[sub_resource type="Resource" id="HeroDamageModifier3"]
+script = ExtResource("6")
+stat = "damage"
+operation = 1
+value = 1.5
+
+[sub_resource type="Resource" id="HeroModifierEffect3"]
+script = ExtResource("5")
+effect_id = &"effect.battle_fury_damage"
+modifier = SubResource("HeroDamageModifier3")
+duration = 6.0
+
+[sub_resource type="Resource" id="HeroLevel3"]
+script = ExtResource("4")
+cooldown_seconds = 10.0
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroModifierEffect3")])
+
+[sub_resource type="Resource" id="HeroDamageModifier4"]
+script = ExtResource("6")
+stat = "damage"
+operation = 1
+value = 1.6
+
+[sub_resource type="Resource" id="HeroModifierEffect4"]
+script = ExtResource("5")
+effect_id = &"effect.battle_fury_damage"
+modifier = SubResource("HeroDamageModifier4")
+duration = 6.0
+
+[sub_resource type="Resource" id="HeroLevel4"]
+script = ExtResource("4")
+cooldown_seconds = 10.0
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroModifierEffect4")])
 
 [resource]
 script = ExtResource("1")
-id = &"ability.battle_fury"
-display_name = "Battle Fury"
-description = "Increases the caster's damage."
 kind = 1
 cooldown_seconds = 10.0
 targeting_policy = 0
-delivery_method = 0
-effects = Array[AbilityEffect]([SubResource("Status")])
+effects = Array[ExtResource("1_vn1jj")]([SubResource("Status")])
 priority = 40
 presentation_color = Color(0.95, 0.2, 0.2, 1)
+price = 75
+id = &"ability.battle_fury"
+display_name = "Battle Fury"
+description = "Increases the caster's damage."
+allowed_hero_ids = Array[StringName]([&"hero.test_vanguard", &"hero.ashen_duelist", &"hero.army_support", &"hero.glass_arcanist", &"hero.thorn_warden", &"hero.iron_oracle"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("HeroLevel1"), SubResource("HeroLevel2"), SubResource("HeroLevel3"), SubResource("HeroLevel4")])

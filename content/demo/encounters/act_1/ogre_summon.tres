@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" format=3 uid="uid://bbsdn144046e6"]
+
+[ext_resource type="Script" uid="uid://4tuimq2q6q86" path="res://content/definitions/encounter_definition.gd" id="1_xvs1h"]
+
+[resource]
+script = ExtResource("1_xvs1h")
+enemy_ids = Array[StringName]([&"enemy.summoner", &"enemy.summoner", &"enemy.summoner", &"enemy.summoner", &"enemy.massive_ogre", &"enemy.massive_ogre"])
+reinforcement_enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider"])
+reinforcement_alive_threshold = 2
+gold_reward = 130
+min_encounter_index = 1
+max_encounter_index = 10
+difficulty_hint = "Low"
+key_properties = Array[String](["Dense melee frontline", "Minimal ranged pressure"])
+id = &"encounter.ogres_attack"
+display_name = "OGRES ATTACK"
+description = "Ogres with summoners. GG WP"
+tags = Array[StringName]([&"encounter", &"act1", &"melee"])

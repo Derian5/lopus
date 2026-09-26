@@ -1,6 +1,9 @@
 extends PanelContainer
 
 
+signal continue_requested
+
+
 func show_result(result: CombatResult) -> void:
 	var timeout_text := " / TIME LIMIT" if result.timed_out else ""
 	%ResultTitle.text = ("VICTORY" if result.winner == &"player" else "DEFEAT") + timeout_text
@@ -15,6 +18,10 @@ func show_result(result: CombatResult) -> void:
 
 func hide_summary() -> void:
 	visible = false
+
+
+func _on_continue_pressed() -> void:
+	continue_requested.emit()
 
 
 func _format_top_unit(data: Dictionary, metric: StringName) -> String:

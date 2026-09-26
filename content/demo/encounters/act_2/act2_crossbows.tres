@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 235
+act = 2
+min_encounter_index = 0
+max_encounter_index = 11
+difficulty_hint = "High"
+key_properties = Array[String](["Six ranged attackers", "Extreme backline pressure"])
+id = &"encounter.act2_crossbows"
+display_name = "Black Bolt Company"
+description = "A veteran crossbow company protected by a narrow shield line."
+tags = Array[StringName]([&"encounter", &"act2", &"ranged"])

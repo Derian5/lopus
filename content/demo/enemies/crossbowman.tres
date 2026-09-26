@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://do5rt4d2utkcn"]
+
+[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1_enemy"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2_stats"]
+
+[sub_resource type="Resource" id="StatBlock_ranged"]
+script = ExtResource("2_stats")
+max_hp = 300.0
+damage = 17.0
+attack_speed = 3.0
+movement_speed = 85.0
+attack_range = 260.0
+
+[resource]
+script = ExtResource("1_enemy")
+base_stats = SubResource("StatBlock_ranged")
+attack_type = &"ranged"
+placeholder_color = Color(0.72, 0.18, 0.3, 1)
+id = &"enemy.crossbowman"
+display_name = "Crossbowman"
+description = "A fragile ranged attacker with rapid crossbow fire."
+tags = Array[StringName]([&"enemy", &"ranged", &"crossbowman"])

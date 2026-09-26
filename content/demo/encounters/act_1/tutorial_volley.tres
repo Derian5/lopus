@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" format=3 uid="uid://d0mp0refl84u8"]
+
+[ext_resource type="Script" uid="uid://4tuimq2q6q86" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 110
+max_encounter_index = 0
+difficulty_hint = "Low"
+key_properties = Array[String](["Balanced tutorial force", "Two exposed ranged attackers"])
+id = &"encounter.tutorial_volley"
+display_name = "Opening Volley"
+description = "A readable opening formation with an exposed ranged line."
+tags = Array[StringName]([&"encounter", &"tutorial"])

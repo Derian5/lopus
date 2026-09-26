@@ -1,0 +1,94 @@
+[gd_resource type="Resource" script_class="RunEventDefinition" format=3 uid="uid://cf0qxifppecek"]
+
+[ext_resource type="Script" uid="uid://doousjkw7uvwu" path="res://content/definitions/run_event_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://buy8me4cbo54b" path="res://content/definitions/run_event_node.gd" id="2"]
+[ext_resource type="Script" uid="uid://duy5soidh7i32" path="res://content/definitions/run_event_choice.gd" id="3"]
+[ext_resource type="Script" uid="uid://blniki8s66th3" path="res://content/definitions/run_event_condition.gd" id="4"]
+[ext_resource type="Script" uid="uid://6yc60mmrkn0j" path="res://content/definitions/run_event_effect.gd" id="5"]
+
+[sub_resource type="Resource" id="MinimumSoldiers"]
+script = ExtResource("4")
+minimum = 2
+
+[sub_resource type="Resource" id="VeterancyReward"]
+script = ExtResource("5")
+effect_id = &"event_effect.old_shrine_training"
+effect_type = 5
+all_soldier_targets = true
+
+[sub_resource type="Resource" id="TrainChoice"]
+script = ExtResource("3")
+choice_id = &"train"
+text = "Let {soldier_0} and {soldier_1} study the old drills."
+effects = Array[ExtResource("5")]([SubResource("VeterancyReward")])
+next_node_id = &"after_training"
+
+[sub_resource type="Resource" id="ItemReward"]
+script = ExtResource("5")
+effect_id = &"event_effect.old_shrine_relic"
+content_id = &"item.hero.titan_seal"
+
+[sub_resource type="Resource" id="RelicChoice"]
+script = ExtResource("3")
+choice_id = &"take_relic"
+text = "Take the sealed relic and leave the shrine untouched."
+effects = Array[ExtResource("5")]([SubResource("ItemReward")])
+
+[sub_resource type="Resource" id="LeaveChoice"]
+script = ExtResource("3")
+choice_id = &"leave"
+text = "Leave before the old stones demand a price."
+
+[sub_resource type="Resource" id="EntryNode"]
+script = ExtResource("2")
+node_id = &"entry"
+title = "The Drillmaster's Shrine"
+body = "An abandoned roadside shrine bears the names of forgotten soldiers. {soldier_0} and {soldier_1} recognize fragments of an old training rite."
+choices = Array[ExtResource("3")]([SubResource("TrainChoice"), SubResource("RelicChoice"), SubResource("LeaveChoice")])
+
+[sub_resource type="Resource" id="TemporaryDamage"]
+script = ExtResource("5")
+effect_id = &"event_effect.old_shrine_fervor"
+effect_type = 3
+all_soldier_targets = true
+stat = "damage"
+modifier_value = 3.0
+battles_remaining = 2
+
+[sub_resource type="Resource" id="FervorChoice"]
+script = ExtResource("3")
+choice_id = &"fervor"
+text = "Finish the rite together. Both soldiers gain +3 damage for the next 2 battles."
+effects = Array[ExtResource("5")]([SubResource("TemporaryDamage")])
+
+[sub_resource type="Resource" id="PermanentArmor"]
+script = ExtResource("5")
+effect_id = &"event_effect.old_shrine_discipline"
+effect_type = 3
+stat = "armor"
+modifier_value = 1.0
+
+[sub_resource type="Resource" id="DisciplineChoice"]
+script = ExtResource("3")
+choice_id = &"discipline"
+text = "Let {soldier_0} complete the final trial alone and gain +1 armor permanently."
+effects = Array[ExtResource("5")]([SubResource("PermanentArmor")])
+
+[sub_resource type="Resource" id="AfterTrainingNode"]
+script = ExtResource("2")
+node_id = &"after_training"
+title = "The Final Inscription"
+body = "The first rite awakens a final inscription. Its lesson can be shared, or entrusted to one veteran."
+choices = Array[ExtResource("3")]([SubResource("FervorChoice"), SubResource("DisciplineChoice")])
+
+[resource]
+script = ExtResource("1")
+weight = 972066.1
+conditions = Array[ExtResource("4")]([SubResource("MinimumSoldiers")])
+soldier_target_count = 2
+entry_node_id = &"entry"
+nodes = Array[ExtResource("2")]([SubResource("EntryNode"), SubResource("AfterTrainingNode")])
+id = &"event.old_shrine"
+display_name = "The Drillmaster's Shrine"
+description = "A branching roadside event about a forgotten military rite."
+tags = Array[StringName]([&"event", &"soldier", &"training"])

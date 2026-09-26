@@ -7,3 +7,7 @@ extends Resource
 
 func apply(_source, _target, _ability: AbilityDefinition) -> void:
 	pass
+
+
+func can_apply(_source, _target, _ability: AbilityDefinition) -> bool:
+	return true

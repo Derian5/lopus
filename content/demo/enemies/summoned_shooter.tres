@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://bhdpj8d8brgat"]
+
+[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 120.0
+damage = 5.0
+attack_speed = 1.2
+movement_speed = 95.0
+attack_range = 190.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"ranged"
+placeholder_color = Color(0.42, 0.62, 0.7, 1)
+id = &"enemy.summoned_shooter"
+display_name = "Summoned Shooter"
+description = "A fragile temporary ranged creature created by a summon ability."
+tags = Array[StringName]([&"enemy", &"summon", &"ranged"])

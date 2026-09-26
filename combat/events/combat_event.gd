@@ -9,6 +9,9 @@ const ABILITY_USED := &"ability_used"
 const STATUS_APPLIED := &"status_applied"
 const UNIT_DIED := &"unit_died"
 const BATTLE_FINISHED := &"battle_finished"
+const BOSS_PHASE_CHANGED := &"boss_phase_changed"
+const REINFORCEMENTS_SPAWNED := &"reinforcements_spawned"
+const UNIT_SUMMONED := &"unit_summoned"
 
 var timestamp := 0.0
 var event_type: StringName

@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://7smy027fix5o"]
 
-[ext_resource type="Script" path="res://ui/management/management.gd" id="1"]
+[ext_resource type="Script" uid="uid://cwc1i0tlo1un7" path="res://ui/management/management.gd" id="1"]
+[ext_resource type="Script" uid="uid://cvlumg5lpjgbp" path="res://ui/management/management_drop_slot.gd" id="2_drop"]
+[ext_resource type="PackedScene" path="res://ui/management/run_event_popup.tscn" id="3_event"]
+[ext_resource type="PackedScene" path="res://ui/management/hero_ability_reward_popup.tscn" id="4_ability_reward"]
 
 [sub_resource type="StyleBoxFlat" id="Background"]
 bg_color = Color(0.028, 0.035, 0.048, 1)
@@ -17,7 +20,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="Management" type="Control"]
+[node name="Management" type="Control" unique_id=387722071]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,7 +29,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Background" type="Panel" parent="."]
+[node name="Background" type="Panel" parent="." unique_id=578055375]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,7 +38,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("Background")
 
-[node name="Page" type="MarginContainer" parent="."]
+[node name="Page" type="MarginContainer" parent="." unique_id=783169623]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,313 +46,293 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 22
-theme_override_constants/margin_top = 18
+theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 18
+theme_override_constants/margin_bottom = 16
 
-[node name="Layout" type="VBoxContainer" parent="Page"]
+[node name="Layout" type="VBoxContainer" parent="Page" unique_id=1684286852]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
-[node name="Header" type="HBoxContainer" parent="Page/Layout"]
+[node name="Header" type="HBoxContainer" parent="Page/Layout" unique_id=1084925767]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="Page/Layout/Header"]
+[node name="Title" type="Label" parent="Page/Layout/Header" unique_id=1979089737]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
 theme_override_font_sizes/font_size = 27
 text = "WAR COUNCIL"
 
-[node name="PhaseLabel" type="Label" parent="Page/Layout/Header"]
+[node name="PhaseLabel" type="Label" parent="Page/Layout/Header" unique_id=30552703]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.48, 0.56, 0.68, 1)
 text = "PREPARATION"
 
-[node name="GoldLabel" type="Label" parent="Page/Layout/Header"]
+[node name="EncounterTitle" type="Label" parent="Page/Layout/Header" unique_id=686091932]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.43, 0.36, 1)
+text = "ACT I  /  BATTLE 1"
+
+[node name="EncounterLabel" type="Label" parent="Page/Layout/Header" unique_id=1829622740]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
+text = "TRAINING SKIRMISH"
+
+[node name="GoldLabel" type="Label" parent="Page/Layout/Header" unique_id=750345226]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.73, 0.28, 1)
 theme_override_font_sizes/font_size = 18
 text = "GOLD  0"
 
-[node name="MenuButton" type="Button" parent="Page/Layout/Header"]
-custom_minimum_size = Vector2(96, 40)
+[node name="MenuButton" type="Button" parent="Page/Layout/Header" unique_id=1281409313]
+custom_minimum_size = Vector2(88, 38)
 layout_mode = 2
 text = "MENU"
 
-[node name="ColumnsScroll" type="ScrollContainer" parent="Page/Layout"]
+[node name="ColumnsScroll" type="ScrollContainer" parent="Page/Layout" unique_id=831691805]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 2
-vertical_scroll_mode = 0
 
-[node name="Columns" type="HBoxContainer" parent="Page/Layout/ColumnsScroll"]
-custom_minimum_size = Vector2(1500, 0)
+[node name="Columns" type="HBoxContainer" parent="Page/Layout/ColumnsScroll" unique_id=1898566913]
+custom_minimum_size = Vector2(1320, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="ArmyCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns"]
-custom_minimum_size = Vector2(340, 0)
+[node name="ArmyCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns" unique_id=1788617173]
+custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("Card")
 
-[node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard"]
+[node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard" unique_id=1077453677]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
-[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin"]
+[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin" unique_id=331507644]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox"]
+[node name="Title" type="Label" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox" unique_id=190758696]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.57, 0.78, 0.95, 1)
 theme_override_font_sizes/font_size = 19
-text = "ARMY  12 / 12"
+text = "ARMY BY PROFESSION"
 
-[node name="RosterScroll" type="ScrollContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox"]
+[node name="Hint" type="Label" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox" unique_id=112649957]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.59, 0.68, 1)
+text = "Drag a soldier onto a Job heading."
+autowrap_mode = 2
+
+[node name="RosterScroll" type="ScrollContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox" unique_id=1099952348]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="Roster" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox/RosterScroll"]
+[node name="Roster" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard/Margin/VBox/RosterScroll" unique_id=1519607799]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="CenterTabs" type="TabContainer" parent="Page/Layout/ColumnsScroll/Columns"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(760, 0)
+[node name="InspectorCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns" unique_id=1511195065]
+custom_minimum_size = Vector2(520, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Card")
 
-[node name="Selected" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
+[node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard" unique_id=61316245]
 layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
 
-[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected"]
+[node name="InspectorScroll" type="ScrollContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin" unique_id=959970162]
 layout_mode = 2
-theme_override_constants/separation = 10
+horizontal_scroll_mode = 0
 
-[node name="SelectedTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll" unique_id=385223555]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 9
+
+[node name="Eyebrow" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=609462515]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.56, 0.68, 1)
+text = "BUILD INSPECTOR"
+
+[node name="SelectedTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=1301418187]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
 theme_override_font_sizes/font_size = 22
-text = "SELECT A UNIT"
+text = "SELECT A UNIT OR JOB"
 
-[node name="DetailsLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+[node name="DetailsLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=1551038105]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
-text = "Choose a hero or soldier from the army."
+text = "Choose a hero, soldier, or profession from the army."
 autowrap_mode = 2
 
-[node name="JobControls" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+[node name="JobControls" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=221992638]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="JobWarning" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls"]
+[node name="JobWarning" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/JobControls" unique_id=960113104]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.91, 0.58, 0.35, 1)
 text = "Changing Job removes all veterancy."
+autowrap_mode = 2
 
-[node name="Row" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls"]
+[node name="Row" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/JobControls" unique_id=2070728528]
 layout_mode = 2
 
-[node name="JobOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls/Row"]
+[node name="JobOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/JobControls/Row" unique_id=511084702]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ChangeJobButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls/Row"]
+[node name="ChangeJobButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/JobControls/Row" unique_id=958168178]
 layout_mode = 2
 text = "CHANGE JOB"
 
-[node name="AbilitiesTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
-layout_mode = 2
-text = "ABILITIES / PRIORITY"
-
-[node name="AbilityRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="AbilityEditRow" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
+[node name="JobBuildControls" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=1578786371]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="AbilityOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/AbilityEditRow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ReplaceAbilityButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/AbilityEditRow"]
-layout_mode = 2
-text = "REPLACE SLOT"
-
-[node name="EquipmentLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.68, 0.78, 1)
-text = "EQUIPMENT  Empty"
-autowrap_mode = 2
-
-[node name="Jobs" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
-
-[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Intro" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
-text = "One shared build applies to every soldier assigned to this Job."
-autowrap_mode = 2
-
-[node name="JobBuildOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="CapacityLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+[node name="CapacityLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/JobBuildControls" unique_id=1072905460]
 unique_name_in_owner = true
 layout_mode = 2
 text = "CAPACITY"
 
-[node name="ActiveLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+[node name="AbilityTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=261986268]
 layout_mode = 2
-text = "ACTIVE ABILITY"
+theme_override_colors/font_color = Color(0.57, 0.78, 0.95, 1)
+text = "ABILITY SLOTS / PRIORITY"
 
-[node name="JobActiveOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+[node name="AbilityRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=1720530715]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 4
 
-[node name="PassiveLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
-layout_mode = 2
-text = "PASSIVE ABILITIES  (UP TO 3)"
-
-[node name="JobPassiveOption" type="OptionButton" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+[node name="EquipmentCount" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=935158865]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.57, 0.78, 0.95, 1)
+text = "EQUIPMENT"
 
-[node name="JobPassivesLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
+[node name="EquipmentRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox" unique_id=637929039]
 unique_name_in_owner = true
 layout_mode = 2
-text = "None"
+theme_override_constants/separation = 4
 
-[node name="JobButtons" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox"]
-layout_mode = 2
-
-[node name="ApplyJobBuildButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons"]
-layout_mode = 2
-text = "APPLY ACTIVE"
-
-[node name="TogglePassiveButton" type="Button" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons"]
-layout_mode = 2
-text = "ADD / REMOVE PASSIVE"
-
-[node name="Inventory" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
-
-[node name="InventoryLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Inventory"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
-text = "Inventory is empty. Equipment actions unlock with item content."
-autowrap_mode = 2
-
-[node name="Market" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs"]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
-
-[node name="MarketRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/CenterTabs/Market"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="EncounterCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns"]
-custom_minimum_size = Vector2(360, 0)
+[node name="RightCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns" unique_id=592696582]
+custom_minimum_size = Vector2(430, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("Card")
 
-[node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard"]
+[node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard" unique_id=109119773]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
 
-[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin"]
+[node name="RightScroll" type="ScrollContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin" unique_id=351284870]
 layout_mode = 2
-theme_override_constants/separation = 12
+horizontal_scroll_mode = 0
 
-[node name="Title" type="Label" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin/VBox"]
+[node name="VBox" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll" unique_id=319920677]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.91, 0.48, 0.39, 1)
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="MarketRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll/VBox" unique_id=1520341978]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="InventoryDropSlot" type="Button" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll/VBox" unique_id=1409202963]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
 theme_override_font_sizes/font_size = 19
-text = "NEXT ENCOUNTER"
+text = "INVENTORY  /  DROP EQUIPPED ITEM HERE"
+script = ExtResource("2_drop")
 
-[node name="EncounterLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin/VBox"]
-unique_name_in_owner = true
+[node name="InventoryHint" type="Label" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll/VBox" unique_id=1856328352]
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.72, 0.77, 0.85, 1)
-text = "No encounter selected."
+theme_override_colors/font_color = Color(0.52, 0.59, 0.68, 1)
+text = "Double-click an item to equip it on the selected Hero or Soldier."
 autowrap_mode = 2
 
-[node name="PreviewLabel" type="Label" parent="Page/Layout/ColumnsScroll/Columns/EncounterCard/Margin/VBox"]
+[node name="InventoryRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll/VBox" unique_id=1224381699]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.52, 0.68, 0.57, 1)
-text = "ARMY PREVIEW"
-autowrap_mode = 2
+theme_override_constants/separation = 5
 
-[node name="Footer" type="HBoxContainer" parent="Page/Layout"]
+[node name="ResurrectionTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll/VBox" unique_id=1468533853]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 19
+text = "RESURRECTION"
+
+[node name="ResurrectionEmpty" type="Label" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll/VBox" unique_id=554721254]
+unique_name_in_owner = true
+layout_mode = 2
+text = "No dead Heroes can be resurrected."
+
+[node name="ResurrectionRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightScroll/VBox" unique_id=1569693224]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Footer" type="HBoxContainer" parent="Page/Layout" unique_id=1260616146]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="FeedbackLabel" type="Label" parent="Page/Layout/Footer"]
+[node name="FeedbackLabel" type="Label" parent="Page/Layout/Footer" unique_id=590718582]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.62, 0.7, 0.8, 1)
-text = "Select a unit to inspect and prepare."
+text = "Drag units and assets directly into their destination slots."
 autowrap_mode = 2
 
-[node name="FightButton" type="Button" parent="Page/Layout/Footer"]
+[node name="PreviewLabel" type="Label" parent="Page/Layout/Footer" unique_id=2114756299]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.68, 0.57, 1)
+text = "ARMY PREVIEW"
+
+[node name="FightButton" type="Button" parent="Page/Layout/Footer" unique_id=259178174]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 52)
 layout_mode = 2
 text = "COMMIT TO BATTLE"
 
+[node name="RunEventPopup" parent="." unique_id=465802837 instance=ExtResource("3_event")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="HeroAbilityRewardPopup" parent="." unique_id=1030138719 instance=ExtResource("4_ability_reward")]
+unique_name_in_owner = true
+layout_mode = 1
+
 [connection signal="pressed" from="Page/Layout/Header/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/JobControls/Row/ChangeJobButton" to="." method="_on_change_job_pressed"]
 [connection signal="pressed" from="Page/Layout/Footer/FightButton" to="." method="_on_fight_button_pressed"]
-[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/JobControls/Row/ChangeJobButton" to="." method="_on_change_job_pressed"]
-[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Selected/VBox/AbilityEditRow/ReplaceAbilityButton" to="." method="_on_replace_ability_pressed"]
-[connection signal="item_selected" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobBuildOption" to="." method="_on_job_build_selected"]
-[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons/ApplyJobBuildButton" to="." method="_on_apply_job_active_pressed"]
-[connection signal="pressed" from="Page/Layout/ColumnsScroll/Columns/CenterTabs/Jobs/VBox/JobButtons/TogglePassiveButton" to="." method="_on_toggle_job_passive_pressed"]

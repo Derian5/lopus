@@ -18,3 +18,4 @@ max_stacks = 3
 stack_policy = 1
 periodic_interval = 1.0
 periodic_effects = Array[AbilityEffect]([SubResource("Damage_burn")])
+polarity = 2

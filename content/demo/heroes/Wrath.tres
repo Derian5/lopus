@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3 uid="uid://bs23hedw7d8hp"]
+
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_0w5kh"]
+[ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_xx62v"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("1_0w5kh")
+max_hp = 720.0
+damage = 56.0
+attack_speed = 1.75
+movement_speed = 120.0
+attack_range = 50.0
+armor = 22.0
+
+[resource]
+script = ExtResource("2_xx62v")
+base_stats = SubResource("Stats")
+placeholder_color = Color(0.86, 0.18, 0.16, 1)
+available_in_new_game = true
+selection_order = 2
+id = &"hero.ashen_duelist"
+display_name = "Wrath"
+description = "A relentless melee skirmisher who trades protection for speed and sustained pressure."
+tags = Array[StringName]([&"hero", &"carry", &"melee", &"skirmisher"])

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RouteDefinition" format=3 uid="uid://tlakb58r1r4o"]
+
+[ext_resource type="Script" uid="uid://cafswtvu7rthf" path="res://content/definitions/route_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+act_one_boss_wave = 12
+act_two_battle_count = 12
+id = &"route.demo"
+display_name = "Demo Route"
+description = "Battle counts and the Act I Boss wave for the demo route."
+tags = Array[StringName]([&"route", &"demo"])

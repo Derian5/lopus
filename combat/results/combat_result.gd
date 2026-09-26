@@ -12,6 +12,7 @@ var unit_statistics: Array[Dictionary] = []
 var top_damage: Dictionary = {}
 var top_healing: Dictionary = {}
 var application_summary: Dictionary = {}
+var permanent_stat_gains: Array[Dictionary] = []
 
 
 static func from_statistics(
@@ -38,6 +39,7 @@ static func from_statistics(
 	)
 	result.top_damage = statistics.get_top_unit(&"damage_dealt", CombatUnitSnapshot.Team.PLAYER)
 	result.top_healing = statistics.get_top_unit(&"effective_healing", CombatUnitSnapshot.Team.PLAYER)
+	result.permanent_stat_gains = statistics.permanent_stat_gains.duplicate(true)
 	return result
 
 
@@ -51,6 +53,10 @@ func get_unit_statistics(runtime_id: String) -> Dictionary:
 func get_player_deaths() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for data in unit_statistics:
-		if int(data.team) == CombatUnitSnapshot.Team.PLAYER and int(data.deaths) > 0:
+		if (
+			int(data.team) == CombatUnitSnapshot.Team.PLAYER
+			and int(data.unit_kind) in [CombatUnitSnapshot.UnitKind.HERO, CombatUnitSnapshot.UnitKind.SOLDIER]
+			and int(data.deaths) > 0
+		):
 			result.append(data)
 	return result

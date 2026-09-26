@@ -62,8 +62,8 @@ static func create_player_army(hero_count := 3, soldier_count := 9) -> Array[Com
 static func create_enemy_army(melee_count := 8, ranged_count := 4) -> Array[CombatUnitSnapshot]:
 	var result: Array[CombatUnitSnapshot] = []
 	var registry = _get_registry()
-	var melee_definition := registry.get_definition(&"enemy.training_melee") as EnemyDefinition
-	var ranged_definition := registry.get_definition(&"enemy.training_ranged") as EnemyDefinition
+	var melee_definition := registry.get_definition(&"enemy.raider") as EnemyDefinition
+	var ranged_definition := registry.get_definition(&"enemy.crossbowman") as EnemyDefinition
 
 	for index in melee_count:
 		result.append(_create_enemy_snapshot(melee_definition, index, &"melee"))
@@ -74,16 +74,27 @@ static func create_enemy_army(melee_count := 8, ranged_count := 4) -> Array[Comb
 
 
 static func create_enemy_army_from_encounter(encounter: EncounterDefinition) -> Array[CombatUnitSnapshot]:
-	var result: Array[CombatUnitSnapshot] = []
 	if encounter == null:
-		return result
-	for index in encounter.enemy_ids.size():
-		var definition := _get_registry().get_definition(encounter.enemy_ids[index]) as EnemyDefinition
+		return []
+	return _create_enemy_army_from_ids(encounter.enemy_ids, "enemy")
+
+
+static func create_reinforcement_army_from_encounter(encounter: EncounterDefinition) -> Array[CombatUnitSnapshot]:
+	if encounter == null:
+		return []
+	return _create_enemy_army_from_ids(encounter.reinforcement_enemy_ids, "enemy-reinforcement")
+
+
+static func _create_enemy_army_from_ids(enemy_ids: Array[StringName], runtime_prefix: String) -> Array[CombatUnitSnapshot]:
+	var result: Array[CombatUnitSnapshot] = []
+	var registry := _get_registry()
+	for index in enemy_ids.size():
+		var definition := registry.get_definition(enemy_ids[index]) as EnemyDefinition
 		result.append(CombatSnapshotBuilder.build_enemy(
 			definition,
-			"enemy-%02d" % index,
+			"%s-%02d" % [runtime_prefix, index],
 			"%s %d" % [definition.display_name, index + 1],
-			_get_registry()
+			registry
 		))
 	return result
 

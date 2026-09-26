@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://bmhlki8fqjclh"]
+
+[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 270.0
+damage = 8.0
+attack_speed = 0.8
+movement_speed = 80.0
+attack_range = 180.0
+armor = 2.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"ranged"
+ability_ids = Array[StringName]([&"ability.enemy_summon"])
+placeholder_color = Color(0.54, 0.25, 0.67, 1)
+id = &"enemy.summoner"
+display_name = "Enemy Summoner"
+description = "A fragile backline caster that continuously calls temporary ranged creatures."
+tags = Array[StringName]([&"enemy", &"ranged", &"summoner"])

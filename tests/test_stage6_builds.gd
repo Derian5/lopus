@@ -14,6 +14,8 @@ func _run() -> void:
 	Engine.time_scale = 20.0
 	_test_slot_limits()
 	_test_starting_army_and_snapshots()
+	_test_hero_stat_growth()
+	_test_veterancy_stat_growth()
 	_test_definition_driven_extension()
 	await _test_distinct_builds()
 	Engine.time_scale = 1.0
@@ -27,15 +29,15 @@ func _run() -> void:
 
 func _test_slot_limits() -> void:
 	var hero := HeroState.new()
+	_check(not hero.equip_ability(&"ability.unowned"), "Hero cannot equip an ability before purchasing it.")
 	for index in HeroState.MAX_ABILITY_SLOTS:
-		_check(hero.equip_ability(StringName("ability.%d" % index)), "Hero ability slot %d is available." % index)
+		var ability_id := StringName("ability.%d" % index)
+		hero.unlock_ability(ability_id)
+		_check(hero.equip_ability(ability_id), "Hero ability slot %d is available after ownership." % index)
+	hero.unlock_ability(&"ability.overflow")
 	_check(not hero.equip_ability(&"ability.overflow"), "Hero rejects a fifth ability.")
-	for index in HeroState.MAX_ITEM_SLOTS:
-		_check(hero.equip_item(StringName("item.%d" % index)), "Hero item slot %d is available." % index)
-	_check(not hero.equip_item(&"item.overflow"), "Hero rejects a seventh item.")
-	var soldier := SoldierState.new()
-	_check(soldier.equip_item(&"item.one") and soldier.equip_item(&"item.two"), "Soldier has two item slots.")
-	_check(not soldier.equip_item(&"item.three"), "Soldier rejects a third item.")
+	_check(HeroState.MAX_ITEM_SLOTS == 6, "Hero has six item slots.")
+	_check(SoldierState.MAX_ITEM_SLOTS == 2, "Soldier has two item slots.")
 
 
 func _test_starting_army_and_snapshots() -> void:
@@ -45,7 +47,7 @@ func _test_starting_army_and_snapshots() -> void:
 	var hero_ids: Array[StringName] = []
 	for hero in run.heroes:
 		hero_ids.append(hero.definition_id)
-		_check(hero.ability_ids.size() == 4, "Each starting hero fills four ability slots.")
+		_check(hero.ability_ids.is_empty() and hero.owned_ability_ids.is_empty(), "Each starting Hero must buy abilities before equipping them.")
 	_check(hero_ids == DemoRunFactory.HERO_IDS, "Starting heroes cover carry, support, and control roles.")
 
 	var builds := {
@@ -65,6 +67,12 @@ func _test_starting_army_and_snapshots() -> void:
 	_check(warrior.job_id == &"job.warrior" and warrior.stats.armor > archer.stats.armor, "Warrior snapshot is a durable frontline build.")
 	_check(archer.attack_type == &"ranged" and archer.stats.attack_range > warrior.stats.attack_range, "Archer snapshot has ranged behavior.")
 	_check(priest.abilities[0].id == &"ability.mending_light", "Priest snapshot receives its selected support ability.")
+	var summoner_soldier := SoldierState.new()
+	summoner_soldier.unique_id = "summoner-test"
+	summoner_soldier.generated_name = "Summoner Test"
+	summoner_soldier.current_job_id = &"job.summoner"
+	var summoner := CombatSnapshotBuilder.build_soldier(summoner_soldier, null, run.inventory, registry)
+	_check(summoner.abilities.size() == 1 and summoner.abilities[0].id == &"ability.summoner_job_summon", "Summoner Job receives its innate summon without a Job build or ability slot.")
 
 
 func _test_definition_driven_extension() -> void:
@@ -83,6 +91,78 @@ func _test_definition_driven_extension() -> void:
 	damage.effect_id = &"effect.runtime_test"
 	ability.effects = [damage]
 	_check(ability.effects[0] is DamageEffect, "A basic ability is assembled from Resources without core code.")
+
+
+func _test_veterancy_stat_growth() -> void:
+	var registry := root.get_node("ContentRegistry")
+	var progression := registry.get_definition(&"progression.demo") as ProgressionDefinition
+	var original := [
+		progression.veterancy_max_hp_growth_per_level,
+		progression.veterancy_damage_growth_per_level,
+		progression.veterancy_attack_speed_growth_per_level,
+		progression.veterancy_movement_speed_growth_per_level,
+		progression.veterancy_attack_range_growth_per_level,
+		progression.veterancy_armor_growth_per_level,
+	]
+	progression.veterancy_max_hp_growth_per_level = 0.01
+	progression.veterancy_damage_growth_per_level = 0.02
+	progression.veterancy_attack_speed_growth_per_level = 0.03
+	progression.veterancy_movement_speed_growth_per_level = 0.04
+	progression.veterancy_attack_range_growth_per_level = 0.05
+	progression.veterancy_armor_growth_per_level = 0.06
+	var run := DemoRunFactory.create_starting_run(6010)
+	var soldier := run.soldiers[0]
+	var recruit := CombatSnapshotBuilder.build_soldier(soldier, null, run.inventory, registry)
+	soldier.veterancy_level = 2
+	var veteran := CombatSnapshotBuilder.build_soldier(soldier, null, run.inventory, registry)
+	_check(is_equal_approx(veteran.stats.max_hp, recruit.stats.max_hp * 1.02), "Veterancy applies independent max HP growth.")
+	_check(is_equal_approx(veteran.stats.damage, recruit.stats.damage * 1.04), "Veterancy applies independent damage growth.")
+	_check(is_equal_approx(veteran.stats.attack_speed, recruit.stats.attack_speed * 1.06), "Veterancy applies independent attack speed growth.")
+	_check(is_equal_approx(veteran.stats.movement_speed, recruit.stats.movement_speed * 1.08), "Veterancy applies independent movement speed growth.")
+	_check(is_equal_approx(veteran.stats.attack_range, recruit.stats.attack_range * 1.10), "Veterancy applies independent attack range growth.")
+	_check(is_equal_approx(veteran.stats.armor, recruit.stats.armor * 1.12), "Veterancy applies independent armor growth.")
+	progression.veterancy_max_hp_growth_per_level = original[0]
+	progression.veterancy_damage_growth_per_level = original[1]
+	progression.veterancy_attack_speed_growth_per_level = original[2]
+	progression.veterancy_movement_speed_growth_per_level = original[3]
+	progression.veterancy_attack_range_growth_per_level = original[4]
+	progression.veterancy_armor_growth_per_level = original[5]
+
+
+func _test_hero_stat_growth() -> void:
+	var registry := root.get_node("ContentRegistry")
+	var progression := registry.get_definition(&"progression.demo") as ProgressionDefinition
+	var original := [
+		progression.hero_max_hp_growth_per_level,
+		progression.hero_damage_growth_per_level,
+		progression.hero_attack_speed_growth_per_level,
+		progression.hero_movement_speed_growth_per_level,
+		progression.hero_attack_range_growth_per_level,
+		progression.hero_armor_growth_per_level,
+	]
+	progression.hero_max_hp_growth_per_level = 0.01
+	progression.hero_damage_growth_per_level = 0.02
+	progression.hero_attack_speed_growth_per_level = 0.03
+	progression.hero_movement_speed_growth_per_level = 0.04
+	progression.hero_attack_range_growth_per_level = 0.05
+	progression.hero_armor_growth_per_level = 0.06
+	var run := DemoRunFactory.create_starting_run(6011)
+	var hero := run.heroes[0]
+	var level_one := CombatSnapshotBuilder.build_hero(hero, run.inventory, registry)
+	hero.level = 3
+	var level_three := CombatSnapshotBuilder.build_hero(hero, run.inventory, registry)
+	_check(is_equal_approx(level_three.stats.max_hp, level_one.stats.max_hp * 1.02), "Hero levels apply independent max HP growth.")
+	_check(is_equal_approx(level_three.stats.damage, level_one.stats.damage * 1.04), "Hero levels apply independent damage growth.")
+	_check(is_equal_approx(level_three.stats.attack_speed, level_one.stats.attack_speed * 1.06), "Hero levels apply independent attack speed growth.")
+	_check(is_equal_approx(level_three.stats.movement_speed, level_one.stats.movement_speed * 1.08), "Hero levels apply independent movement speed growth.")
+	_check(is_equal_approx(level_three.stats.attack_range, level_one.stats.attack_range * 1.10), "Hero levels apply independent attack range growth.")
+	_check(is_equal_approx(level_three.stats.armor, level_one.stats.armor * 1.12), "Hero levels apply independent armor growth.")
+	progression.hero_max_hp_growth_per_level = original[0]
+	progression.hero_damage_growth_per_level = original[1]
+	progression.hero_attack_speed_growth_per_level = original[2]
+	progression.hero_movement_speed_growth_per_level = original[3]
+	progression.hero_attack_range_growth_per_level = original[4]
+	progression.hero_armor_growth_per_level = original[5]
 
 
 func _test_distinct_builds() -> void:

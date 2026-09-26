@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="2"]
+
+[sub_resource type="Resource" id="Health"]
+script = ExtResource("2")
+stat = "max_hp"
+operation = 1
+value = 1.15
+
+[resource]
+script = ExtResource("1")
+allowed_target_type = &"hero"
+passive_effects = Array[StatModifier]([SubResource("Health")])
+rarity = "rare"
+price = 220
+sell_price = 110
+id = &"item.hero.titan_seal"
+display_name = "Titan Seal"
+description = "A heavy sigil that multiplies maximum health by 1.15."
+tags = Array[StringName]([&"item", &"hero", &"defense"])

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://blgbgxxftqpud"]
+
+[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 1750.0
+damage = 42.0
+attack_speed = 1.5
+movement_speed = 64.0
+armor = 52.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+ability_ids = Array[StringName]([&"ability.massive_ogre_rage"])
+placeholder_color = Color(0.48, 0.24, 0.14, 1)
+id = &"enemy.massive_ogre"
+display_name = "Massive Ogre"
+description = "A slow, heavily armored brute that swells into a life-draining bloodrage."
+tags = Array[StringName]([&"enemy", &"melee", &"ogre", &"heavy"])

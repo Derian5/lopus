@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/effects/basic_attack_empower_effect.gd" id="4"]
+
+[sub_resource type="Resource" id="AttackSpeedModifier"]
+script = ExtResource("3")
+stat = "attack_speed"
+operation = 1
+value = 1.5
+
+[sub_resource type="Resource" id="AttackSpeedEffect"]
+script = ExtResource("2")
+effect_id = &"effect.massive_ogre_rage_attack_speed"
+modifier = SubResource("AttackSpeedModifier")
+duration = 6.0
+
+[sub_resource type="Resource" id="EmpowermentEffect"]
+script = ExtResource("4")
+effect_id = &"effect.massive_ogre_rage_empowerment"
+lifesteal_percent = 50.0
+size_multiplier = 1.5
+duration = 6.0
+
+[resource]
+script = ExtResource("1")
+id = &"ability.massive_ogre_rage"
+display_name = "Massive Bloodrage"
+description = "For 6 seconds, gains 50% attack speed, 50% basic-attack lifesteal, and 50% model and collision size."
+cooldown_seconds = 15.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("AttackSpeedEffect"), SubResource("EmpowermentEffect")])
+priority = 100
+presentation_color = Color(0.76, 0.18, 0.12, 1)
+presentation_text = "Massive Bloodrage"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"active", &"self_buff", &"enemy"])

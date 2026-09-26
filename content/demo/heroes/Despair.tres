@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3 uid="uid://b48o270mg01db"]
+
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_oq5mk"]
+[ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_26i2r"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("1_oq5mk")
+max_hp = 520.0
+damage = 39.0
+attack_speed = 1.3
+movement_speed = 96.0
+attack_range = 245.0
+armor = 14.0
+
+[resource]
+script = ExtResource("2_26i2r")
+base_stats = SubResource("Stats")
+placeholder_color = Color(0.24, 0.48, 0.88, 1)
+available_in_new_game = true
+selection_order = 6
+id = &"hero.iron_oracle"
+display_name = "Despair"
+description = "A resilient ranged tactician who holds ground and directs the army through enemy pressure."
+tags = Array[StringName]([&"hero", &"ranged", &"durable", &"tactician"])

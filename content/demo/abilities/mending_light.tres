@@ -1,12 +1,57 @@
-[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
 [ext_resource type="Script" path="res://content/definitions/effects/heal_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="3"]
 
 [sub_resource type="Resource" id="Heal"]
 script = ExtResource("2")
 effect_id = &"effect.mending_light_heal"
 amount = 28.0
+
+[sub_resource type="Resource" id="HeroHeal1"]
+script = ExtResource("2")
+effect_id = &"effect.mending_light_heal"
+amount = 28.0
+
+[sub_resource type="Resource" id="HeroLevel1"]
+script = ExtResource("3")
+cooldown_seconds = 6.0
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroHeal1")])
+
+[sub_resource type="Resource" id="HeroHeal2"]
+script = ExtResource("2")
+effect_id = &"effect.mending_light_heal"
+amount = 33.6
+
+[sub_resource type="Resource" id="HeroLevel2"]
+script = ExtResource("3")
+cooldown_seconds = 5.8
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroHeal2")])
+
+[sub_resource type="Resource" id="HeroHeal3"]
+script = ExtResource("2")
+effect_id = &"effect.mending_light_heal"
+amount = 40.3
+
+[sub_resource type="Resource" id="HeroLevel3"]
+script = ExtResource("3")
+cooldown_seconds = 5.6
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroHeal3")])
+
+[sub_resource type="Resource" id="HeroHeal4"]
+script = ExtResource("2")
+effect_id = &"effect.mending_light_heal"
+amount = 48.4
+
+[sub_resource type="Resource" id="HeroLevel4"]
+script = ExtResource("3")
+cooldown_seconds = 5.4
+area_radius = 0.0
+effects = Array[AbilityEffect]([SubResource("HeroHeal4")])
 
 [resource]
 script = ExtResource("1")
@@ -19,3 +64,7 @@ delivery_method = 0
 effects = Array[AbilityEffect]([SubResource("Heal")])
 priority = 90
 presentation_color = Color(0.35, 1, 0.55, 1)
+rarity = "uncommon"
+price = 140
+allowed_hero_ids = Array[StringName]([&"hero.army_support"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("HeroLevel1"), SubResource("HeroLevel2"), SubResource("HeroLevel3"), SubResource("HeroLevel4")])

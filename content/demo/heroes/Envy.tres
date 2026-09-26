@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="HeroDefinition" format=3 uid="uid://cgc3ghb4gydlc"]
+
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_v43km"]
+[ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_fsxpw"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("1_v43km")
+max_hp = 670.0
+damage = 38.0
+attack_speed = 1.4000000000000001
+movement_speed = 102.0
+attack_range = 280.0
+armor = 6.0
+
+[resource]
+script = ExtResource("2_fsxpw")
+base_stats = SubResource("Stats")
+placeholder_color = Color(0.24, 0.72, 0.3, 1)
+available_in_new_game = true
+selection_order = 3
+id = &"hero.army_support"
+display_name = "Envy"
+description = "Army support hero that sustains and reinforces nearby allies."
+tags = Array[StringName]([&"hero", &"support", &"ranged"])

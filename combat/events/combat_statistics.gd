@@ -7,6 +7,7 @@ var hero_stats: Dictionary = {}
 var job_stats: Dictionary = {}
 var ability_stats: Dictionary = {}
 var event_counts: Dictionary = {}
+var permanent_stat_gains: Array[Dictionary] = []
 var winner: StringName
 var duration := 0.0
 
@@ -17,6 +18,7 @@ func reset() -> void:
 	job_stats.clear()
 	ability_stats.clear()
 	event_counts.clear()
+	permanent_stat_gains.clear()
 	winner = &""
 	duration = 0.0
 
@@ -29,6 +31,9 @@ func register_unit(snapshot: CombatUnitSnapshot) -> void:
 		"team": snapshot.team,
 		"unit_kind": snapshot.unit_kind,
 		"job_id": String(snapshot.job_id),
+		"veterancy_level": snapshot.veterancy_level,
+		"summoner_runtime_id": snapshot.summoner_runtime_id,
+		"summoner_contribution_percent": snapshot.summoner_contribution_percent,
 		"damage_dealt": 0.0,
 		"damage_taken": 0.0,
 		"damage_tanked": 0.0,
@@ -100,6 +105,20 @@ func get_event_count(event_type: StringName) -> int:
 	return int(event_counts.get(event_type, 0))
 
 
+func record_permanent_stat_gain(
+	target_runtime_id: String,
+	source_runtime_id: String,
+	ability_id: StringName,
+	stats: Dictionary
+) -> void:
+	permanent_stat_gains.append({
+		"target_runtime_id": target_runtime_id,
+		"source_runtime_id": source_runtime_id,
+		"ability_id": String(ability_id),
+		"stats": stats.duplicate(true),
+	})
+
+
 func _record_damage(event: CombatEvent) -> void:
 	var value := maxf(0.0, event.value)
 	if value <= 0.0 or not unit_stats.has(event.target_id):
@@ -112,13 +131,17 @@ func _record_damage(event: CombatEvent) -> void:
 	var target: Dictionary = unit_stats[event.target_id]
 	if not bool(target.alive):
 		return
-	_add_unit_metric(event.target_id, "damage_tanked", value)
-	_add_group_metric(event.target_id, "damage_tanked", value)
+	var tanking_attribution := _contribution_attribution(event.target_id)
+	var attributed_tanking := value * float(tanking_attribution.multiplier)
+	_add_unit_metric(tanking_attribution.runtime_id, "damage_tanked", attributed_tanking)
+	_add_group_metric(tanking_attribution.runtime_id, "damage_tanked", attributed_tanking)
 	var source: Dictionary = unit_stats[event.source_id]
 	if not bool(source.alive):
 		return
-	_add_unit_metric(event.source_id, "damage_dealt", value)
-	_add_group_metric(event.source_id, "damage_dealt", value)
+	var damage_attribution := _contribution_attribution(event.source_id)
+	var attributed_damage := value * float(damage_attribution.multiplier)
+	_add_unit_metric(damage_attribution.runtime_id, "damage_dealt", attributed_damage)
+	_add_group_metric(damage_attribution.runtime_id, "damage_dealt", attributed_damage)
 
 
 func _record_healing(event: CombatEvent) -> void:
@@ -129,10 +152,12 @@ func _record_healing(event: CombatEvent) -> void:
 	var target: Dictionary = unit_stats[event.target_id]
 	if int(source.team) != int(target.team) or not bool(source.alive) or not bool(target.alive):
 		return
-	_add_unit_metric(event.source_id, "healing", value)
-	_add_unit_metric(event.source_id, "effective_healing", value)
-	_add_group_metric(event.source_id, "healing", value)
-	_add_group_metric(event.source_id, "effective_healing", value)
+	var healing_attribution := _contribution_attribution(event.source_id)
+	var attributed_healing := value * float(healing_attribution.multiplier)
+	_add_unit_metric(healing_attribution.runtime_id, "healing", attributed_healing)
+	_add_unit_metric(healing_attribution.runtime_id, "effective_healing", attributed_healing)
+	_add_group_metric(healing_attribution.runtime_id, "healing", attributed_healing)
+	_add_group_metric(healing_attribution.runtime_id, "effective_healing", attributed_healing)
 	_add_ability_metric(event.ability_id, "healing", value)
 
 
@@ -153,7 +178,7 @@ func _record_death(event: CombatEvent) -> void:
 		victim.last_effect_id = String(event.effect_id)
 		_add_group_metric(event.target_id, "deaths", 1)
 
-	if not event.source_id.is_empty():
+	if _is_hostile_event(event):
 		_add_unit_metric(event.source_id, "kills", 1)
 		_add_group_metric(event.source_id, "kills", 1)
 
@@ -162,6 +187,17 @@ func _record_survivors() -> void:
 	for data: Dictionary in unit_stats.values():
 		if data.alive and int(data.unit_kind) == CombatUnitSnapshot.UnitKind.SOLDIER:
 			data.battles_survived = int(data.battles_survived) + 1
+
+
+func _contribution_attribution(runtime_id: String) -> Dictionary:
+	if runtime_id.is_empty() or not unit_stats.has(runtime_id):
+		return {"runtime_id": runtime_id, "multiplier": 1.0}
+	var data: Dictionary = unit_stats[runtime_id]
+	var owner_id := String(data.get("summoner_runtime_id", ""))
+	if not unit_stats.has(owner_id):
+		return {"runtime_id": runtime_id, "multiplier": 1.0}
+	var percent := clampf(float(data.get("summoner_contribution_percent", 100.0)), 0.0, 100.0)
+	return {"runtime_id": owner_id, "multiplier": percent / 100.0}
 
 
 func _add_unit_metric(runtime_id: String, metric: StringName, value: Variant) -> void:
