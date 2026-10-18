@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="2"]
+[ext_resource type="Resource" path="res://content/demo/statuses/troll_priest_poison.tres" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_troll_priest_poison.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Poison"]
+script = ExtResource("2")
+effect_id = &"effect.troll_priest_poison"
+status = ExtResource("3")
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.troll_priest_poison"
+display_name = "Troll Venom"
+description = "Poisons a random enemy that is not poisoned yet: [dmg]{e0.status.periodic_effects.0.amount} damage per second[/dmg] until the battle ends."
+cooldown_seconds = 5.0
+targeting_policy = 5
+delivery_method = 2
+effects = Array[AbilityEffect]([SubResource("Poison")])
+priority = 100
+presentation_color = Color(0.46, 0.78, 0.18, 1)
+presentation_text = "Troll Venom"
+available_to_heroes = false
+excluded_target_status_id = &"status.troll_priest_poison"
+tags = Array[StringName]([&"ability", &"active", &"poison", &"enemy"])

@@ -6,7 +6,7 @@ var items: Array[Dictionary] = []
 var next_instance_serial := 1
 
 
-func create_item(definition_id: StringName, bound_target_id := "") -> StringName:
+func create_item(definition_id: StringName) -> StringName:
 	if String(definition_id).is_empty():
 		return &""
 	var instance_id := StringName("item-%08d" % next_instance_serial)
@@ -17,18 +17,16 @@ func create_item(definition_id: StringName, bound_target_id := "") -> StringName
 	items.append({
 		"instance_id": String(instance_id),
 		"definition_id": String(definition_id),
-		"bound_target_id": bound_target_id,
 	})
 	return instance_id
 
 
-func add_item(instance_id: StringName, definition_id: StringName, bound_target_id := "") -> bool:
+func add_item(instance_id: StringName, definition_id: StringName) -> bool:
 	if String(instance_id).is_empty() or String(definition_id).is_empty() or has_instance(instance_id):
 		return false
 	items.append({
 		"instance_id": String(instance_id),
 		"definition_id": String(definition_id),
-		"bound_target_id": bound_target_id,
 	})
 	return true
 
@@ -68,8 +66,7 @@ static func from_dictionary(data: Dictionary) -> InventoryState:
 	for item in StateSerialization.data_to_dictionaries(data.get("items", [])):
 		state.add_item(
 			StringName(item.get("instance_id", "")),
-			StringName(item.get("definition_id", "")),
-			String(item.get("bound_target_id", ""))
+			StringName(item.get("definition_id", ""))
 		)
 	state.next_instance_serial = maxi(1, int(data.get("next_instance_serial", 1)))
 	return state

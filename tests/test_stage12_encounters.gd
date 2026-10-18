@@ -35,8 +35,8 @@ func _test_deterministic_generation() -> void:
 	var second := DemoRunFactory.create_starting_run(12001)
 	_check(first.available_encounter_ids == second.available_encounter_ids, "Equal run seeds generate identical Encounter Cards.")
 	_check(first.run_rng.to_dictionary() == second.run_rng.to_dictionary(), "Encounter generation consumes the persisted Run RNG deterministically.")
-	_check(first.available_encounter_ids == [&"encounter.training_skirmish"], "New Game uses the fixed tutorial Encounter.")
-	_check(first.selected_encounter_id == &"encounter.training_skirmish", "New Game automatically selects the tutorial Encounter.")
+	_check(first.available_encounter_ids == [&"encounter.tutorial_volley"], "New Game uses the fixed tutorial Encounter.")
+	_check(first.selected_encounter_id == &"encounter.tutorial_volley", "New Game automatically selects the tutorial Encounter.")
 
 	var restored := RunState.from_dictionary(first.to_dictionary())
 	first.current_act = 1
@@ -70,7 +70,17 @@ func _test_act_structure_and_unknown_limit() -> void:
 	)
 	var initial_snapshots := CombatDemoFactory.create_enemy_army_from_encounter(reinforcement)
 	var reinforcement_snapshots := CombatDemoFactory.create_reinforcement_army_from_encounter(reinforcement)
-	_check(initial_snapshots.size() == 5 and reinforcement_snapshots.size() == 4, "Initial and reinforcement groups build independently from the encounter resource.")
+	var scaled := CombatDemoFactory.create_enemy_army_from_encounter(reinforcement, 2.0, 6)
+	var hp_steps := scaled[0].stats.breakdown_for(&"max_hp")
+	var hp_text := StatBreakdownFormatter.format(&"max_hp", scaled[0].stats.max_hp, hp_steps)
+	_check(
+		hp_steps.size() == 3
+		and hp_text.contains("Act threat (battle 6)")
+		and hp_text.contains("Encounter strength: %s" % reinforcement.display_name)
+		and is_equal_approx(float(hp_steps[-1].after), scaled[0].stats.max_hp),
+		"Enemy stat breakdowns explain the act threat and encounter strength multipliers."
+	)
+	_check(initial_snapshots.size() == reinforcement.enemy_ids.size() and reinforcement_snapshots.size() == reinforcement.reinforcement_enemy_ids.size(), "Initial and reinforcement groups build independently from the encounter resource.")
 	_check(initial_snapshots[0].runtime_id != reinforcement_snapshots[0].runtime_id, "Reinforcement runtime IDs cannot overwrite initial enemy statistics.")
 	var invalid_reinforcement := EncounterDefinition.new()
 	invalid_reinforcement.id = &"encounter.invalid_reinforcement"
@@ -130,7 +140,7 @@ func _test_save_state_validation() -> void:
 	wrong_act.available_encounter_ids = [&"encounter.act2_pressure", &"encounter.act2_crossbows"]
 	_check(not manager._validate_run(wrong_act, registry).is_empty(), "Save validation rejects cards from the wrong Act.")
 	var duplicates := DemoRunFactory.create_starting_run(12031)
-	duplicates.available_encounter_ids = [&"encounter.training_skirmish", &"encounter.training_skirmish"]
+	duplicates.available_encounter_ids = [&"encounter.tutorial_volley", &"encounter.tutorial_volley"]
 	_check(not manager._validate_run(duplicates, registry).is_empty(), "Save validation rejects duplicate Encounter Cards.")
 	var final_layer := DemoRunFactory.create_starting_run(12032)
 	final_layer.encounter_index = route.act_one_boss_index()
@@ -240,13 +250,16 @@ func _test_management_cards() -> void:
 	await process_frame
 	_check(screen.get_node("%Cards").get_child_count() == 2, "The standalone Encounter screen displays exactly two route cards.")
 	var page_text := _descendant_text(screen)
-	_check(page_text.contains("Dense melee frontline") and page_text.contains("REWARD"), "Encounter cards expose route properties and rewards.")
+	var raider_line := registry.get_definition(&"encounter.raider_line") as EncounterDefinition
+	_check(page_text.contains(raider_line.key_properties[0]) and page_text.contains("REWARD") and page_text.contains(str(raider_line.gold_reward)) and page_text.contains("Ogre Brute"), "Encounter cards expose route properties, enemy forces and rewards.")
 	var selected_ids: Array[StringName] = []
 	screen.encounter_selected.connect(func(encounter_id: StringName) -> void: selected_ids.append(encounter_id))
 	var first_card := screen.get_node("%Cards").get_child(0)
-	var choose_button := first_card.get_child(0).get_child(0).get_child(first_card.get_child(0).get_child(0).get_child_count() - 1) as Button
-	choose_button.pressed.emit()
-	_check(selected_ids == [&"encounter.raider_line"], "Choosing a route emits its Encounter ID for Main routing.")
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	(first_card as Control).gui_input.emit(click)
+	_check(selected_ids == [&"encounter.raider_line"], "Clicking a route card emits its Encounter ID for Main routing.")
 	screen.free()
 
 	var reinforcement_run := DemoRunFactory.create_starting_run(12008)
@@ -263,9 +276,9 @@ func _test_management_cards() -> void:
 	var threshold_word := "enemy" if reinforcement_definition.reinforcement_alive_threshold == 1 else "enemies"
 	var direction_text := "right side" if reinforcement_definition.reinforcement_entry_direction == EncounterDefinition.ReinforcementEntryDirection.RIGHT_SIDE else "all sides"
 	_check(
-		reinforcement_text.contains("reinforcements arrive at %d %s remaining" % [reinforcement_definition.reinforcement_alive_threshold, threshold_word])
-		and reinforcement_text.contains("entry: %s" % direction_text)
-		and reinforcement_text.contains("raider"),
+		reinforcement_text.contains("when %d %s remain" % [reinforcement_definition.reinforcement_alive_threshold, threshold_word])
+		and reinforcement_text.contains(direction_text)
+		and reinforcement_text.contains("ogre bonebreaker"),
 		"Encounter cards reveal the reinforcement trigger, direction, and configured composition."
 	)
 	reinforcement_screen.free()
@@ -300,7 +313,7 @@ func _test_outcome_flow() -> void:
 	var selected_heroes: Array[StringName] = [&"hero.control_savant", &"hero.test_vanguard", &"hero.army_support"]
 	main._begin_new_game(selected_heroes)
 	await process_frame
-	_check(main.current_screen.name == "Management" and main.active_run.heroes.size() == 3 and main.active_run.soldiers.size() == 9, "Selecting three Heroes after Run Defeat starts a fresh run with nine Militia.")
+	_check(main.current_screen.name == "Combat" and main.active_run.pending_event.event_id == &"event.opening_march" and main.active_run.heroes.size() == 3 and main.active_run.soldiers.size() == 9, "Selecting three Heroes after Run Defeat starts a fresh run with the opening event and nine Militia.")
 
 	main.active_run.run_status = RunState.STATUS_DEMO_COMPLETE
 	main.show_run_outcome()

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.massive_ogre", &"enemy.raider", &"enemy.raider"])
+reinforcement_enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider"])
+reinforcement_alive_threshold = 1
+reinforcement_entry_direction = 1
+gold_reward = 130
+enemy_power = 1.76
+min_encounter_index = 1
+max_encounter_index = 3
+difficulty_hint = "Low"
+key_properties = Array[String](["Bloodraging heavy"])
+is_unknown = false
+is_boss = false
+id = &"encounter.lone_juggernaut"
+display_name = "Lone Juggernaut"
+description = "A Juggernaut and its keepers. More brutes wait over the dune."
+tags = Array[StringName]([&"encounter", &"act1", &"reinforcements"])

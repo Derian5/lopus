@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_despair_withering_touch.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/attack_speed_aura_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Curse"]
+script = ExtResource("3")
+effect_id = &"effect.troll_hex_of_rot"
+radius = 200.0
+multiplier = 0.8
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.troll_hex_of_rot"
+display_name = "Bog Curse"
+description = "Enemies within {e0.radius} attack [debuff]{e0.multiplier:inv_pct}% slower[/debuff]. Slowing auras do not stack."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+tags = Array[StringName]([&"ability", &"passive", &"enemy", &"aura"])
+effects = Array[AbilityEffect]([SubResource("Curse")])
+presentation_color = Color(0.5, 0.3, 0.62, 1)
+presentation_text = "Bog Curse"
+available_to_heroes = false

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker"])
+gold_reward = 150
+enemy_power = 1.55
+min_encounter_index = 3
+max_encounter_index = 6
+difficulty_hint = "Moderate"
+key_properties = Array[String](["Troll Blood regeneration", "Berserk when struck"])
+is_unknown = false
+is_boss = false
+id = &"encounter.berserker_pack"
+display_name = "Berserker Pack"
+description = "Fast trolls that regenerate unless you burst them down."
+tags = Array[StringName]([&"encounter", &"act1"])

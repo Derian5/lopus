@@ -8,6 +8,7 @@ var duration := 0.0
 var timed_out := false
 var encounter_id: StringName
 var gold_reward := 0
+var bonus_gold_reward := 0
 var unit_statistics: Array[Dictionary] = []
 var top_damage: Dictionary = {}
 var top_healing: Dictionary = {}
@@ -29,7 +30,8 @@ static func from_statistics(
 	result.timed_out = battle_timed_out
 	if encounter != null:
 		result.encounter_id = encounter.id
-		result.gold_reward = encounter.gold_reward if result.winner == &"player" else 0
+		result.bonus_gold_reward = statistics.bonus_gold if result.winner == &"player" else 0
+		result.gold_reward = (encounter.gold_reward + result.bonus_gold_reward) if result.winner == &"player" else 0
 	for data: Dictionary in statistics.unit_stats.values():
 		var result_data := data.duplicate(true)
 		result_data["contribution"] = progression.contribution_breakdown(result_data)

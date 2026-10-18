@@ -1,0 +1,317 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/hero_selection/hero_selection_card.gd" id="1_card"]
+[ext_resource type="Script" path="res://ui/common/button_motion.gd" id="2_motion"]
+[ext_resource type="Script" path="res://ui/hero_selection/hero_card_frame.gd" id="3_frame"]
+
+[sub_resource type="StyleBoxFlat" id="InfoStyle"]
+bg_color = Color(0.045, 0.03, 0.02, 0.95)
+
+[sub_resource type="StyleBoxEmpty" id="HitboxStyle"]
+
+[node name="HeroSelectionCard" type="Control"]
+custom_minimum_size = Vector2(430, 700)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 430.0
+offset_bottom = 700.0
+mouse_filter = 1
+script = ExtResource("1_card")
+
+[node name="VisualRoot" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+pivot_offset = Vector2(215, 350)
+
+[node name="Backdrop" type="TextureRect" parent="VisualRoot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = 415.0
+grow_horizontal = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="PortraitPlaceholder" type="ColorRect" parent="VisualRoot"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 423.0
+offset_bottom = 414.0
+mouse_filter = 2
+color = Color(0.02, 0.025, 0.035, 0.4)
+
+[node name="Initials" type="Label" parent="VisualRoot/PortraitPlaceholder"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 1)
+theme_override_font_sizes/font_size = 64
+text = "H"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PortraitClip" type="Control" parent="VisualRoot"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 423.0
+offset_bottom = 414.0
+mouse_filter = 2
+
+[node name="Portrait" type="TextureRect" parent="VisualRoot/PortraitClip"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Badge" type="TextureRect" parent="VisualRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 15.0
+offset_top = 13.0
+offset_right = 94.0
+offset_bottom = 108.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Info" type="Panel" parent="VisualRoot"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 365.0
+offset_right = 424.0
+offset_bottom = 694.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("InfoStyle")
+
+[node name="HeroName" type="Label" parent="VisualRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 18.0
+offset_top = 370.0
+offset_right = 412.0
+offset_bottom = 406.0
+theme_override_font_sizes/font_size = 32
+text = "HERO"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_type_variation = &"HeaderLabel"
+
+[node name="RoleLabel" type="Label" parent="VisualRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 14.0
+offset_top = 406.0
+offset_right = 416.0
+offset_bottom = 432.0
+theme_override_font_sizes/font_size = 14
+text = "ROLE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Description" type="Label" parent="VisualRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 42.0
+offset_top = 432.0
+offset_right = 388.0
+offset_bottom = 506.0
+theme_override_colors/font_color = Color(0.76, 0.7, 0.62, 1)
+theme_override_font_sizes/font_size = 18
+text = "Hero description"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+text_overrun_behavior = 3
+max_lines_visible = 3
+
+[node name="Divider" type="ColorRect" parent="VisualRoot"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 515.0
+offset_right = 390.0
+offset_bottom = 517.0
+mouse_filter = 2
+color = Color(0.66, 0.48, 0.26, 0.8)
+
+[node name="StatsCenter" type="CenterContainer" parent="VisualRoot"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 523.0
+offset_right = 398.0
+offset_bottom = 633.0
+mouse_filter = 2
+
+[node name="Stats" type="GridContainer" parent="VisualRoot/StatsCenter"]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 6
+
+[node name="HpIcon" type="TextureRect" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="HpLabel" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "HP"
+vertical_alignment = 1
+[node name="HpValue" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+[node name="DamageIcon" type="TextureRect" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="DamageLabel" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "DAMAGE"
+vertical_alignment = 1
+[node name="DamageValue" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+[node name="AttackSpeedIcon" type="TextureRect" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="AttackSpeedLabel" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "ATK SPEED"
+vertical_alignment = 1
+[node name="AttackSpeedValue" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+[node name="MoveSpeedIcon" type="TextureRect" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="MoveSpeedLabel" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "MOVE"
+vertical_alignment = 1
+[node name="MoveSpeedValue" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+[node name="RangeIcon" type="TextureRect" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="RangeLabel" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "RANGE"
+vertical_alignment = 1
+[node name="RangeValue" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+[node name="ArmorIcon" type="TextureRect" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="ArmorLabel" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "ARMOR"
+vertical_alignment = 1
+[node name="ArmorValue" type="Label" parent="VisualRoot/StatsCenter/Stats"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="OrnamentFrame" type="Control" parent="VisualRoot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_frame")
+
+[node name="CardHitbox" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+focus_mode = 2
+flat = true
+theme_override_styles/normal = SubResource("HitboxStyle")
+theme_override_styles/hover = SubResource("HitboxStyle")
+theme_override_styles/pressed = SubResource("HitboxStyle")
+theme_override_styles/focus = SubResource("HitboxStyle")
+theme_override_styles/disabled = SubResource("HitboxStyle")
+
+[node name="ButtonMotion" type="Node" parent="CardHitbox"]
+script = ExtResource("2_motion")
+target_path = NodePath("../../VisualRoot")
+hover_scale = 1.025
+pressed_scale = 0.975

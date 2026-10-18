@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_archer_professionalism_fire_arrow_tier_1.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="BurnDamage"]
+script = ExtResource("2")
+effect_id = &"effect.archer_professionalism_burn_tick"
+amount = 20.0
+
+[sub_resource type="Resource" id="BurnStatus"]
+script = ExtResource("4")
+id = &"status.archer_professionalism_burn"
+display_name = "Fire Arrow Burn"
+description = "A nonstacking burn refreshed by another fire arrow."
+default_duration = 5.0
+max_stacks = 1
+stack_policy = 0
+periodic_interval = 1.0
+periodic_effects = Array[AbilityEffect]([SubResource("BurnDamage")])
+polarity = 2
+
+[sub_resource type="Resource" id="ImpactDamage"]
+script = ExtResource("2")
+effect_id = &"effect.archer_professionalism_impact"
+amount = 50.0
+
+[sub_resource type="Resource" id="ApplyBurn"]
+script = ExtResource("3")
+effect_id = &"effect.archer_professionalism_apply_burn"
+status = SubResource("BurnStatus")
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.archer_professionalism_fire_arrow_tier_1"
+display_name = "Fire Arrow I"
+description = "The next basic attack fires a flaming arrow: [dmg]{e0.amount} damage[/dmg] to enemies within {area} of the impact, who then [dmg]burn for {e1.status.periodic_effects.0.amount} damage per second[/dmg] for {e1.status.default_duration}s."
+activation_mode = 1
+cooldown_seconds = 5.0
+targeting_policy = 1
+delivery_method = 2
+effects = Array[AbilityEffect]([SubResource("ImpactDamage"), SubResource("ApplyBurn")])
+area_radius = 150.0
+presentation_color = Color(1, 0.32, 0.06, 1)
+available_to_heroes = false

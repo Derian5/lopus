@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.massive_ogre", &"enemy.massive_ogre", &"enemy.massive_ogre", &"enemy.ogre_drummer", &"enemy.ogre_drummer"])
+gold_reward = 230
+enemy_power = 0.8
+min_encounter_index = 7
+max_encounter_index = 11
+difficulty_hint = "High"
+key_properties = Array[String](["Three bloodraging heavies", "Dread Drums"])
+is_unknown = false
+is_boss = false
+id = &"encounter.juggernaut_line"
+display_name = "Juggernaut Line"
+description = "Three Juggernauts march to the beat of the drums."
+tags = Array[StringName]([&"encounter", &"act1"])

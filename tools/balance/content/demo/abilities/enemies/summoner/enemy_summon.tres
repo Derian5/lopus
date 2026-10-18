@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_enemy_summon.png" id="2"]
+[ext_resource type="Resource" path="res://content/demo/enemies/bog_spitter.tres" id="3"]
+[ext_resource type="Script" path="res://content/definitions/effects/summon_effect.gd" id="4"]
+
+[sub_resource type="Resource" id="Summon"]
+script = ExtResource("4")
+effect_id = &"effect.enemy_summon"
+summoned_unit = ExtResource("3")
+max_active_summons = 3
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.enemy_summon"
+display_name = "Call Bog Spitters"
+description = "Every 5 seconds calls a Bog Spitter from the mire, up to 3 at once."
+cooldown_seconds = 5.0
+initial_cooldown_seconds = 1.5
+targeting_policy = 0
+priority = 100
+tags = Array[StringName]([&"ability", &"active", &"summon", &"enemy"])
+effects = Array[AbilityEffect]([SubResource("Summon")])
+presentation_color = Color(0.58, 0.35, 0.78, 1)
+presentation_text = "Call Bog Spitters"
+available_to_heroes = false

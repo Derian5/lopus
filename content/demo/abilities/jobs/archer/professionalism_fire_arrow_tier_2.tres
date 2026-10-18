@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" format=3 uid="uid://dcv14gplud7w0"]
+
+[ext_resource type="Script" uid="uid://dbpyny7dkpanj" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c47iqedtnympj" path="res://content/definitions/effects/ability_effect.gd" id="1_es7m4"]
+[ext_resource type="Script" uid="uid://cdwb8b50iykkg" path="res://content/definitions/effects/damage_effect.gd" id="2"]
+[ext_resource type="Script" uid="uid://cse71h5ixvfjr" path="res://content/definitions/effects/apply_status_effect.gd" id="3"]
+[ext_resource type="Script" uid="uid://vxoj4qgo7rwe" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" uid="uid://cvpxbdvecnh7k" path="res://content/definitions/effects/stat_modifier.gd" id="5_1ti1a"]
+[ext_resource type="Script" uid="uid://cuu4yeqmts77v" path="res://content/definitions/ability_level_definition.gd" id="6_wmfcc"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_archer_professionalism_fire_arrow_tier_2.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="ImpactDamage"]
+script = ExtResource("2")
+amount = 100.0
+effect_id = &"effect.archer_professionalism_impact"
+
+[sub_resource type="Resource" id="BurnDamage"]
+script = ExtResource("2")
+amount = 40.0
+effect_id = &"effect.archer_professionalism_burn_tick"
+
+[sub_resource type="Resource" id="BurnStatus"]
+script = ExtResource("4")
+default_duration = 5.0
+periodic_interval = 1.0
+periodic_effects = Array[ExtResource("1_es7m4")]([SubResource("BurnDamage")])
+polarity = 2
+id = &"status.archer_professionalism_burn"
+display_name = "Fire Arrow Burn"
+description = "A nonstacking burn refreshed by another fire arrow."
+
+[sub_resource type="Resource" id="ApplyBurn"]
+script = ExtResource("3")
+status = SubResource("BurnStatus")
+effect_id = &"effect.archer_professionalism_apply_burn"
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+activation_mode = 1
+cooldown_seconds = 5.0
+delivery_method = 2
+effects = Array[ExtResource("1_es7m4")]([SubResource("ImpactDamage"), SubResource("ApplyBurn")])
+area_radius = 150.0
+presentation_color = Color(1, 0.16, 0.02, 1)
+available_to_heroes = false
+id = &"ability.archer_professionalism_fire_arrow_tier_2"
+display_name = "Fire Arrow II"
+description = "The next basic attack fires a flaming arrow: [dmg]{e0.amount} damage[/dmg] to enemies within {area} of the impact, who then [dmg]burn for {e1.status.periodic_effects.0.amount} damage per second[/dmg] for {e1.status.default_duration}s."

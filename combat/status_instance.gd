@@ -33,11 +33,12 @@ func refresh(source_combatant, ability_id: StringName) -> void:
 
 
 func update(delta: float, target) -> bool:
+	var active_delta := delta if infinite_duration else minf(delta, remaining_duration)
 	if not infinite_duration:
 		remaining_duration -= delta
 	if definition.periodic_interval > 0.0:
-		periodic_timer -= delta
-		while periodic_timer <= 0.0 and (infinite_duration or remaining_duration > 0.0):
+		periodic_timer -= active_delta
+		while periodic_timer <= 0.000001:
 			periodic_timer += definition.periodic_interval
 			var ability: AbilityDefinition = target.session.get_ability_definition(source_ability_id)
 			if ability != null:

@@ -1,31 +1,36 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/combat/selected_unit_panel.gd" id="1_panel"]
 
+[ext_resource type="Script" path="res://ui/common/ornate_frame.gd" id="10_frame"]
+
 [sub_resource type="StyleBoxFlat" id="StylePanel"]
-bg_color = Color(0.035, 0.041, 0.055, 0.97)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.55, 0.45, 0.24, 0.9)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+bg_color = Color(0.06, 0.042, 0.03, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.66, 0.48, 0.27, 0.95)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.65)
+shadow_size = 12
+corner_detail = 1
 
 [node name="SelectedUnitPanel" type="PanelContainer"]
 visible = false
-custom_minimum_size = Vector2(0, 154)
+custom_minimum_size = Vector2(0, 230)
 theme_override_styles/panel = SubResource("StylePanel")
 script = ExtResource("1_panel")
 
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 16
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
@@ -46,10 +51,19 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
 
-[node name="Stats" type="Label" parent="Margin/VBox"]
+[node name="StatusIcons" type="HBoxContainer" parent="Margin/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="StatsGrid" type="GridContainer" parent="Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.74, 0.86, 0.72, 1)
+size_flags_horizontal = 0
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 6
+columns = 6
 
 [node name="Runtime" type="Label" parent="Margin/VBox"]
 unique_name_in_owner = true
@@ -62,18 +76,53 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 24
 
-[node name="Abilities" type="Label" parent="Margin/VBox/Columns"]
+[node name="Abilities" type="VBoxContainer" parent="Margin/VBox/Columns"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.66, 0.78, 0.96, 1)
-autowrap_mode = 2
 
-[node name="Equipment" type="Label" parent="Margin/VBox/Columns"]
+[node name="Title" type="Label" parent="Margin/VBox/Columns/Abilities"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.78, 0.96, 1)
+text = "ABILITIES"
+
+[node name="AbilityIcons" type="GridContainer" parent="Margin/VBox/Columns/Abilities"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 5
+columns = 4
+
+[node name="Equipment" type="VBoxContainer" parent="Margin/VBox/Columns"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="Margin/VBox/Columns/Equipment"]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.72, 0.4, 1)
-autowrap_mode = 2
+text = "EQUIPMENT"
+
+[node name="ItemIcons" type="GridContainer" parent="Margin/VBox/Columns/Equipment"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
+columns = 3
+
+[node name="Ornament" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_frame")
+accent_color = Color(0.86, 0.68, 0.32, 1)
+cut = 14.0
+inset = 2.0
+crest_width = 70.0
+corner_gem = &"gold"
+corner_gem_size = 20.0

@@ -33,6 +33,16 @@ func _run() -> void:
 		return
 	main._begin_new_game(DemoRunFactory.HERO_IDS)
 	await process_frame
+	if main.current_screen.name != "Combat" or not main.current_screen.get_node("%RunEventPopup").visible:
+		_fail("Opening event did not appear over the combat screen.")
+		return
+	for step in 4:
+		var event := root.get_node("ContentRegistry").get_definition(main.active_run.pending_event.event_id) as RunEventDefinition
+		var node := event.get_node_definition(main.active_run.pending_event.node_id)
+		main._on_run_event_choice_requested(node.choices[0].choice_id)
+	main.active_run.run_phase = &"management"
+	main.show_management()
+	await process_frame
 	if main.current_screen.name != "Management":
 		_fail("Management screen transition failed.")
 		return
@@ -40,6 +50,9 @@ func _run() -> void:
 	main.open_game_menu()
 	if not paused or not is_instance_valid(main.game_menu):
 		_fail("Game menu did not pause the management screen.")
+		return
+	if root.gui_get_focus_owner() != null:
+		_fail("Game menu preselected a button when it opened.")
 		return
 
 	main.close_game_menu()

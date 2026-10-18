@@ -160,6 +160,7 @@ func _request_combat() -> void:
 	screen.management_requested.connect(_return_from_combat)
 	screen.menu_requested.connect(open_game_menu)
 	screen.battle_resolved.connect(_on_battle_resolved)
+	screen.run_event_choice_requested.connect(_on_run_event_choice_requested)
 
 
 func _return_from_combat() -> void:
@@ -268,7 +269,15 @@ func _replace_screen(scene: PackedScene):
 
 	current_screen = scene.instantiate()
 	screen_root.add_child(current_screen)
+	_fade_in(current_screen)
 	return current_screen
+
+
+## Short fade so screen changes read as deliberate transitions rather than cuts.
+func _fade_in(screen: CanvasItem) -> void:
+	screen.modulate.a = 0.0
+	var tween := screen.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(screen, "modulate:a", 1.0, 0.22)
 
 
 func _start_new_game() -> void:
@@ -291,11 +300,19 @@ func _begin_new_game(selected_hero_ids: Array[StringName]) -> void:
 	var seed := int(Time.get_unix_time_from_system() * 1000000.0) ^ Time.get_ticks_usec()
 	active_run = DemoRunFactory.create_starting_run(seed, selected_hero_ids)
 	active_run.run_phase = &"management"
+	var route := get_node("/root/ContentRegistry").get_definition(RunState.ROUTE_DEFINITION_ID) as RouteDefinition
+	if route == null:
+		show_main_menu("Could not prepare the opening event: demo route is missing.")
+		return
+	var event_result := RunEventService.prepare_specific_event(active_run, route.opening_event_id, get_node("/root/ContentRegistry"))
+	if not event_result.ok:
+		show_main_menu("Could not prepare the opening event: %s" % event_result.error)
+		return
 	var result := save_manager.save_run(active_run, get_node("/root/ContentRegistry"))
 	if not result.ok:
 		show_main_menu("Could not create the run save: %s" % result.message)
 		return
-	show_management()
+	_request_combat()
 
 
 func _continue_game() -> void:
@@ -329,12 +346,19 @@ func _on_run_event_choice_requested(choice_id: StringName) -> void:
 		current_screen.get_node("%RunEventPopup").set_feedback(result.error)
 		return
 	var staged: RunState = result.run_state
+	var runtime_phase := staged.run_phase
+	if is_instance_valid(current_screen) and current_screen.has_method("refresh_run_event") and runtime_phase == &"combat":
+		staged.run_phase = &"management"
 	var save_result := save_manager.save_run(staged, get_node("/root/ContentRegistry"))
 	if not save_result.ok:
 		current_screen.get_node("%RunEventPopup").set_feedback("Event choice was not saved: %s" % save_result.message)
 		return
 	active_run = staged
-	current_screen.setup(active_run)
+	if current_screen.has_method("refresh_run_event"):
+		active_run.run_phase = runtime_phase
+		current_screen.refresh_run_event(active_run)
+	else:
+		current_screen.setup(active_run)
 
 
 func _on_hero_ability_reward_requested(offer_id: String) -> void:

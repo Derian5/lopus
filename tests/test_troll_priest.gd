@@ -85,7 +85,7 @@ func _test_combat_behavior() -> void:
 	_check(first_target.current_hp == hp_before - 20.0, "Poison deals 20 damage after one second.")
 	_check(first_target.statuses.size() == 1 and first_target.statuses[0].infinite_duration, "Poison remains active indefinitely during combat.")
 	var slow := registry.get_definition(&"status.slow") as StatusDefinition
-	first_target.apply_status(slow, troll_unit, &"ability.frost_dart")
+	first_target.apply_status(slow, troll_unit, &"ability.test_slow")
 	first_target._update_runtime(slow.default_duration + 0.1)
 	_check(first_target.has_status(&"status.troll_priest_poison") and not first_target.has_status(&"status.slow"), "Finite statuses still expire while battle-long poison remains.")
 	session.free()

@@ -187,15 +187,7 @@ Temporary Armor.
 
 Избегать item-specific code.
 
----
-
-## Soldier Items
-
-**Target: 10**
-
-Редкие и сильные.
-
-До двух предметов на конкретного солдата.
+Предметы не имеют персональной привязки к Hero. Допустимые ограничения: все Heroes, только melee Heroes или только ranged Heroes.
 
 ---
 
@@ -508,7 +500,6 @@ XP
 Level
 4 Ability Slots
 6 Item Slots
-Ability Priority
 Alive/Dead State
 
 ---
@@ -539,19 +530,9 @@ Level thresholds — data-driven.
 
 ---
 
-# 18. ABILITY PRIORITY
+# 18. ABILITY EXECUTION
 
-Для Active abilities героя существует ordered list.
-
-Например:
-
-[Heal, Stun, Fireball, Dash]
-
-AI проходит список сверху вниз и использует первую доступную способность, которая имеет valid target.
-
-После применения процесс повторяется согласно cooldown/AI update.
-
-Drag-and-drop UI желательно, но не является технической необходимостью.
+Отдельной пользовательской настройки priority нет. AI проверяет экипированные Active abilities в стабильном порядке слотов и использует первую доступную способность с valid target. После применения процесс повторяется согласно cooldown/AI update.
 
 ---
 
@@ -640,22 +621,15 @@ Veterancy должна быть простой числовой системой
 
 # 23. EQUIPMENT
 
-Один generic Item framework обслуживает Hero и Soldier items.
+Item framework обслуживает только Hero items.
 
 Item содержит:
 
-Allowed Target Type
-Restrictions
 Passive Effects
 Triggered Effects [только после общего trigger pipeline; не входят в Demo Stage 9]
-
-Hero:
+Hero Eligibility: Any / Melee / Ranged
 
 6 slots.
-
-Soldier:
-
-2 slots.
 
 ---
 
@@ -663,9 +637,7 @@ Soldier:
 
 Необходим единый inventory/run storage.
 
-Предметы, которые не экипированы, остаются у игрока.
-
-После смерти Soldier его equipment возвращается в inventory.
+Предметы, которые не экипированы героями, остаются у игрока.
 
 Execution rules для Hero equipment — [TBD].
 
@@ -909,7 +881,6 @@ Hero Death State
 Soldiers
 Jobs
 Veterancy
-Soldier Items
 Unlocked Jobs
 Job Builds
 Inventory
@@ -1004,7 +975,7 @@ Battle 1 → только наблюдение.
 
 Battle 2 → Job.
 
-Battle 3 → Ability priority.
+Battle 3 → Hero abilities.
 
 И т.д.
 
@@ -1073,7 +1044,6 @@ Hero abilities могут комбинировать/модифицироват�
 ~15 Hero Abilities
 ~9 Job Abilities
 ~15 Hero Items
-~4 Soldier Items
 
 ## Tier B — Target
 
@@ -1086,7 +1056,6 @@ Hero abilities могут комбинировать/модифицироват�
 40 Hero Abilities
 20 Job Abilities
 40 Hero Items
-10 Soldier Items
 
 ## Tier C — Stretch
 
@@ -1105,17 +1074,16 @@ Additional polish.
 Если сроки начинают гореть, резать в таком порядке:
 
 1. Extra bosses.
-2. Soldier items beyond minimum.
-3. Hero items beyond minimum.
-4. Hero abilities beyond minimum.
-5. Jobs #4–5.
-6. Heroes #4–5.
-7. Enemy types beyond minimum.
-8. Elite encounters.
-9. Events.
-10. Extra combat statistics.
-11. Extra VFX variety.
-12. Extra tutorial polish.
+2. Hero items beyond minimum.
+3. Hero abilities beyond minimum.
+4. Jobs #4–5.
+5. Heroes #4–5.
+6. Enemy types beyond minimum.
+7. Elite encounters.
+8. Events.
+9. Extra combat statistics.
+10. Extra VFX variety.
+11. Extra tutorial polish.
 
 Не резать без крайней необходимости:
 

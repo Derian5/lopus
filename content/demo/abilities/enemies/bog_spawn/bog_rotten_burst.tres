@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_gluttony_death_explosion.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/gluttony_death_explosion_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Burst"]
+script = ExtResource("3")
+effect_id = &"effect.bog_rotten_burst"
+radius = 80.0
+damage = 40.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.bog_rotten_burst"
+display_name = "Rotten Burst"
+description = "On death, bursts for [dmg]{e0.damage} damage[/dmg] to enemies within {e0.radius}."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+tags = Array[StringName]([&"ability", &"passive", &"enemy", &"death"])
+effects = Array[AbilityEffect]([SubResource("Burst")])
+presentation_color = Color(0.5, 0.62, 0.22, 1)
+presentation_text = "Rotten Burst"
+available_to_heroes = false

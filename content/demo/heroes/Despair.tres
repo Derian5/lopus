@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_oq5mk"]
 [ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_26i2r"]
+[ext_resource type="Texture2D" uid="uid://cq5l8ev32ulma" path="res://arts/v1/Despair.png" id="3_portrait"]
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_oq5mk")
-max_hp = 520.0
-damage = 39.0
-attack_speed = 1.3
+max_hp = 260.0
+damage = 9.5
+attack_speed = 0.8
 movement_speed = 96.0
 attack_range = 245.0
 armor = 14.0
@@ -16,6 +17,7 @@ armor = 14.0
 script = ExtResource("2_26i2r")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.24, 0.48, 0.88, 1)
+portrait = ExtResource("3_portrait")
 available_in_new_game = true
 selection_order = 6
 id = &"hero.iron_oracle"

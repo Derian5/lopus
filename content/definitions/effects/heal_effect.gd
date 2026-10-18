@@ -3,6 +3,7 @@ extends AbilityEffect
 
 
 @export_range(0.0, 100000.0, 0.1, "or_greater") var amount := 10.0
+@export_range(0.0, 1000.0, 0.1, "or_greater") var veterancy_bonus_percent_per_level := 0.0
 
 
 func apply(source, target, ability: AbilityDefinition) -> void:

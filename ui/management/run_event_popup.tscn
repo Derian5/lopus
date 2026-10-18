@@ -1,21 +1,11 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/management/run_event_popup.gd" id="1"]
 
+[ext_resource type="Script" path="res://ui/common/ornate_frame.gd" id="10_frame"]
+
 [sub_resource type="StyleBoxFlat" id="Dim"]
 bg_color = Color(0.005, 0.008, 0.014, 0.82)
-
-[sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.055, 0.067, 0.09, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.67, 0.49, 0.22, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
 
 [node name="RunEventPopup" type="Control"]
 visible = false
@@ -50,7 +40,6 @@ mouse_filter = 1
 [node name="Panel" type="PanelContainer" parent="Center"]
 custom_minimum_size = Vector2(680, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel"]
 layout_mode = 2
@@ -66,21 +55,24 @@ theme_override_constants/separation = 14
 [node name="Eyebrow" type="Label" parent="Center/Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68, 0.5, 0.24, 1)
+theme_override_font_sizes/font_size = 18
 text = "ROAD EVENT"
+theme_type_variation = &"EyebrowLabel"
 
 [node name="EventTitle" type="Label" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.83, 0.5, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 28
 text = "EVENT"
 autowrap_mode = 2
+theme_type_variation = &"HeaderLabel"
 
 [node name="EventBody" type="Label" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.79, 0.82, 0.88, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 text = "Event text"
 autowrap_mode = 2
 
@@ -96,4 +88,21 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.4, 0.35, 1)
+theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
+
+[node name="Ornament" type="Control" parent="Center/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_frame")
+accent_color = Color(0.67, 0.49, 0.22, 1)
+glow = 0.3
+pulse = true
+inset = -14.0
+crest_width = 130.0
+corner_gem = &"gold"

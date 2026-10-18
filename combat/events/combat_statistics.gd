@@ -8,6 +8,7 @@ var job_stats: Dictionary = {}
 var ability_stats: Dictionary = {}
 var event_counts: Dictionary = {}
 var permanent_stat_gains: Array[Dictionary] = []
+var bonus_gold := 0
 var winner: StringName
 var duration := 0.0
 
@@ -19,6 +20,7 @@ func reset() -> void:
 	ability_stats.clear()
 	event_counts.clear()
 	permanent_stat_gains.clear()
+	bonus_gold = 0
 	winner = &""
 	duration = 0.0
 
@@ -34,6 +36,7 @@ func register_unit(snapshot: CombatUnitSnapshot) -> void:
 		"veterancy_level": snapshot.veterancy_level,
 		"summoner_runtime_id": snapshot.summoner_runtime_id,
 		"summoner_contribution_percent": snapshot.summoner_contribution_percent,
+		"post_combat_xp_bonus_percent": snapshot.post_combat_xp_bonus_percent,
 		"damage_dealt": 0.0,
 		"damage_taken": 0.0,
 		"damage_tanked": 0.0,

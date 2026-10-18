@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_ground_slam.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/ground_slam_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Slam"]
+script = ExtResource("3")
+effect_id = &"effect.bog_king_slam"
+damage_multiplier = 1.2
+radius = 130.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.bog_king_slam"
+display_name = "Mire Slam"
+description = "The next basic attack also deals [dmg]{e0.damage_multiplier:pct}% damage[/dmg] to every enemy within {e0.radius}."
+cooldown_seconds = 7.0
+initial_cooldown_seconds = 2.0
+targeting_policy = 0
+delivery_method = 0
+priority = 95
+tags = Array[StringName]([&"ability", &"active", &"enemy", &"area"])
+effects = Array[AbilityEffect]([SubResource("Slam")])
+presentation_color = Color(0.4, 0.56, 0.24, 1)
+presentation_text = "Mire Slam"
+available_to_heroes = false

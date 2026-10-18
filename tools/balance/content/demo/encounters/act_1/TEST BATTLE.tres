@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_priest", &"enemy.troll_priest", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 210
+enemy_power = 0.88
+min_encounter_index = 6
+max_encounter_index = 10
+difficulty_hint = "High"
+key_properties = Array[String](["Healing support", "Regenerating berserkers"])
+is_unknown = false
+is_boss = false
+id = &"encounter.crossfire"
+display_name = "Troll Warcamp"
+description = "A troll warcamp: berserkers in front, witch doctors and spears behind."
+tags = Array[StringName]([&"encounter", &"act1"])

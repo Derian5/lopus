@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 700.0
+damage = 12.0
+attack_speed = 0.9
+movement_speed = 80.0
+attack_range = 200.0
+armor = 10.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"ranged"
+ability_ids = Array[StringName]([&"ability.ogre_dread_drums", &"ability.ogre_war_chant"])
+placeholder_color = Color(0.78, 0.56, 0.26, 1)
+id = &"enemy.ogre_drummer"
+display_name = "Ogre War-Drummer"
+description = "A drummer whose dread rhythm saps the enemy's strikes while it shields wounded ogres."
+tags = Array[StringName]([&"enemy", &"ranged", &"ogre", &"support"])

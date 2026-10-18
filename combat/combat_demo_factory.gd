@@ -7,10 +7,7 @@ const HERO_COLORS: Array[Color] = [
 	Color(0.65, 0.38, 0.9),
 	Color(0.24, 0.78, 0.68),
 ]
-const PROTOTYPE_HERO_ABILITY_IDS: Array[StringName] = [
-	&"ability.fire_bolt",
-	&"ability.mending_light",
-]
+const PROTOTYPE_HERO_ABILITY_IDS: Array[StringName] = []
 
 
 static func create_player_army(hero_count := 3, soldier_count := 9) -> Array[CombatUnitSnapshot]:
@@ -73,29 +70,34 @@ static func create_enemy_army(melee_count := 8, ranged_count := 4) -> Array[Comb
 	return result
 
 
-static func create_enemy_army_from_encounter(encounter: EncounterDefinition) -> Array[CombatUnitSnapshot]:
+static func create_enemy_army_from_encounter(encounter: EncounterDefinition, route_power := 1.0, battle_number := 0) -> Array[CombatUnitSnapshot]:
 	if encounter == null:
 		return []
-	return _create_enemy_army_from_ids(encounter.enemy_ids, "enemy")
+	return _create_enemy_army_from_ids(encounter.enemy_ids, "enemy", encounter, route_power, battle_number)
 
 
-static func create_reinforcement_army_from_encounter(encounter: EncounterDefinition) -> Array[CombatUnitSnapshot]:
+static func create_reinforcement_army_from_encounter(encounter: EncounterDefinition, route_power := 1.0, battle_number := 0) -> Array[CombatUnitSnapshot]:
 	if encounter == null:
 		return []
-	return _create_enemy_army_from_ids(encounter.reinforcement_enemy_ids, "enemy-reinforcement")
+	return _create_enemy_army_from_ids(encounter.reinforcement_enemy_ids, "enemy-reinforcement", encounter, route_power, battle_number)
 
 
-static func _create_enemy_army_from_ids(enemy_ids: Array[StringName], runtime_prefix: String) -> Array[CombatUnitSnapshot]:
+static func _create_enemy_army_from_ids(enemy_ids: Array[StringName], runtime_prefix: String, encounter: EncounterDefinition = null, route_power := 1.0, battle_number := 0) -> Array[CombatUnitSnapshot]:
 	var result: Array[CombatUnitSnapshot] = []
 	var registry := _get_registry()
 	for index in enemy_ids.size():
 		var definition := registry.get_definition(enemy_ids[index]) as EnemyDefinition
-		result.append(CombatSnapshotBuilder.build_enemy(
+		var snapshot := CombatSnapshotBuilder.build_enemy(
 			definition,
 			"%s-%02d" % [runtime_prefix, index],
 			"%s %d" % [definition.display_name, index + 1],
 			registry
-		))
+		)
+		var route_source := "Act threat (battle %d)" % battle_number if battle_number > 0 else "Act threat"
+		apply_enemy_power(snapshot.stats, route_power, route_source)
+		if encounter != null:
+			apply_enemy_power(snapshot.stats, encounter.enemy_power, "Encounter strength: %s" % encounter.display_name)
+		result.append(snapshot)
 	return result
 
 
@@ -118,3 +120,37 @@ static func _create_enemy_snapshot(
 
 static func _get_registry() -> Node:
 	return Engine.get_main_loop().root.get_node("ContentRegistry")
+
+
+## Route-level enemy power for the run's current battle (1.0 without a run or route curve).
+static func route_enemy_power(run_state: RunState) -> float:
+	if run_state == null:
+		return 1.0
+	var route := _get_registry().get_definition(RunState.ROUTE_DEFINITION_ID, false) as RouteDefinition
+	return route.enemy_power_for(run_state.current_act, run_state.encounter_index) if route != null else 1.0
+
+
+## Enemy power grows damage faster than health so late battles get deadlier
+## instead of longer (the 120-second limit awards stalled fights by remaining HP).
+static func enemy_hp_multiplier(power: float) -> float:
+	return pow(maxf(power, 0.01), 0.85)
+
+
+static func enemy_damage_multiplier(power: float) -> float:
+	return pow(maxf(power, 0.01), 1.15)
+
+
+## Scales Max HP and Damage by an enemy power and records both steps in the stat
+## breakdown so the inspector explains why the same enemy differs between battles.
+## Power splits multiplicatively: (a*b)^k == a^k * b^k, so layers can be applied one by one.
+static func apply_enemy_power(stats: CombatStats, power: float, source: String) -> void:
+	if is_equal_approx(power, 1.0):
+		return
+	var hp_multiplier := enemy_hp_multiplier(power)
+	var before := stats.max_hp
+	stats.max_hp *= hp_multiplier
+	stats.record_change(&"max_hp", source, &"multiply", hp_multiplier, before, stats.max_hp)
+	var damage_multiplier := enemy_damage_multiplier(power)
+	before = stats.damage
+	stats.damage *= damage_multiplier
+	stats.record_change(&"damage", source, &"multiply", damage_multiplier, before, stats.damage)

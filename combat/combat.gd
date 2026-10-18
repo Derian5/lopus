@@ -4,15 +4,18 @@ extends Control
 signal management_requested
 signal menu_requested
 signal battle_resolved(result: CombatResult)
+signal run_event_choice_requested(choice_id: StringName)
 
-const SPEEDS: Array[float] = [1.0, 2.0, 4.0]
+const SPEEDS: Array[float] = [0.5, 1.0, 2.0, 4.0]
+const DEFAULT_SPEED_INDEX := 1
 
 @onready var combat_session: CombatSession = %CombatSession
 @onready var player_statistics = %PlayerStatistics
 @onready var enemy_statistics = %EnemyStatistics
 @onready var selected_unit_panel = %SelectedUnitPanel
 
-var speed_index := 0
+var speed_index := DEFAULT_SPEED_INDEX
+var battle_paused := false
 var inspected_combatant: Combatant
 var run_state: RunState
 var current_encounter: EncounterDefinition
@@ -21,6 +24,7 @@ var last_result: CombatResult
 var battle_seed := 0
 var statistics_refresh_timer := 0.0
 var statistics_dirty := true
+var battle_started := false
 
 
 func _ready() -> void:
@@ -28,16 +32,19 @@ func _ready() -> void:
 	combat_session.combat_event_emitted.connect(_on_combat_event_emitted)
 	combat_session.combatant_selected.connect(_on_combatant_selected)
 	%PostBattlePanel.continue_requested.connect(_on_management_button_pressed)
+	%RunEventPopup.choice_selected.connect(func(choice_id: StringName) -> void: run_event_choice_requested.emit(choice_id))
 	player_statistics.setup("ALLIES", CombatUnitSnapshot.Team.PLAYER)
 	enemy_statistics.setup("ENEMIES", CombatUnitSnapshot.Team.ENEMY)
 	player_statistics.unit_requested.connect(_on_statistics_unit_requested)
 	enemy_statistics.unit_requested.connect(_on_statistics_unit_requested)
 	tree_exiting.connect(_reset_time_scale)
-	_set_speed(0)
+	_set_speed(DEFAULT_SPEED_INDEX)
 	call_deferred("_start_demo_battle")
 
 
 func _process(delta: float) -> void:
+	if selected_unit_panel.visible:
+		selected_unit_panel.refresh_cooldowns()
 	statistics_refresh_timer += delta
 	if statistics_refresh_timer < 0.1:
 		return
@@ -58,6 +65,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _start_demo_battle() -> void:
+	if battle_started:
+		return
+	if run_state != null and not run_state.pending_event.is_empty():
+		$Page/VBox/Footer/RestartButton.disabled = true
+		%PauseButton.disabled = true
+		%RunEventPopup.show_pending(run_state)
+		return
+	battle_started = true
+	_set_battle_paused(false)
 	%PostBattlePanel.hide_summary()
 	_clear_inspector()
 	%ManagementButton.disabled = true
@@ -69,13 +85,16 @@ func _start_demo_battle() -> void:
 	var reinforcement_direction := EncounterDefinition.ReinforcementEntryDirection.RIGHT_SIDE
 	if not String(run.selected_encounter_id).is_empty():
 		current_encounter = get_node("/root/ContentRegistry").get_definition(run.selected_encounter_id) as EncounterDefinition
-		enemies = CombatDemoFactory.create_enemy_army_from_encounter(current_encounter)
+		var route_power := CombatDemoFactory.route_enemy_power(run)
+		var battle_number := run.encounter_index + 1
+		enemies = CombatDemoFactory.create_enemy_army_from_encounter(current_encounter, route_power, battle_number)
 		if current_encounter.has_reinforcements():
-			reinforcements = CombatDemoFactory.create_reinforcement_army_from_encounter(current_encounter)
+			reinforcements = CombatDemoFactory.create_reinforcement_army_from_encounter(current_encounter, route_power, battle_number)
 			reinforcement_threshold = current_encounter.reinforcement_alive_threshold
 			reinforcement_direction = current_encounter.reinforcement_entry_direction
 	battle_result_id = "combat-%d-%d-%d" % [run.run_seed, run.current_act, run.encounter_index]
 	$Page/VBox/Footer/RestartButton.disabled = false
+	%PauseButton.disabled = false
 	combat_session.setup(
 		CombatSnapshotBuilder.build_player_army(run, get_node("/root/ContentRegistry")),
 		enemies,
@@ -94,6 +113,13 @@ func setup_run(new_run_state: RunState, new_battle_seed := 0) -> void:
 	battle_seed = new_battle_seed
 
 
+func refresh_run_event(new_run_state: RunState) -> void:
+	run_state = new_run_state
+	%RunEventPopup.show_pending(run_state)
+	if run_state.pending_event.is_empty() and not battle_started:
+		_start_demo_battle()
+
+
 func _on_management_button_pressed() -> void:
 	management_requested.emit()
 
@@ -103,6 +129,7 @@ func _on_menu_button_pressed() -> void:
 
 
 func _on_restart_button_pressed() -> void:
+	_set_battle_paused(false)
 	%PostBattlePanel.hide_summary()
 	_clear_inspector()
 	%ManagementButton.disabled = true
@@ -119,13 +146,27 @@ func _on_speed_up_button_pressed() -> void:
 	_set_speed(speed_index + 1)
 
 
+func _on_pause_button_pressed() -> void:
+	if combat_session.battle_active:
+		_set_battle_paused(not battle_paused)
+
+
 func _set_speed(new_index: int) -> void:
 	speed_index = clampi(new_index, 0, SPEEDS.size() - 1)
 	Engine.time_scale = SPEEDS[speed_index]
-	%SpeedLabel.text = "SPEED  x%d" % int(SPEEDS[speed_index])
+	var speed := SPEEDS[speed_index]
+	%SpeedLabel.text = "SPEED  x%d" % int(speed) if is_equal_approx(speed, roundf(speed)) else "SPEED  x%.1f" % speed
+
+
+func _set_battle_paused(value: bool) -> void:
+	battle_paused = value and combat_session.battle_active
+	combat_session.process_mode = Node.PROCESS_MODE_DISABLED if battle_paused else Node.PROCESS_MODE_INHERIT
+	%PauseButton.text = "RESUME" if battle_paused else "PAUSE"
 
 
 func _on_battle_finished(winner: StringName, duration: float, timed_out: bool) -> void:
+	_set_battle_paused(false)
+	%PauseButton.disabled = true
 	var progression := get_node("/root/ContentRegistry").get_definition(&"progression.demo") as ProgressionDefinition
 	var result := CombatResult.from_statistics(
 		battle_result_id,
@@ -170,4 +211,6 @@ func _refresh_statistics() -> void:
 
 
 func _reset_time_scale() -> void:
+	if is_instance_valid(combat_session):
+		combat_session.process_mode = Node.PROCESS_MODE_INHERIT
 	Engine.time_scale = 1.0

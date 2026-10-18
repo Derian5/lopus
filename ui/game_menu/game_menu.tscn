@@ -1,21 +1,11 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/game_menu/game_menu.gd" id="1_game_menu"]
 
+[ext_resource type="Script" path="res://ui/common/ornate_frame.gd" id="10_frame"]
+
 [sub_resource type="StyleBoxFlat" id="StyleDim"]
 bg_color = Color(0.008, 0.01, 0.015, 0.82)
-
-[sub_resource type="StyleBoxFlat" id="StylePanel"]
-bg_color = Color(0.07, 0.082, 0.105, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.38, 0.42, 0.5, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
 
 [node name="GameMenu" type="Control"]
 process_mode = 3
@@ -48,7 +38,6 @@ grow_vertical = 2
 [node name="Panel" type="PanelContainer" parent="Center"]
 custom_minimum_size = Vector2(380, 340)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StylePanel")
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel"]
 layout_mode = 2
@@ -63,10 +52,10 @@ theme_override_constants/separation = 14
 
 [node name="Title" type="Label" parent="Center/Panel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 30
 text = "MENU"
 horizontal_alignment = 1
+theme_type_variation = &"HeaderLabel"
 
 [node name="Spacer" type="Control" parent="Center/Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 12)
@@ -76,23 +65,48 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "RESUME"
+theme_type_variation = &"PrimaryButton"
 
 [node name="MainMenuButton" type="Button" parent="Center/Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "MAIN MENU"
+theme_type_variation = &"LedgerButton"
 
 [node name="QuitButton" type="Button" parent="Center/Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "QUIT"
+theme_type_variation = &"LedgerButton"
 
 [node name="Hint" type="Label" parent="Center/Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.55, 0.63, 1)
+theme_override_font_sizes/font_size = 18
 text = "Press Esc to resume"
 horizontal_alignment = 1
+visible = false
+
+[node name="Ornament" type="Control" parent="Center/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_frame")
+accent_color = Color(0.86, 0.68, 0.32, 1)
+glow = 0.25
+pulse = true
+inset = -14.0
+crest_width = 90.0
+corner_gem = &"gold"
+side_notches = true
 
 [connection signal="pressed" from="Center/Panel/Margin/VBox/ResumeButton" to="." method="_on_resume_button_pressed"]
 [connection signal="pressed" from="Center/Panel/Margin/VBox/MainMenuButton" to="." method="_on_main_menu_button_pressed"]

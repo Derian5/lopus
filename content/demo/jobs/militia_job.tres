@@ -7,13 +7,14 @@
 script = ExtResource("2_stats")
 max_hp = 150.0
 damage = 2.0
-attack_speed = 0.09999999999999999
+attack_speed = 0.1
 movement_speed = 0.0
-attack_range = 0.0
+attack_range = 25.0
 armor = 4.0
 
 [resource]
 script = ExtResource("1_job")
+innate_ability_ids = Array[StringName]([&"ability.militia_strength_in_numbers"])
 stat_modifiers = SubResource("StatBlock_militia")
 id = &"job.militia"
 display_name = "Militia"

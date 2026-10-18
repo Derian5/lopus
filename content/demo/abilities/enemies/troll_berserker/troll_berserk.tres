@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_frenzy.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier_effect.gd" id="4"]
+
+[sub_resource type="Resource" id="HasteModifier"]
+script = ExtResource("3")
+stat = "attack_speed"
+operation = 1
+value = 1.6
+
+[sub_resource type="Resource" id="Haste"]
+script = ExtResource("4")
+effect_id = &"effect.troll_berserk"
+modifier = SubResource("HasteModifier")
+duration = 4.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.troll_berserk"
+display_name = "Berserk"
+description = "After taking damage, [buff]attacks {e0.modifier.value:bonus_pct}% faster[/buff] for {e0.duration}s."
+cooldown_seconds = 10.0
+required_recent_damage_seconds = 2.0
+targeting_policy = 0
+delivery_method = 0
+priority = 90
+tags = Array[StringName]([&"ability", &"active", &"enemy", &"self_buff"])
+effects = Array[AbilityEffect]([SubResource("Haste")])
+presentation_color = Color(0.82, 0.24, 0.16, 1)
+presentation_text = "Berserk"
+available_to_heroes = false

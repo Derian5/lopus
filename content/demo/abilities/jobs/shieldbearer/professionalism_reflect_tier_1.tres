@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/attack_reflect_effect.gd" id="2"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_shieldbearer_professionalism_reflect_tier_1.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Reflect"]
+script = ExtResource("2")
+effect_id = &"effect.shieldbearer_professionalism_reflect_tier_1"
+reflect_percent = 30.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.shieldbearer_professionalism_reflect_tier_1"
+display_name = "Spiked Shields I"
+description = "[dmg]Reflects {e0.reflect_percent}%[/dmg] of the HP damage taken from basic attacks back to the attacker."
+kind = 1
+targeting_policy = 0
+effects = Array[AbilityEffect]([SubResource("Reflect")])
+presentation_color = Color(0.45, 0.65, 0.82, 1)
+available_to_heroes = false

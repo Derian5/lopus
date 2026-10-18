@@ -7,7 +7,7 @@ signal quit_requested
 
 
 func _ready() -> void:
-	%ResumeButton.grab_focus()
+	get_viewport().gui_release_focus()
 
 
 func _unhandled_input(event: InputEvent) -> void:

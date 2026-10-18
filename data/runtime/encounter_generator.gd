@@ -38,8 +38,9 @@ static func generate(run_state: RunState, registry: Node, stream: RngStreamState
 		include_unknown = true
 	var selected: Array[StringName] = []
 	var known_count := desired_count - (1 if include_unknown else 0)
+	var final_index := route.final_encounter_index(run_state.current_act)
 	for _index in known_count:
-		var picked := int(stream.next_u32() % known.size())
+		var picked := _weighted_pick(known, run_state.encounter_index, final_index, stream)
 		selected.append(known[picked].id)
 		known.remove_at(picked)
 	if include_unknown:
@@ -50,3 +51,21 @@ static func generate(run_state: RunState, registry: Node, stream: RngStreamState
 		selected[index] = selected[swap_index]
 		selected[swap_index] = value
 	return {"ok": true, "error": "", "encounter_ids": selected}
+
+
+## Picks an index proportionally to each encounter's difficulty weight at this point of the act.
+static func _weighted_pick(pool: Array[EncounterDefinition], encounter_index: int, final_index: int, stream: RngStreamState) -> int:
+	var weights: Array[float] = []
+	var total := 0.0
+	for encounter in pool:
+		var weight := maxf(encounter.selection_weight(encounter_index, final_index), 0.0)
+		weights.append(weight)
+		total += weight
+	if total <= 0.0:
+		return int(stream.next_u32() % pool.size())
+	var roll := float(stream.next_u32()) / 4294967296.0 * total
+	for index in weights.size():
+		roll -= weights[index]
+		if roll < 0.0:
+			return index
+	return weights.size() - 1

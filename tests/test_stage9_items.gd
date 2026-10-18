@@ -26,27 +26,17 @@ func _run() -> void:
 
 func _test_definitions_and_validation(registry: Node) -> void:
 	var hero_item := registry.get_definition(&"item.hero.vanguard_blade") as ItemDefinition
-	_check(hero_item.allowed_target_type == &"hero" and not hero_item.passive_effects.is_empty(), "Hero item uses the generic ItemDefinition and passive modifiers.")
-	_check(not hero_item.rarity.is_empty() and hero_item.price > 0 and hero_item.sell_price > 0, "Item rarity and economy fields are populated.")
+	_check(not hero_item.passive_effects.is_empty(), "Hero item uses the generic ItemDefinition and passive modifiers.")
+	_check(hero_item.price > 0 and hero_item.sell_price > 0, "Item economy fields are populated without a rarity classification.")
+	_check(hero_item.hero_eligibility == ItemDefinition.HeroEligibility.ANY, "Items default to compatibility with every Hero.")
 	var item_count := 0
 	for definition in registry.definitions.values():
 		if definition is ItemDefinition:
 			item_count += 1
-			_check(definition.allowed_target_type == &"hero", "Every current test item targets Heroes.")
-	_check(item_count == 2, "The prototype exposes exactly two test item definitions.")
-
-	var registry_script: Script = load("res://autoload/content_registry.gd")
-	var isolated = registry_script.new()
-	var invalid := ItemDefinition.new()
-	invalid.id = &"item.invalid"
-	invalid.allowed_target_type = &"dragon"
-	invalid.rarity = "mythic"
-	isolated.register_definition(invalid, false)
-	_check(not isolated.validate_registered_definitions(false), "Registry rejects invalid item targets and rarities.")
-	isolated.free()
-
+	_check(item_count == 2, "The prototype exposes exactly two Hero item definitions.")
 
 func _test_inventory_identity() -> void:
+	_check(DemoRunFactory.create_starting_run(9008).inventory.items.is_empty(), "A new run starts with an empty Inventory.")
 	var inventory := InventoryState.new()
 	var first := inventory.create_item(&"item.hero.vanguard_blade")
 	var second := inventory.create_item(&"item.hero.vanguard_blade")
@@ -67,6 +57,8 @@ func _test_inventory_identity() -> void:
 
 func _test_equipment_transactions_and_snapshots(registry: Node) -> void:
 	var run := DemoRunFactory.create_starting_run(9009)
+	run.inventory.create_item(&"item.hero.vanguard_blade")
+	run.inventory.create_item(&"item.hero.titan_seal")
 	var blade := _instance_for(run, &"item.hero.vanguard_blade")
 	var seal := _instance_for(run, &"item.hero.titan_seal")
 	var base_hero := CombatSnapshotBuilder.build_hero(run.heroes[0], run.inventory, registry)
@@ -80,7 +72,7 @@ func _test_equipment_transactions_and_snapshots(registry: Node) -> void:
 	_check(duplicated_hero.equipped_item_instance_ids == [blade], "Duplicated combat snapshots own independent equipment arrays.")
 	var duplicate_before := run.heroes[1].item_ids.duplicate()
 	_check(not EquipmentService.equip_or_swap(run, &"hero", 1, 0, blade, registry).ok and run.heroes[1].item_ids == duplicate_before, "One physical item instance cannot be equipped twice.")
-	_check(not EquipmentService.equip_or_swap(run, &"soldier", 0, 0, seal, registry).ok and run.soldiers[0].item_ids.is_empty(), "Target restrictions are checked before RunState mutation.")
+	_check(not EquipmentService.equip_or_swap(run, &"soldier", 0, 0, seal, registry).ok, "Only Heroes can be equipment targets.")
 
 	var swap := EquipmentService.equip_or_swap(run, &"hero", 0, 0, seal, registry)
 	_check(swap.ok and StringName(swap.replaced_instance_id) == blade, "Equipping into an occupied slot swaps the previous item to inventory.")
@@ -88,9 +80,29 @@ func _test_equipment_transactions_and_snapshots(registry: Node) -> void:
 	_check(sealed_hero.stats.max_hp > base_hero.stats.max_hp and is_equal_approx(sealed_hero.stats.damage, base_hero.stats.damage), "Swap immediately replaces the applied passive effects.")
 	_check(EquipmentService.get_unequipped_items(run).any(func(item: Dictionary) -> bool: return StringName(item.instance_id) == blade), "The swapped item remains owned and becomes unequipped.")
 	_check(EquipmentService.unequip(run, &"hero", 0, 0).ok and run.heroes[0].item_ids.is_empty(), "Unequip returns the exact instance to available inventory.")
+	_check(EquipmentService.equip_or_swap(run, &"hero", 1, 0, blade, registry).ok, "An unrestricted item can move from one Hero to another.")
+	EquipmentService.unequip(run, &"hero", 1, 0)
 
 	_check(not EquipmentService.equip_or_swap(run, &"soldier", 2, 0, blade, registry).ok, "Hero item cannot equip to a Soldier.")
 	_check(not EquipmentService.equip_or_swap(run, &"hero", 0, 0, &"missing-instance", registry).ok, "Unknown item instances are rejected.")
+
+	var melee_only := ItemDefinition.new()
+	melee_only.id = &"item.hero.runtime_melee"
+	melee_only.display_name = "Runtime Melee"
+	melee_only.hero_eligibility = ItemDefinition.HeroEligibility.MELEE
+	var ranged_only := ItemDefinition.new()
+	ranged_only.id = &"item.hero.runtime_ranged"
+	ranged_only.display_name = "Runtime Ranged"
+	ranged_only.hero_eligibility = ItemDefinition.HeroEligibility.RANGED
+	_check(registry.register_definition(melee_only, false) and registry.register_definition(ranged_only, false), "Melee-only and ranged-only item definitions register without Hero IDs.")
+	var melee_instance := run.inventory.create_item(melee_only.id)
+	var ranged_instance := run.inventory.create_item(ranged_only.id)
+	_check(EquipmentService.equip_or_swap(run, &"hero", 0, 0, melee_instance, registry).ok, "A melee Hero can equip a melee-only item.")
+	EquipmentService.unequip(run, &"hero", 0, 0)
+	_check(not EquipmentService.equip_or_swap(run, &"hero", 1, 0, melee_instance, registry).ok, "A ranged Hero cannot equip a melee-only item.")
+	_check(EquipmentService.equip_or_swap(run, &"hero", 1, 0, ranged_instance, registry).ok, "A ranged Hero can equip a ranged-only item.")
+	EquipmentService.unequip(run, &"hero", 1, 0)
+	_check(not EquipmentService.equip_or_swap(run, &"hero", 0, 0, ranged_instance, registry).ok, "A melee Hero cannot equip a ranged-only item.")
 
 	var generic := ItemDefinition.new()
 	generic.id = &"item.hero.runtime_generic"
@@ -116,6 +128,7 @@ func _test_equipment_transactions_and_snapshots(registry: Node) -> void:
 
 func _test_management_actions(registry: Node) -> void:
 	var run := DemoRunFactory.create_starting_run(9010)
+	run.inventory.create_item(&"item.hero.vanguard_blade")
 	var screen = MANAGEMENT_SCENE.instantiate()
 	root.add_child(screen)
 	screen.setup(run)
@@ -129,7 +142,7 @@ func _test_management_actions(registry: Node) -> void:
 	var empty_slot: Button = screen.get_node("%EquipmentRows").get_child(0)
 	empty_slot.pressed.emit()
 	await process_frame
-	_check(screen.selected_equipment_slot == 0 and screen.get_node("%EquipmentRows").get_child_count() == HeroState.MAX_ITEM_SLOTS, "All Hero equipment drop slots remain visible after selection.")
+	_check(screen.selected_equipment_slot == 0 and screen.get_node("%EquipmentRows").get_child_count() == HeroState.MAX_ITEM_SLOTS and screen.get_node("%EquipmentRows").get_child(0) is ContentIconButton, "All six Hero equipment icon slots remain visible after selection.")
 	_emit_double_click(_inventory_button(screen, blade))
 	await process_frame
 	_check(run.heroes[0].item_ids == [blade], "Double-clicking Inventory equips the selected item without an Equip button.")
@@ -141,11 +154,12 @@ func _test_management_actions(registry: Node) -> void:
 	_check(changed_actions.count(&"equipment_changed") == 2, "Equip and inventory return each request one autosave.")
 	screen._select_unit("soldier", 0)
 	await process_frame
+	_check(not screen.get_node("%EquipmentRows").visible and not screen.get_node("%EquipmentCount").visible, "Soldiers expose no equipment section.")
 	_emit_double_click(_inventory_button(screen, blade))
 	await process_frame
-	_check(run.soldiers[0].item_ids.is_empty() and screen.get_node("%FeedbackLabel").text.contains("can only be equipped"), "Management UI explains a blocked target restriction.")
+	_check(screen.get_node("%FeedbackLabel").text.contains("Select the Hero"), "Management UI explains that items require a selected Hero.")
 	var tooltip := ContentButton.describe_content(&"item.hero.vanguard_blade")
-	_check(tooltip.contains("COMMON") and tooltip.contains("Hero") and tooltip.contains("Damage +6.0") and tooltip.contains("Sell: 50"), "Item tooltip shows rarity, target, modifiers, and prices.")
+	_check(not tooltip.contains("COMMON") and not tooltip.contains("RARE") and not tooltip.contains("Any Hero") and tooltip.contains("Damage +6.0") and tooltip.contains("Sell: 50"), "Item tooltips omit rarity and redundant universal Hero compatibility while retaining modifiers and prices.")
 	_check(screen.get_node("%InventoryRows").get_child_count() > 0, "Management Inventory lists available physical item instances.")
 	screen.free()
 

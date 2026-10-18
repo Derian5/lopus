@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/threshold_guard_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_threshold_guard.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Base"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_threshold_guard"
+health_threshold = 0.3
+shield_max_hp_multiplier = 0.3
+armor_multiplier = 1.0
+duration = 10.0
+cooldown_seconds = 30.0
+
+[sub_resource type="Resource" id="Effect1"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_threshold_guard"
+health_threshold = 0.3
+shield_max_hp_multiplier = 0.3
+armor_multiplier = 1.0
+duration = 10.0
+cooldown_seconds = 30.0
+
+[sub_resource type="Resource" id="Effect2"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_threshold_guard"
+health_threshold = 0.3
+shield_max_hp_multiplier = 0.6
+armor_multiplier = 1.5
+duration = 10.0
+cooldown_seconds = 30.0
+
+[sub_resource type="Resource" id="Effect3"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_threshold_guard"
+health_threshold = 0.3
+shield_max_hp_multiplier = 0.9
+armor_multiplier = 2.0
+duration = 10.0
+cooldown_seconds = 30.0
+
+[sub_resource type="Resource" id="Effect4"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_threshold_guard"
+health_threshold = 0.3
+shield_max_hp_multiplier = 1.2
+armor_multiplier = 2.5
+duration = 10.0
+cooldown_seconds = 30.0
+
+[sub_resource type="Resource" id="Level1"]
+script = ExtResource("2")
+effects = Array[AbilityEffect]([SubResource("Effect1")])
+
+[sub_resource type="Resource" id="Level2"]
+script = ExtResource("2")
+effects = Array[AbilityEffect]([SubResource("Effect2")])
+
+[sub_resource type="Resource" id="Level3"]
+script = ExtResource("2")
+effects = Array[AbilityEffect]([SubResource("Effect3")])
+
+[sub_resource type="Resource" id="Level4"]
+script = ExtResource("2")
+effects = Array[AbilityEffect]([SubResource("Effect4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.wrath_threshold_guard"
+display_name = "Too Angry to Fall"
+description = "At {e0.health_threshold:pct}% HP, gains a [shield]shield of {e0.shield_max_hp_multiplier:pct}% Max HP[/shield] and [buff]+{e0.armor_multiplier:bonus_pct}% armor[/buff] for {e0.duration}s. Recharges after {e0.cooldown_seconds}s."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Base")])
+priority = 100
+presentation_color = Color(0.78, 0.18, 0.12, 1)
+allowed_hero_ids = Array[StringName]([&"hero.ashen_duelist"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
+tags = Array[StringName]([&"ability", &"passive", &"wrath", &"shield", &"armor"])

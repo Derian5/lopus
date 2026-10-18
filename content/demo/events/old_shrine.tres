@@ -84,6 +84,7 @@ choices = Array[ExtResource("3")]([SubResource("FervorChoice"), SubResource("Dis
 [resource]
 script = ExtResource("1")
 weight = 972066.1
+theme_hero_id = &"hero.ashen_duelist"
 conditions = Array[ExtResource("4")]([SubResource("MinimumSoldiers")])
 soldier_target_count = 2
 entry_node_id = &"entry"

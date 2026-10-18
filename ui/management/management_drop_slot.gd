@@ -1,5 +1,5 @@
 class_name ManagementDropSlot
-extends ContentButton
+extends ContentIconButton
 
 signal payload_dropped(source: Dictionary, target: Dictionary)
 

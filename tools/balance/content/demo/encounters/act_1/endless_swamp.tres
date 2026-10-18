@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.summoner", &"enemy.summoner", &"enemy.troll_priest", &"enemy.troll_priest", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker"])
+reinforcement_enemy_ids = Array[StringName]([&"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker"])
+reinforcement_alive_threshold = 2
+reinforcement_entry_direction = 0
+gold_reward = 300
+enemy_power = 0.66
+min_encounter_index = 8
+max_encounter_index = 11
+difficulty_hint = "Elite"
+key_properties = Array[String](["Summons, healing and regeneration"])
+is_unknown = false
+is_boss = false
+id = &"encounter.endless_swamp"
+display_name = "Endless Swamp"
+description = "Hexers, witch doctors and berserkers wait in a swamp that never ends."
+tags = Array[StringName]([&"encounter", &"act1", &"reinforcements"])

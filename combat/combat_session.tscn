@@ -15,4 +15,6 @@ script = ExtResource("1_session")
 
 [node name="Units" type="Node2D" parent="."]
 
+[node name="Effects" type="Node2D" parent="."]
+
 [node name="Projectiles" type="Node2D" parent="."]

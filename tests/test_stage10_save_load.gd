@@ -18,6 +18,7 @@ func _run() -> void:
 	var manager := SaveManager.new(save_directory)
 	manager.delete_save()
 	_test_disk_round_trip_and_rng(manager)
+	_test_version_8_item_migration(manager)
 	_test_invalid_saves(manager)
 	await _test_main_lifecycle_and_autosave(manager)
 	manager.delete_save()
@@ -33,6 +34,7 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 	_check(manager.load_run(registry).code == &"missing", "Missing save is a normal non-crashing state.")
 	var route := registry.get_definition(RunState.ROUTE_DEFINITION_ID) as RouteDefinition
 	var run := DemoRunFactory.create_starting_run(101010)
+	run.inventory.create_item(&"item.hero.vanguard_blade")
 	run.current_act = 2
 	run.encounter_index = route.act_two_battle_count - 1
 	run.available_encounter_ids = [&"encounter.act2_pressure", &"encounter.act2_crossbows"]
@@ -40,6 +42,7 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 	run.gold = 777
 	run.heroes[0].level = 3
 	run.heroes[0].xp = 175
+	run.unlocked_job_ids.append(&"job.warrior")
 	run.soldiers[0].current_job_id = &"job.warrior"
 	run.soldiers[0].definition_id = &"job.warrior"
 	run.soldiers[0].veterancy_xp = 88
@@ -59,7 +62,6 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 	run.heroes[2].life_state = HeroState.EXECUTED
 	run.heroes[2].ability_ids.clear()
 	run.heroes[2].owned_ability_ids.clear()
-	run.heroes[2].ability_priority.clear()
 	var execution_recruit := SoldierState.new()
 	execution_recruit.unique_id = "stage10-execution-recruit"
 	execution_recruit.generated_name = "Militia 10"
@@ -68,6 +70,7 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 	EquipmentService.equip_or_swap(run, &"hero", 0, 0, blade, registry)
 	run.run_rng.next_u32()
 	run.combat_rng.next_u32()
+	run.market.offers[0].is_pinned = true
 	var expected_market_stream := RngStreamState.from_dictionary(run.market_rng.to_dictionary())
 	var expected_market_draw := expected_market_stream.next_u32()
 	var market_offers := run.market.to_dictionary()
@@ -80,6 +83,7 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 		var loaded: RunState = load_result.run_state
 		_check(loaded.to_dictionary() == saved_dictionary, "Every RunState field survives a disk JSON round-trip.")
 		_check(loaded.market.to_dictionary() == market_offers, "Current Market offers are restored exactly instead of regenerated.")
+		_check(loaded.market.offers[0].is_pinned, "Locked Market positions survive Save and Load.")
 		_check(loaded.market_rng.next_u32() == expected_market_draw, "The next Market RNG draw is identical after Load.")
 		_check(loaded.heroes[2].life_state == HeroState.EXECUTED and loaded.execution_snapshots.size() == 1, "Executed Hero state and snapshot cannot be undone by Load.")
 		_check(loaded.inventory.get_definition_id(blade) == &"item.hero.vanguard_blade" and loaded.heroes[0].item_ids.has(blade), "Inventory ownership and equipped instance IDs are restored.")
@@ -97,9 +101,27 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 	_check(manager.load_run(registry).ok, "Unpublished temporary files are ignored and the previous generation remains loadable.")
 
 
+func _test_version_8_item_migration(manager: SaveManager) -> void:
+	manager.delete_save()
+	var run := DemoRunFactory.create_starting_run(101011)
+	run.inventory.create_item(&"item.hero.vanguard_blade")
+	var data := run.to_dictionary()
+	data["save_version"] = 8
+	data.inventory.items[0]["bound_target_id"] = String(data.heroes[0].unique_id)
+	for offer in data.market.offers:
+		if StringName(offer.offer_type) == &"hero_item":
+			offer.target_id = String(data.heroes[0].unique_id)
+	_write_generation(data)
+	var migrated := manager.load_run(registry)
+	var migrated_items: Array = migrated.run_state.inventory.items if migrated.ok else []
+	var migrated_offers: Array[MarketOffer] = migrated.run_state.market.offers if migrated.ok else []
+	_check(migrated.ok and not migrated_items[0].has("bound_target_id"), "Version 8 item instances migrate without personal Hero bindings.")
+	_check(migrated.ok and migrated_offers.all(func(offer: MarketOffer) -> bool: return offer.offer_type != &"hero_item" or offer.target_id.is_empty()), "Version 8 Market item offers migrate to shared Hero compatibility.")
+
+
 func _test_invalid_saves(manager: SaveManager) -> void:
 	manager.delete_save()
-	_write_generation({"save_version": RunState.CURRENT_SAVE_VERSION - 1})
+	_write_generation({"save_version": RunState.CURRENT_SAVE_VERSION - 2})
 	var legacy := manager.load_run(registry)
 	_check(legacy.code == &"unsupported_version" and legacy.message.contains("New Game"), "Pre-vertical-slice route saves are rejected with a clear recovery message.")
 	manager.delete_save()
@@ -135,14 +157,21 @@ func _test_main_lifecycle_and_autosave(manager: SaveManager) -> void:
 	_check(main.current_screen.name == "HeroSelection" and not manager.has_any_save(), "New Game waits for Hero selection before creating a save.")
 	main._begin_new_game(DemoRunFactory.HERO_IDS)
 	await process_frame
-	_check(main.current_screen.name == "Management" and manager.has_any_save(), "New Game creates an initial Management autosave.")
+	_check(main.current_screen.name == "Combat" and main.active_run.pending_event.event_id == &"event.opening_march" and manager.has_any_save(), "New Game creates an initial autosave and opens the story over the battlefield.")
+	for step in 4:
+		var event := registry.get_definition(main.active_run.pending_event.event_id) as RunEventDefinition
+		var node := event.get_node_definition(main.active_run.pending_event.node_id)
+		main._on_run_event_choice_requested(node.choices[0].choice_id)
+	main.active_run.run_phase = &"management"
+	main.show_management()
 	var management = main.current_screen
-	management._select_encounter(main.active_run.available_encounter_ids[0])
-	await process_frame
-	management._select_unit("soldier", 0)
-	var warrior_option: int = management.job_option_ids.find(&"job.warrior")
-	management.get_node("%JobOption").select(warrior_option)
-	management._on_change_job_pressed()
+	main.active_run.unlocked_job_ids.append(&"job.warrior")
+	main.active_run.job_capacities["job.warrior"] = 1
+	management._refresh_all()
+	management._on_management_drop(
+		{"source": &"soldier", "soldier_index": 0},
+		{"target": &"job", "job_id": &"job.warrior"}
+	)
 	await process_frame
 	var changed := manager.load_run(registry)
 	_check(changed.ok and changed.run_state.soldiers[0].current_job_id == &"job.warrior", "A successful management action autosaves its transaction.")
@@ -159,11 +188,12 @@ func _test_main_lifecycle_and_autosave(manager: SaveManager) -> void:
 	main._continue_game()
 	await process_frame
 	_check(main.current_screen.name == "Management" and main.active_run.combat_rng.draw_count == persisted_combat_draw_count, "Continue after leaving combat restores the pre-combat run.")
-	var alternate_id := &"encounter.tutorial_volley"
+	var alternate_id := &"encounter.raider_line"
 	_check(not EncounterService.select_encounter(main.active_run, alternate_id).ok, "Continue can retry the committed battle but cannot choose another encounter.")
 
 	main.active_run.gold += 55
 	main.active_run.run_phase = &"combat"
+	main.post_combat_prepared = true
 	main._return_from_combat()
 	await process_frame
 	var post_combat := manager.load_run(registry)

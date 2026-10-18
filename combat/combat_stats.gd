@@ -2,12 +2,15 @@ class_name CombatStats
 extends RefCounted
 
 
+const STAT_NAMES: Array[StringName] = [&"max_hp", &"damage", &"attack_speed", &"movement_speed", &"attack_range", &"armor"]
+
 var max_hp := 100.0
 var damage := 10.0
 var attack_speed := 1.0
 var movement_speed := 100.0
 var attack_range := 48.0
 var armor := 0.0
+var breakdowns: Dictionary = {}
 
 
 static func from_stat_block(block: StatBlock) -> CombatStats:
@@ -31,7 +34,36 @@ func duplicate_stats() -> CombatStats:
 	copy.movement_speed = movement_speed
 	copy.attack_range = attack_range
 	copy.armor = armor
+	copy.breakdowns = breakdowns.duplicate(true)
 	return copy
+
+
+func begin_breakdowns(source: String) -> void:
+	breakdowns.clear()
+	for stat in STAT_NAMES:
+		breakdowns[stat] = [{
+			"source": source,
+			"operation": &"base",
+			"operand": float(get(stat)),
+			"before": 0.0,
+			"after": float(get(stat)),
+		}]
+
+
+func record_change(stat: StringName, source: String, operation: StringName, operand: float, before: float, after: float) -> void:
+	if not breakdowns.has(stat) or is_equal_approx(before, after):
+		return
+	breakdowns[stat].append({
+		"source": source,
+		"operation": operation,
+		"operand": operand,
+		"before": before,
+		"after": after,
+	})
+
+
+func breakdown_for(stat: StringName) -> Array:
+	return breakdowns.get(stat, []).duplicate(true)
 
 
 func add_stat_block(block: StatBlock) -> void:

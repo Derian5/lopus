@@ -29,7 +29,7 @@ func _test_content() -> void:
 	if definition == null:
 		return
 	_check(
-		definition.base_stats.max_hp == 520.0
+		definition.base_stats.max_hp == 1750.0
 		and definition.base_stats.damage == 42.0
 		and definition.base_stats.attack_speed == 1.5
 		and definition.base_stats.armor == 52.0
@@ -43,8 +43,9 @@ func _test_content() -> void:
 	_check(
 		ability.kind == AbilityDefinition.AbilityKind.ACTIVE
 		and ability.targeting_policy == AbilityDefinition.TargetingPolicy.SELF
-		and ability.cooldown_seconds == 15.0,
-		"Massive Bloodrage is an active self-only ability with a 15-second cooldown."
+		and ability.cooldown_seconds == 15.0
+		and ability.required_recent_damage_seconds == 3.0,
+		"Massive Bloodrage is a self-only ability that requires damage within three seconds and has a 15-second cooldown."
 	)
 	_check(speed_effect.duration == 6.0 and speed_effect.modifier.operation == StatModifier.Operation.MULTIPLY and speed_effect.modifier.value == 1.5, "Massive Bloodrage grants x1.5 attack speed for six seconds.")
 	_check(empowerment.duration == 6.0 and empowerment.lifesteal_percent == 50.0 and empowerment.size_multiplier == 1.5, "Massive Bloodrage grants the requested lifesteal and size increase.")
@@ -80,8 +81,13 @@ func _test_bloodrage_behavior() -> void:
 	_check(session.resolve_ability_target(ogre_unit, rage) == ogre_unit, "Massive Bloodrage can target only its caster.")
 	ogre_unit._acquire_target()
 	var collision := ogre_unit.get_node("CollisionShape2D").shape as CircleShape2D
+	_check(is_equal_approx(ogre_unit.get_effective_stat(&"attack_speed"), 1.5) and float(ogre_unit.ability_cooldowns.get(&"ability.massive_ogre_rage", 0.0)) == 0.0, "Massive Ogre does not cast Bloodrage before taking damage.")
+	ogre_unit.take_damage(10.0, player_unit)
+	ogre_unit.receive_healing(5.0, ogre_unit, &"ability.massive_ogre_rage", &"effect.lifesteal")
+	_check(ogre_unit.flash_color.is_equal_approx(Color.WHITE) and ogre_unit.flash_priority == Combatant.DAMAGE_FLASH_PRIORITY, "Bloodrage healing cannot replace the Massive Ogre's active white damage flash.")
+	ogre_unit._acquire_target()
 	_check(is_equal_approx(ogre_unit.get_effective_stat(&"attack_speed"), 2.25), "Bloodrage multiplies the Ogre's attack speed by 1.5.")
-	_check(is_equal_approx(ogre_unit.body_radius, 24.0) and is_equal_approx(collision.radius, 24.0), "Bloodrage increases both model and collision radius by 50%.")
+	_check(is_equal_approx(ogre_unit.body_radius, 30.24) and is_equal_approx(ogre_unit.visual_radius, 43.2) and is_equal_approx(collision.radius, 30.24), "Bloodrage preserves the reduced collision ratio while increasing model and collision radii by 50%.")
 	_check(ogre_unit.ability_cooldowns[&"ability.massive_ogre_rage"] == 15.0, "Casting Bloodrage starts its 15-second cooldown.")
 
 	ogre_unit.current_hp = 400.0
@@ -97,9 +103,13 @@ func _test_bloodrage_behavior() -> void:
 	var damage_dealt := player_hp_before - player_unit.current_hp
 	_check(is_equal_approx(damage_dealt, 42.0) and is_equal_approx(ogre_unit.current_hp, 421.0), "Bloodrage heals the Ogre for 50% of actual basic-attack damage.")
 
+	session.elapsed_time = 3.1
+	ogre_unit.ability_cooldowns[&"ability.massive_ogre_rage"] = 0.0
 	ogre_unit._update_runtime(6.1)
+	ogre_unit._acquire_target()
 	_check(is_equal_approx(ogre_unit.get_effective_stat(&"attack_speed"), 1.5), "Bloodrage attack speed expires after six seconds.")
-	_check(is_equal_approx(ogre_unit.body_radius, 16.0) and is_equal_approx(collision.radius, 16.0), "Model and collision size return to normal when Bloodrage expires.")
+	_check(is_equal_approx(ogre_unit.body_radius, 20.16) and is_equal_approx(ogre_unit.visual_radius, 28.8) and is_equal_approx(collision.radius, 20.16), "Model and collision size return to their normal visual and reduced physical radii when Bloodrage expires.")
+	_check(ogre_unit.ability_cooldowns[&"ability.massive_ogre_rage"] == 0.0, "Massive Ogre cannot cast Bloodrage more than three seconds after its last damage.")
 	var hp_after_expiry := ogre_unit.current_hp
 	player_unit.current_hp = player_hp_before
 	ogre_unit.target = player_unit

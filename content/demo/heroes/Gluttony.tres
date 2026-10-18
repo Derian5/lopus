@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_j5gaw"]
 [ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_hp7re"]
+[ext_resource type="Texture2D" uid="uid://b2hmywk5xmyg6" path="res://arts/v1/Gluttony.png" id="3_portrait"]
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_j5gaw")
-max_hp = 1150.0
-damage = 80.0
-attack_speed = 0.9
+max_hp = 575.0
+damage = 13.0
+attack_speed = 0.6
 movement_speed = 90.0
 armor = 35.0
 
@@ -15,6 +16,7 @@ armor = 35.0
 script = ExtResource("2_hp7re")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.95, 0.48, 0.14, 1)
+portrait = ExtResource("3_portrait")
 available_in_new_game = true
 selection_order = 5
 id = &"hero.thorn_warden"

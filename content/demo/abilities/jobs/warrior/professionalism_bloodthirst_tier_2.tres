@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/basic_attack_lifesteal_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/on_hit_status_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="5"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_focused_damage.png" id="icon"]
+
+[sub_resource type="Resource" id="Lifesteal"]
+script = ExtResource("2")
+effect_id = &"effect.warrior_bloodthirst_lifesteal"
+lifesteal_percent = 50.0
+
+[sub_resource type="Resource" id="ArmorShred"]
+script = ExtResource("5")
+stat = "armor"
+operation = 0
+value = -5.0
+
+[sub_resource type="Resource" id="SunderStatus"]
+script = ExtResource("4")
+id = &"status.warrior_sundered_armor"
+display_name = "Sundered Armor"
+description = "Armor reduced by Warrior blows. Stacks from every Warrior share one cap."
+default_duration = 6.0
+max_stacks = 10
+stack_policy = 1
+stat_modifiers = Array[ExtResource("5")]([SubResource("ArmorShred")])
+polarity = 2
+
+[sub_resource type="Resource" id="Sunder"]
+script = ExtResource("3")
+effect_id = &"effect.warrior_bloodthirst_sunder"
+status = SubResource("SunderStatus")
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("icon")
+id = &"ability.warrior_professionalism_bloodthirst_tier_2"
+display_name = "Bloodthirst II"
+description = "Basic attacks [heal]heal for {e0.lifesteal_percent}%[/heal] of the damage dealt and [debuff]shred {e1.status.stat_modifiers.0.value:abs} armor[/debuff] for {e1.status.default_duration}s, stacking up to {e1.status.max_stacks} times on a target (up to [debuff]-{e1.status.stat_modifiers.0.value*e1.status.max_stacks:abs} armor[/debuff]). All Warriors share the stacks."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Lifesteal"), SubResource("Sunder")])
+presentation_color = Color(0.86, 0.2, 0.18, 1)
+presentation_text = "Bloodthirst"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"passive", &"job", &"warrior", &"lifesteal", &"armor_shred"])

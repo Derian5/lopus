@@ -1,0 +1,89 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/leap_slam_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_leap_slam.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Base"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_leap_slam"
+damage = 200.0
+impact_radius = 200.0
+knockback_distance = 150.0
+stun_duration = 2.0
+
+[sub_resource type="Resource" id="Effect1"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_leap_slam"
+damage = 200.0
+impact_radius = 200.0
+knockback_distance = 150.0
+stun_duration = 2.0
+
+[sub_resource type="Resource" id="Effect2"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_leap_slam"
+damage = 400.0
+impact_radius = 200.0
+knockback_distance = 150.0
+stun_duration = 3.0
+
+[sub_resource type="Resource" id="Effect3"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_leap_slam"
+damage = 600.0
+impact_radius = 200.0
+knockback_distance = 150.0
+stun_duration = 4.0
+
+[sub_resource type="Resource" id="Effect4"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_leap_slam"
+damage = 800.0
+impact_radius = 200.0
+knockback_distance = 150.0
+stun_duration = 5.0
+
+[sub_resource type="Resource" id="Level1"]
+script = ExtResource("2")
+cooldown_seconds = 10.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect1")])
+
+[sub_resource type="Resource" id="Level2"]
+script = ExtResource("2")
+cooldown_seconds = 10.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect2")])
+
+[sub_resource type="Resource" id="Level3"]
+script = ExtResource("2")
+cooldown_seconds = 10.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect3")])
+
+[sub_resource type="Resource" id="Level4"]
+script = ExtResource("2")
+cooldown_seconds = 10.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.wrath_leap_slam"
+display_name = "Cataclysmic Leap"
+description = "Leaps to the nearest enemy within {search} and deals [dmg]{e0.damage} damage[/dmg]. Other enemies within {e0.impact_radius} are [cc]knocked back {e0.knockback_distance} and stunned for {e0.stun_duration}s[/cc]."
+cooldown_seconds = 10.0
+targeting_policy = 1
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Base")])
+priority = 110
+area_radius = 200.0
+target_search_radius = 300.0
+presentation_color = Color(0.94, 0.3, 0.12, 1)
+presentation_text = "Cataclysmic Leap"
+allowed_hero_ids = Array[StringName]([&"hero.ashen_duelist"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
+tags = Array[StringName]([&"ability", &"active", &"wrath", &"damage", &"stun", &"movement"])

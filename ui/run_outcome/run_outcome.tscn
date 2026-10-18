@@ -1,21 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/run_outcome/run_outcome.gd" id="1"]
 
-[sub_resource type="StyleBoxFlat" id="Background"]
-bg_color = Color(0.025, 0.029, 0.039, 1)
+[ext_resource type="Script" path="res://ui/common/ornate_frame.gd" id="10_frame"]
 
-[sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.07, 0.078, 0.1, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.62, 0.25, 0.2, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+[ext_resource type="Script" path="res://ui/common/screen_backdrop.gd" id="11_backdrop"]
 
 [node name="RunOutcome" type="Control"]
 layout_mode = 3
@@ -26,14 +15,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Background" type="Panel" parent="."]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("Background")
+script = ExtResource("11_backdrop")
+horizon = -1.0
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -46,7 +36,6 @@ grow_vertical = 2
 [node name="Panel" type="PanelContainer" parent="Center"]
 custom_minimum_size = Vector2(620, 430)
 layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel"]
 layout_mode = 2
@@ -66,6 +55,7 @@ theme_override_colors/font_color = Color(0.9, 0.55, 0.4, 1)
 theme_override_font_sizes/font_size = 16
 text = "THE ARMY HAS FALLEN"
 horizontal_alignment = 1
+theme_type_variation = &"EyebrowLabel"
 
 [node name="Title" type="Label" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
@@ -74,6 +64,7 @@ theme_override_colors/font_color = Color(0.96, 0.82, 0.45, 1)
 theme_override_font_sizes/font_size = 38
 text = "RUN DEFEAT"
 horizontal_alignment = 1
+theme_type_variation = &"TitleLabel"
 
 [node name="Body" type="Label" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
@@ -90,17 +81,36 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 text = "START NEW RUN"
+theme_type_variation = &"PrimaryButton"
 
 [node name="MainMenuButton" type="Button" parent="Center/Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 text = "MAIN MENU"
+theme_type_variation = &"LedgerButton"
 
 [node name="StatusLabel" type="Label" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.45, 0.35, 1)
 horizontal_alignment = 1
+
+[node name="Ornament" type="Control" parent="Center/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_frame")
+accent_color = Color(0.86, 0.3, 0.24, 1)
+glow = 0.4
+pulse = true
+inset = -14.0
+crest_width = 110.0
+corner_gem = &"red"
+side_notches = true
 
 [connection signal="pressed" from="Center/Panel/Margin/VBox/NewRunButton" to="." method="_on_new_run_pressed"]
 [connection signal="pressed" from="Center/Panel/Margin/VBox/MainMenuButton" to="." method="_on_main_menu_pressed"]

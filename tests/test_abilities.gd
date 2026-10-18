@@ -27,12 +27,22 @@ func _run() -> void:
 func _test_definition_resources() -> void:
 	var registry = root.get_node("ContentRegistry")
 	var ability_ids := [
-		&"ability.fire_bolt", &"ability.mending_light", &"ability.stunning_blow",
-		&"ability.frost_dart", &"ability.guardian_shield", &"ability.fortify",
-		&"ability.battle_fury", &"ability.whirlwind", &"ability.hero_summon",
-		&"ability.summoner_job_summon", &"ability.enemy_summon",
+		&"ability.greed_golden_reserve", &"ability.greed_gilded_armory", &"ability.greed_shadowstep",
+		&"ability.greed_bounty_hunter", &"ability.greed_dagger_nova", &"ability.greed_smoke_bomb",
+		&"ability.wrath_melee_retaliation", &"ability.wrath_focused_damage", &"ability.wrath_frenzy",
+		&"ability.wrath_leap_slam", &"ability.wrath_threshold_guard", &"ability.wrath_ground_slam",
+		&"ability.summoner_job_summon", &"ability.enemy_summon", &"ability.priest_heal",
 		&"ability.pride_last_stand", &"ability.pride_farthest_attack", &"ability.pride_cleanse",
 		&"ability.pride_sacrifice", &"ability.pride_melee_teleport", &"ability.pride_attack_speed_aura",
+		&"ability.envy_stat_theft", &"ability.envy_strongest_ally_damage", &"ability.envy_illusion",
+		&"ability.envy_execute", &"ability.envy_post_combat_xp", &"ability.envy_dart_volley",
+		&"ability.lust_guardian_desire", &"ability.lust_fallen_devotion", &"ability.lust_recruit",
+		&"ability.lust_beguiling_presence", &"ability.lust_fatal_bond", &"ability.lust_heartbreaker",
+		&"ability.gluttony_lifesteal_aura", &"ability.gluttony_regeneration", &"ability.gluttony_damage_aura",
+		&"ability.gluttony_siphon", &"ability.gluttony_death_explosion", &"ability.gluttony_grease",
+		&"ability.despair_crushing_gloom", &"ability.despair_withering_touch", &"ability.despair_deep_slumber",
+		&"ability.despair_still_sanctuary", &"ability.despair_grasping_vines", &"ability.despair_endless_descent",
+		&"ability.despair_burdened_guard",
 	]
 	for ability_id in ability_ids:
 		var ability := registry.get_definition(ability_id, false) as AbilityDefinition
@@ -50,25 +60,17 @@ func _test_definition_resources() -> void:
 			single_hero += 1
 		else:
 			shared += 1
-	_check(universal == 0 and single_hero == 12 and shared == 2, "Demo abilities include twelve focused skills and two explicitly shared skills.")
-	var fire := registry.get_definition(&"ability.fire_bolt") as AbilityDefinition
-	_check(fire.effects.size() == 2, "One ability contains multiple ordered effects.")
-	_check(fire.effects[0] is DamageEffect and fire.effects[1] is ApplyStatusEffect, "Effect order is preserved by the Resource.")
-	var deliveries: Array[int] = []
-	for ability_id in ability_ids:
-		deliveries.append((registry.get_definition(ability_id) as AbilityDefinition).delivery_method)
-	for method in AbilityDefinition.DeliveryMethod.values():
-		_check(deliveries.has(method), "Demo abilities cover delivery method %s." % AbilityDefinition.DeliveryMethod.keys()[method])
+	_check(universal == 0 and single_hero == 43 and shared == 0, "Every Hero ability is exclusive to exactly one Hero.")
 
 
 func _test_job_build_limits() -> void:
 	var build := JobBuildState.new()
-	build.set_active_ability(&"ability.fire_bolt")
+	build.set_active_ability(&"ability.test_active")
 	_check(build.add_passive_ability(&"passive.one"), "First passive slot is accepted.")
 	_check(build.add_passive_ability(&"passive.two"), "Second passive slot is accepted.")
 	_check(build.add_passive_ability(&"passive.three"), "Third passive slot is accepted.")
 	_check(not build.add_passive_ability(&"passive.four"), "A fourth passive slot is rejected.")
-	_check(build.is_valid() and build.active_ability_id == &"ability.fire_bolt", "Job build has one active and at most three passives.")
+	_check(build.is_valid() and build.active_ability_id == &"ability.test_active", "Job build has one active and at most three passives.")
 
 
 func _test_targeting_effects_and_reset() -> void:
@@ -93,46 +95,45 @@ func _test_targeting_effects_and_reset() -> void:
 	enemy_b.position = Vector2(500, 100)
 	ally.current_hp = 30.0
 
-	var heal := registry.get_definition(&"ability.mending_light") as AbilityDefinition
-	var fire := registry.get_definition(&"ability.fire_bolt") as AbilityDefinition
-	var shield := registry.get_definition(&"ability.guardian_shield") as AbilityDefinition
-	var random_ability := registry.get_definition(&"ability.frost_dart") as AbilityDefinition
+	var heal := registry.get_definition(&"ability.troll_priest_heal") as AbilityDefinition
+	var daggers := registry.get_definition(&"ability.greed_dagger_nova") as AbilityDefinition
+	var smoke := registry.get_definition(&"ability.greed_smoke_bomb") as AbilityDefinition
+	var random_ability := AbilityDefinition.new()
+	random_ability.targeting_policy = AbilityDefinition.TargetingPolicy.RANDOM_VALID_ENEMY
 	_check(session.resolve_ability_target(hero, heal) == ally, "Lowest HP ally targeting uses health ratio.")
-	_check(session.resolve_ability_target(hero, fire) == enemy_a, "Closest enemy targeting uses distance.")
-	_check(session.resolve_ability_target(hero, shield) == hero, "Self targeting returns the caster.")
+	_check(session.resolve_ability_target(hero, smoke) == hero, "Self targeting returns the caster.")
 	var random_sequence: Array[String] = []
 	for index in 5:
 		random_sequence.append(session.resolve_ability_target(hero, random_ability).snapshot.runtime_id)
 
 	session.deliver_ability(hero, ally, heal)
 	_check(ally.current_hp > 30.0, "HealEffect restores health.")
-	var fire_hp := enemy_a.current_hp
-	session._apply_ability_effects(hero, enemy_a, fire)
-	_check(enemy_a.current_hp < fire_hp and enemy_a.statuses.size() == 1, "Multiple damage and status effects execute in order.")
+	var enemy_hp := enemy_a.current_hp
+	session._apply_ability_effects(hero, hero, daggers)
+	_check(enemy_a.current_hp < enemy_hp, "A custom radial damage effect damages nearby enemies.")
 	var burn: StatusDefinition = registry.get_definition(&"status.burn")
-	enemy_a.apply_status(burn, hero, fire.id)
+	enemy_a.apply_status(burn, hero, daggers.id)
+	enemy_a.apply_status(burn, hero, daggers.id)
 	_check(enemy_a.statuses[0].stacks == 2, "Add Stacks increments up to the status limit.")
 	var stun: StatusDefinition = registry.get_definition(&"status.stun")
-	enemy_a.apply_status(stun, hero, &"ability.stunning_blow")
+	enemy_a.apply_status(stun, hero, &"ability.test_stun")
 	var stun_duration := enemy_a.statuses[1].remaining_duration
 	enemy_a.statuses[1].remaining_duration = 0.1
-	enemy_a.apply_status(stun, hero, &"ability.stunning_blow")
+	enemy_a.apply_status(stun, hero, &"ability.test_stun")
 	_check(is_equal_approx(enemy_a.statuses[1].remaining_duration, stun_duration), "Refresh Duration restores duration without adding stacks.")
-	session.deliver_ability(hero, hero, shield)
-	_check(not hero.shields.is_empty() and hero.get_effective_stat(&"armor") > hero.snapshot.stats.armor, "ShieldEffect and StatModifierEffect both apply.")
 
-	var damage_events := session.events.filter(func(event: CombatEvent) -> bool: return event.event_type == CombatEvent.DAMAGE_APPLIED and event.ability_id == fire.id)
+	var damage_events := session.events.filter(func(event: CombatEvent) -> bool: return event.event_type == CombatEvent.DAMAGE_APPLIED and event.ability_id == daggers.id)
 	var healing_events := session.events.filter(func(event: CombatEvent) -> bool: return event.event_type == CombatEvent.HEALING_APPLIED and event.ability_id == heal.id)
-	_check(not damage_events.is_empty() and damage_events[0].effect_id == &"effect.fire_bolt_damage", "Damage event attributes ability and effect.")
-	_check(not healing_events.is_empty() and healing_events[0].effect_id == &"effect.mending_light_heal", "Healing event attributes ability and effect.")
-	_check(session.statistics.ability_stats.has(String(fire.id)) and session.statistics.ability_stats.has(String(heal.id)), "CombatStatistics aggregates both abilities.")
+	_check(not damage_events.is_empty() and damage_events[0].effect_id == &"effect.greed_dagger_nova", "Damage event attributes ability and effect.")
+	_check(not healing_events.is_empty() and healing_events[0].effect_id == &"effect.troll_priest_heal", "Healing event attributes ability and effect.")
+	_check(session.statistics.ability_stats.has(String(daggers.id)) and session.statistics.ability_stats.has(String(heal.id)), "CombatStatistics aggregates both abilities.")
 
-	hero.snapshot.abilities = [shield, fire]
+	hero.snapshot.abilities = [smoke, daggers]
 	hero.ability_cooldowns.clear()
 	hero._acquire_target()
 	var uses := session.events.filter(func(event: CombatEvent) -> bool: return event.event_type == CombatEvent.ABILITY_USED)
-	_check(not uses.is_empty() and uses[-1].ability_id == shield.id, "AI uses the first available ability in ordered priority.")
-	hero.ability_cooldowns[shield.id] = 5.0
+	_check(not uses.is_empty() and uses[-1].ability_id == smoke.id, "AI uses the first available ability in stable snapshot slot order.")
+	hero.ability_cooldowns[smoke.id] = 5.0
 	hero.statuses.append(StatusInstance.new())
 	session.restart_battle()
 	await process_frame
@@ -149,7 +150,8 @@ func _test_summoning() -> void:
 	var registry = root.get_node("ContentRegistry")
 	var players := CombatDemoFactory.create_player_army(1, 0)
 	var enemies := CombatDemoFactory.create_enemy_army(1, 0)
-	var summon_ability := registry.get_definition(&"ability.hero_summon") as AbilityDefinition
+	var summon_ability := (registry.get_definition(&"ability.summoner_job_summon") as AbilityDefinition).duplicate(true) as AbilityDefinition
+	(summon_ability.effects[0] as SummonEffect).max_active_summons = 2
 	players[0].abilities.clear()
 	var session: CombatSession = SESSION_SCENE.instantiate()
 	session.set_anchors_preset(Control.PRESET_TOP_LEFT)
@@ -170,7 +172,7 @@ func _test_summoning() -> void:
 	var first: Combatant = summons[0]
 	first.set_simulation_active(false)
 	_check(
-		first.snapshot.definition_id == &"enemy.summoned_shooter"
+		first.snapshot.definition_id == &"enemy.summoned_brawler"
 		and first.snapshot.team == CombatUnitSnapshot.Team.PLAYER
 		and first.snapshot.unit_kind == CombatUnitSnapshot.UnitKind.SUMMON,
 		"Summon uses the configured unit template and inherits the caster team."
@@ -240,7 +242,7 @@ func _test_summoner_veterancy_inheritance() -> void:
 	var soldier := run.soldiers[0]
 	soldier.current_job_id = &"job.summoner"
 	soldier.veterancy_level = 2
-	var summoner_snapshot := CombatSnapshotBuilder.build_soldier(soldier, null, run.inventory, registry)
+	var summoner_snapshot := CombatSnapshotBuilder.build_soldier(soldier, null, registry)
 	var players: Array[CombatUnitSnapshot] = [summoner_snapshot]
 	var session: CombatSession = SESSION_SCENE.instantiate()
 	session.set_anchors_preset(Control.PRESET_TOP_LEFT)

@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_pxuva"]
 [ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_5pqei"]
+[ext_resource type="Texture2D" uid="uid://wmsngmaejqdf" path="res://arts/v1/Pride.png" id="3_portrait"]
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_pxuva")
-max_hp = 575.0
-damage = 43.0
-attack_speed = 2.0
+max_hp = 288.0
+damage = 10.5
+attack_speed = 0.8
 movement_speed = 112.0
 attack_range = 330.0
 armor = 8.0
@@ -16,6 +17,7 @@ armor = 8.0
 script = ExtResource("2_5pqei")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.58, 0.32, 0.86, 1)
+portrait = ExtResource("3_portrait")
 available_in_new_game = true
 id = &"hero.control_savant"
 display_name = "Pride"

@@ -14,6 +14,11 @@ func setup(run_status: StringName, act: int, encounter_index: int) -> void:
 		%Eyebrow.text = "STEAM DEMO COMPLETE"
 		%Title.text = "THE WAR CONTINUES"
 		%Body.text = "You survived Act I and completed all three battles of Act II.\nThank you for playing Can Be Only One Hero."
+	var victory := run_status != RunState.STATUS_DEFEAT
+	var ornament := $Center/Panel/Ornament as OrnateFrame
+	ornament.accent_color = UiStyle.GOLD if victory else Color(0.86, 0.3, 0.24)
+	ornament.corner_gem = &"gold" if victory else &"red"
+	%Eyebrow.add_theme_color_override("font_color", Color(0.98, 0.84, 0.5) if victory else Color(0.95, 0.55, 0.45))
 	%NewRunButton.grab_focus()
 
 

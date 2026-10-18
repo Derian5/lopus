@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/effects/basic_attack_empower_effect.gd" id="4"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_massive_ogre_rage.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="AttackSpeedModifier"]
+script = ExtResource("3")
+stat = "attack_speed"
+operation = 1
+value = 1.5
+
+[sub_resource type="Resource" id="AttackSpeedEffect"]
+script = ExtResource("2")
+effect_id = &"effect.massive_ogre_rage_attack_speed"
+modifier = SubResource("AttackSpeedModifier")
+duration = 6.0
+
+[sub_resource type="Resource" id="EmpowermentEffect"]
+script = ExtResource("4")
+effect_id = &"effect.massive_ogre_rage_empowerment"
+lifesteal_percent = 50.0
+size_multiplier = 1.5
+duration = 6.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.massive_ogre_rage"
+display_name = "Massive Bloodrage"
+description = "After taking damage, rages for {e0.duration}s: [buff]+{e0.modifier.value:bonus_pct}% attack speed[/buff], [heal]{e1.lifesteal_percent}% lifesteal[/heal] and [buff]{e1.size_multiplier:bonus_pct}% larger body[/buff]."
+cooldown_seconds = 15.0
+required_recent_damage_seconds = 3.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("AttackSpeedEffect"), SubResource("EmpowermentEffect")])
+priority = 100
+presentation_color = Color(0.76, 0.18, 0.12, 1)
+presentation_text = "Massive Bloodrage"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"active", &"self_buff", &"enemy"])

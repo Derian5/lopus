@@ -41,6 +41,8 @@ func _run_complete_slice(strategy: int) -> Dictionary:
 	var manager := SaveManager.new("%s-%d" % [SAVE_ROOT, strategy])
 	manager.delete_save()
 	var run := DemoRunFactory.create_starting_run(seed)
+	run.inventory.create_item(&"item.hero.vanguard_blade")
+	run.inventory.create_item(&"item.hero.titan_seal")
 	_apply_strategy(run, strategy)
 	var report := {
 		"strategy": ["hero_investment", "frontline", "mixed_equipment"][strategy],
@@ -190,12 +192,19 @@ func _resolve_pending_event(run: RunState) -> RunState:
 
 
 func _resolve_pending_ability_reward(run: RunState) -> RunState:
-	if run.pending_hero_ability_reward.is_empty():
-		return run
-	var offer := run.pending_hero_ability_reward.offers[0]
-	var result := HeroAbilityRewardService.choose(run, offer.offer_id, registry)
-	_check(result.ok, "Vertical-slice Hero ability reward applies.")
-	return result.run_state if result.ok else null
+	while not run.pending_hero_ability_reward.is_empty():
+		if run.pending_hero_ability_reward.offers.is_empty():
+			var prepared := HeroAbilityRewardService.prepare_reward(run, registry)
+			_check(prepared.ok, "Vertical-slice Hero level-up reward prepares.")
+			if not prepared.ok or run.pending_hero_ability_reward.is_empty():
+				break
+		var offer := run.pending_hero_ability_reward.offers[0]
+		var result := HeroAbilityRewardService.choose(run, offer.offer_id, registry)
+		_check(result.ok, "Vertical-slice Hero ability reward applies.")
+		if not result.ok:
+			return null
+		run = result.run_state
+	return run
 
 
 func _apply_strategy(run: RunState, strategy: int) -> void:
@@ -205,24 +214,17 @@ func _apply_strategy(run: RunState, strategy: int) -> void:
 			run.soldiers[index].current_job_id = &"job.warrior"
 			run.soldiers[index].definition_id = &"job.warrior"
 	var hero_items: Array[StringName] = []
-	var soldier_items: Array[StringName] = []
 	for item in run.inventory.items:
-		var definition := registry.get_definition(StringName(item.definition_id)) as ItemDefinition
-		if definition.allowed_target_type == &"hero":
-			hero_items.append(StringName(item.instance_id))
-		else:
-			soldier_items.append(StringName(item.instance_id))
+		hero_items.append(StringName(item.instance_id))
 	if strategy == 0:
 		for slot in hero_items.size():
 			EquipmentService.equip_or_swap(run, &"hero", 0, slot, hero_items[slot], registry)
 	elif strategy == 1:
-		for slot in mini(2, soldier_items.size()):
-			EquipmentService.equip_or_swap(run, &"soldier", slot, 0, soldier_items[slot], registry)
+		for slot in hero_items.size():
+			EquipmentService.equip_or_swap(run, &"hero", 1, slot, hero_items[slot], registry)
 	else:
-		if not hero_items.is_empty():
-			EquipmentService.equip_or_swap(run, &"hero", 2, 0, hero_items[0], registry)
-		for slot in mini(2, soldier_items.size()):
-			EquipmentService.equip_or_swap(run, &"soldier", slot, 0, soldier_items[slot], registry)
+		for slot in hero_items.size():
+			EquipmentService.equip_or_swap(run, &"hero", 2, slot, hero_items[slot], registry)
 
 
 func _resurrect_available_heroes(run: RunState, report: Dictionary) -> void:
@@ -237,8 +239,8 @@ func _resurrect_available_heroes(run: RunState, report: Dictionary) -> void:
 func _purchase_market_offer(run: RunState, strategy: int, report: Dictionary) -> void:
 	var preferred_types: Array = [
 		[&"hero_item"],
-		[&"job_unlock", &"job_capacity", &"soldier_item"],
-		[&"soldier_item", &"job_ability"],
+		[&"job_unlock", &"job_capacity", &"hero_item"],
+		[&"job_ability", &"hero_item"],
 	][strategy]
 	for preferred_type in preferred_types:
 		for offer in run.market.offers:

@@ -11,7 +11,15 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	var registry := root.get_node("ContentRegistry")
+	var test_job_ability := AbilityDefinition.new()
+	test_job_ability.id = &"ability.test_job_active"
+	test_job_ability.display_name = "Test Job Active"
+	test_job_ability.available_to_heroes = false
+	registry.register_definition(test_job_ability, false)
+	(registry.get_definition(&"job.archer") as JobDefinition).available_ability_ids.append(test_job_ability.id)
 	var run := DemoRunFactory.create_starting_run(7070)
+	run.inventory.create_item(&"item.hero.titan_seal")
 	var screen = MANAGEMENT_SCENE.instantiate()
 	root.add_child(screen)
 	screen.setup(run)
@@ -26,36 +34,64 @@ func _run() -> void:
 			draggable_soldiers += 1
 	_check(draggable_soldiers == 9, "Army roster groups and exposes all nine soldiers as draggable units.")
 	_check(screen.get_node("%GoldLabel").text.contains("300"), "Gold is visible.")
-	_check(screen.get_node("%EncounterLabel").text.contains("TRAINING SKIRMISH") and not screen.get_node("%FightButton").disabled, "The fixed tutorial encounter appears compactly in the header and enables preparation.")
+	_check(not run.unlocked_job_ids.has(&"job.warrior") and int(run.job_capacities.get("job.warrior", 0)) == 0, "A new run starts with Warrior locked and without free capacity.")
+	_check(not screen.get_node("%Roster").get_children().any(func(row: Node) -> bool: return row is ManagementDropSlot and row.target_payload.get("job_id", &"") == &"job.warrior"), "Management hides the Warrior 0 / 0 row while the Job is locked.")
+	_check(screen.get_node("%EncounterLabel").text.contains("OGRES ON THE ROAD") and not screen.get_node("%FightButton").disabled, "The fixed tutorial encounter appears compactly in the header and enables preparation.")
 	_check(run.market.offers.size() >= 5 and run.market.offers.size() <= 7, "Market generates five to seven offers.")
 	_check(screen.get_node("%MarketRows").get_child_count() == run.market.offers.size() + 2, "Market shows every offer and its reroll action.")
-	var item_offer := _offer("test-item-tooltip", &"hero_item", &"item.hero.vanguard_blade", 1, &"hero", run.heroes[0].unique_id)
+	var first_market_row := screen.get_node("%MarketRows").get_child(2) as HBoxContainer
+	var first_pin := first_market_row.get_child(2) as Button
+	first_pin.toggled.emit(true)
+	await process_frame
+	_check(run.market.offers[0].is_pinned and changed_actions.has(&"market_pin_changed"), "The Market lock control persists its position and requests autosave.")
+	first_market_row = screen.get_node("%MarketRows").get_child(2) as HBoxContainer
+	_check((first_market_row.get_child(2) as Button).text == "LOCKED", "A locked Market position is visibly marked.")
+	_check(screen.find_child("MarketFilters", true, false) == null, "Market shows all offer types in one list without category filters.")
+	var item_offer := _offer("test-item-tooltip", &"hero_item", &"item.hero.vanguard_blade", 1, &"hero", "")
 	run.market.offers.append(item_offer)
 	screen._refresh_market()
 	var item_row: HBoxContainer = screen.get_node("%MarketRows").get_child(screen.get_node("%MarketRows").get_child_count() - 1)
 	var item_content := item_row.get_child(1) as ContentButton
-	var item_tooltip := item_content._make_custom_tooltip("") if item_content != null else null
-	_check(item_content != null and item_content.content_id == &"item.hero.vanguard_blade" and item_tooltip is ContentTooltip, "Market item names expose the full custom hover tooltip.")
+	var item_tooltip := item_content._create_content_tooltip(item_content._content_tooltip_text()) if item_content != null else null
+	_check(item_content != null and item_content.content_id == &"item.hero.vanguard_blade" and item_tooltip is ContentTooltip and item_content.has_meta("disable_auto_motion") and item_content.tooltip_text.is_empty(), "Market item names expose only the owner-managed hover tooltip without transform animation.")
 	if item_tooltip != null:
 		root.add_child(item_tooltip)
 		await process_frame
 		await process_frame
-		item_tooltip.size = Vector2(320.0, 1080.0)
+		_check(item_content.get_node_or_null("AutoButtonMotion") == null, "Tooltip owners do not receive the global hover-scale component.")
+		_check(item_tooltip.mouse_filter == Control.MOUSE_FILTER_IGNORE and item_tooltip.get_node("Margin").mouse_filter == Control.MOUSE_FILTER_IGNORE and item_tooltip.get_node("Margin/Text").mouse_filter == Control.MOUSE_FILTER_IGNORE, "Custom content tooltips are fully transparent to pointer hover.")
+		var stable_size: Vector2 = item_tooltip.custom_minimum_size
 		await process_frame
-		var tooltip_panel := item_tooltip.get_node("Panel") as PanelContainer
-		_check(tooltip_panel.size.y <= item_tooltip._get_minimum_size().y + 2.0 and tooltip_panel.size.y < item_tooltip.size.y, "The visible tooltip panel follows its rendered text even if Godot stretches the wrapper.")
+		_check(item_tooltip.custom_minimum_size == stable_size and stable_size.y > 40.0, "Custom content tooltips have their final size before display and never resize after opening.")
 		item_tooltip.free()
-
-	var warrior_option: int = screen.job_option_ids.find(&"job.warrior")
+	item_content._show_custom_tooltip()
+	await process_frame
+	var persistent_tooltip_id := ContentButton.active_tooltip.get_instance_id() if is_instance_valid(ContentButton.active_tooltip) else 0
+	await create_timer(1.2).timeout
+	_check(persistent_tooltip_id != 0 and is_instance_valid(ContentButton.active_tooltip) and ContentButton.active_tooltip.get_instance_id() == persistent_tooltip_id, "Owner-managed content tooltip remains the same instance until its source loses hover.")
+	item_content._hide_custom_tooltip()
+	await process_frame
+	_check(not is_instance_valid(ContentButton.active_tooltip), "Owner-managed content tooltip closes when its source loses hover.")
+	var empty_slot := ManagementDropSlot.new()
+	root.add_child(empty_slot)
+	empty_slot._show_custom_tooltip()
+	await process_frame
+	_check(not is_instance_valid(ContentButton.active_tooltip), "Empty ability and equipment slots never create content tooltips.")
+	empty_slot.free()
+	run.unlocked_job_ids.append(&"job.warrior")
+	run.job_capacities["job.warrior"] = 3
+	screen._refresh_all()
 	for soldier_index in 3:
-		screen._select_unit("soldier", soldier_index)
-		screen.get_node("%JobOption").select(warrior_option)
-		screen._on_change_job_pressed()
+		screen._on_management_drop(
+			{"source": &"soldier", "soldier_index": soldier_index},
+			{"target": &"job", "job_id": &"job.warrior"}
+		)
 		_check(run.soldiers[soldier_index].current_job_id == &"job.warrior", "Available Warrior capacity accepts assignment %d." % soldier_index)
-	screen._select_unit("soldier", 3)
-	screen.get_node("%JobOption").select(warrior_option)
 	var actions_before_rejection := changed_actions.size()
-	screen._on_change_job_pressed()
+	screen._on_management_drop(
+		{"source": &"soldier", "soldier_index": 3},
+		{"target": &"job", "job_id": &"job.warrior"}
+	)
 	_check(run.soldiers[3].current_job_id == &"job.militia", "A fourth Warrior assignment is blocked at capacity.")
 	_check(screen.get_node("%FeedbackLabel").text.contains("capacity is full"), "Blocked assignment explains the capacity problem.")
 	_check(changed_actions.size() == actions_before_rejection, "Rejected management actions do not request autosave.")
@@ -67,29 +103,40 @@ func _run() -> void:
 	screen._buy_market_offer(unlock_offer.offer_id)
 	await process_frame
 	screen._select_unit("soldier", 0)
-	var archer_option: int = screen.job_option_ids.find(&"job.archer")
-	screen.get_node("%JobOption").select(archer_option)
-	screen._on_job_preview_selected(archer_option)
-	_check(screen.get_node("%JobWarning").text.contains("3") and screen.get_node("%JobWarning").text.contains("75"), "Job preview shows veterancy loss before confirmation.")
-	screen._on_change_job_pressed()
-	_check(run.soldiers[0].veterancy_level == 0 and run.soldiers[0].veterancy_xp == 0, "Confirmed Job change resets veterancy.")
+	_check(screen.find_child("JobControls", true, false) == null and screen.find_child("JobOption", true, false) == null and screen.find_child("ChangeJobButton", true, false) == null, "The soldier inspector omits duplicate Job assignment controls.")
+	screen._on_management_drop(
+		{"source": &"soldier", "soldier_index": 0},
+		{"target": &"job", "job_id": &"job.archer"}
+	)
+	_check(run.soldiers[0].veterancy_level == 0 and run.soldiers[0].veterancy_xp == 0, "Changing Job by dropping a soldier onto a profession resets veterancy.")
 
 	screen._select_unit("hero", 0)
-	_check(run.heroes[0].ability_ids.is_empty() and screen.get_node("%AbilityRows").get_child_count() == HeroState.MAX_ABILITY_SLOTS, "A new Hero exposes all empty drag-and-drop ability slots.")
+	_check(screen.find_child("ArmyNavButton", true, false) == null and screen.find_child("MarketNavButton", true, false) == null and screen.find_child("RosterSearch", true, false) == null, "Management omits the redundant Army/Market navigation and roster search controls.")
+	_check(screen.find_child("InspectorTabs", true, false) == null and screen.get_node("%BehaviorControls").visible and screen.get_node("%AbilityRows").visible and screen.get_node("%EquipmentRows").visible, "The Hero inspector shows behavior, abilities, and equipment together without tabs.")
+	var selected_hero_snapshot := CombatSnapshotBuilder.build_hero(run.heroes[0], run.inventory, root.get_node("ContentRegistry"))
+	_check(screen.get_node("%StatsGrid").visible and screen.get_node("%HpStatValue").text == "%.0f" % selected_hero_snapshot.stats.max_hp and screen.get_node("%DamageStatValue").text == "%.0f" % selected_hero_snapshot.stats.damage, "The Hero summary exposes calculated combat stats in the icon grid.")
+	var hp_tooltip: String = (screen.get_node("%StatsGrid").get_node("HpStat").get_meta("stat_tooltip_binding") as StatTooltipBinding).text
+	_check(hp_tooltip.contains("MAX HEALTH") and hp_tooltip.contains("Base:") and hp_tooltip.contains("FINAL:"), "Management stat hover explains the base value and final result.")
+	_check(screen.get_node("%BehaviorControls").visible and screen.get_node("%TargetClosestButton").button_pressed and screen.get_node("%AcceptDamageButton").button_pressed, "A melee Hero defaults to the nearest enemy and does not avoid damage.")
+	screen.get_node("%TargetFarthestButton").pressed.emit()
+	screen.get_node("%AvoidDamageButton").pressed.emit()
+	_check(run.heroes[0].targeting_mode == &"farthest" and run.heroes[0].damage_avoidance_override == 1, "The four behavior buttons persist the selected Hero settings.")
+	_check(changed_actions.count(&"combat_behavior_changed") == 2, "Each combat behavior change requests an autosave.")
+	var first_empty_ability := screen.get_node("%AbilityRows").get_child(0).get_child(0) as ContentIconButton
+	_check(run.heroes[0].ability_ids.is_empty() and screen.get_node("%AbilityRows").get_child_count() == HeroState.MAX_ABILITY_SLOTS and first_empty_ability.content_id.is_empty(), "A new Hero exposes four empty ability icon slots.")
 	_check(screen.find_child("OwnedTitle", true, false) == null and screen.find_child("OwnedAbilityRows", true, false) == null, "Management no longer displays an Owned Abilities section.")
-	for ability_id in [&"ability.fire_bolt", &"ability.whirlwind", &"ability.battle_fury"]:
+	for ability_id in [&"ability.greed_dagger_nova", &"ability.greed_shadowstep", &"ability.greed_smoke_bomb"]:
 		run.heroes[0].unlock_ability(ability_id)
 		run.heroes[0].equip_ability(ability_id)
 	screen._refresh_selected()
-	_check(screen.get_node("%AbilityRows").get_child(0).get_child(0).text.contains("LV 1"), "Management displays the persisted Hero ability level.")
-	var old_first := run.heroes[0].ability_priority[0]
-	screen._move_hero_ability(1, -1)
-	_check(run.heroes[0].ability_priority[1] == old_first, "Hero ability priority moves up and down.")
+	_check(screen.get_node("%AbilityRows").get_child(0).get_child(0).badge_text == "L1", "Management displays the persisted Hero ability level on its icon.")
+	_check(screen.get_node("%AbilityRows").get_children().all(func(cell: Node) -> bool: return cell.get_child_count() == 1), "Hero ability slots expose no manual order controls.")
 	var gold_before_direct_item := run.gold
 	screen._buy_market_offer(item_offer.offer_id)
 	_check(run.gold == gold_before_direct_item - 1 and run.heroes[0].item_ids.size() == 1, "A purchased item automatically equips on the selected Hero.")
 	await process_frame
 	screen._select_unit("hero", 0)
+	_check((screen.get_node("%StatsGrid").get_node("DamageStat").get_meta("stat_tooltip_binding") as StatTooltipBinding).text.contains("Item:"), "Management stat hover attributes equipped item modifiers.")
 	screen._select_equipment_slot(5)
 	await process_frame
 	var seal_instance := _inventory_instance(run, &"item.hero.titan_seal")
@@ -103,7 +150,7 @@ func _run() -> void:
 	var inventory_drop := screen.get_node("%InventoryDropSlot") as ManagementDropSlot
 	inventory_drop._drop_data(Vector2.ZERO, equipped_slot.drag_payload)
 	_check(not run.heroes[0].item_ids.has(returned_instance) and not EquipmentService.is_instance_equipped(run, returned_instance), "Dragging equipped gear onto shared Inventory returns it without an Unequip button.")
-	var blocked_item := _offer("test-blocked-direct-item", &"hero_item", &"item.hero.titan_seal", 1, &"hero", run.heroes[0].unique_id)
+	var blocked_item := _offer("test-blocked-direct-item", &"hero_item", &"item.hero.titan_seal", 1, &"hero", "")
 	run.market.offers.append(blocked_item)
 	var gold_before_blocked_item := run.gold
 	screen._on_management_drop(
@@ -138,26 +185,19 @@ func _run() -> void:
 		warrior_target._drop_data(Vector2.ZERO, militia_source.drag_payload)
 		_check(run.soldiers[5].current_job_id == &"job.warrior", "A real drop signal applies the profession change before deferred UI rebuilding.")
 		await process_frame
-	var job_ability_offer := _offer("test-job-drag", &"job_ability", &"ability.whirlwind", 1, &"job", "job.warrior")
+	var job_ability_offer := _offer("test-job-drag", &"job_ability", &"ability.test_job_active", 1, &"job", "job.archer")
 	run.market.offers.append(job_ability_offer)
-	screen._select_unit("soldier", 1)
+	screen._select_unit("soldier", 0)
 	screen._buy_market_offer(job_ability_offer.offer_id)
-	_check(screen._job_build(&"job.warrior").active_ability_id == &"ability.whirlwind", "A purchased Job ability automatically equips in the selected Soldier's shared build.")
-	var soldier_item := ItemDefinition.new()
-	soldier_item.id = &"item.test.auto_soldier"
-	soldier_item.display_name = "Auto Soldier Item"
-	soldier_item.allowed_target_type = &"soldier"
-	soldier_item.allowed_job_ids = [&"job.warrior"]
-	root.get_node("ContentRegistry").register_definition(soldier_item, false)
-	var soldier_item_offer := _offer("test-auto-soldier-item", &"soldier_item", soldier_item.id, 1, &"soldier", "")
-	soldier_item_offer.allowed_job_ids = [&"job.warrior"]
-	run.market.offers.append(soldier_item_offer)
-	screen._buy_market_offer(soldier_item_offer.offer_id)
-	_check(run.soldiers[1].item_ids.size() == 1, "A purchased Soldier item automatically equips on the selected compatible Soldier.")
-	_check(changed_actions.has(&"job_changed") and changed_actions.has(&"hero_priority_changed"), "Hero priority and Soldier management mutations request autosave.")
+	_check(screen._job_build(&"job.archer").active_ability_id == &"ability.test_job_active", "A purchased Job ability automatically equips in the selected Soldier's shared build.")
+	screen._select_unit("soldier", 1)
+	await process_frame
+	_check(not screen.get_node("%EquipmentRows").visible and not screen.get_node("%EquipmentCount").visible, "The Soldier inspector contains no item slots.")
+	_check(screen.get_node("%AbilityRows").get_child_count() >= HeroState.MAX_ABILITY_SLOTS and screen.get_node("%AbilityRows").get_child(3) is ContentIconButton, "The Soldier inspector reserves at least four ability icon slots.")
+	_check(changed_actions.has(&"job_changed") and not changed_actions.has(&"hero_priority_changed"), "Soldier management mutations request autosave without obsolete Hero priority actions.")
 	_check(changed_actions.has(&"market_purchase") and changed_actions.has(&"job_build_changed"), "Market and Job build mutations request autosave.")
-	var tooltip := ContentButton.describe_content(&"ability.fire_bolt")
-	_check(tooltip.contains("Cooldown: 6.0") and tooltip.contains("Damage 4.0") and tooltip.contains("Max stacks: 3"), "Unified tooltip reads complete ability and status values.")
+	var tooltip := ContentButton.describe_content(&"ability.greed_dagger_nova")
+	_check(tooltip.contains("ACTIVE") and tooltip.contains("cooldown.png[/img] [b]8") and tooltip.contains("radius.png[/img] [b]200[/b]") and tooltip.contains("70") and tooltip.contains("damage") and not tooltip.contains("Target:") and not tooltip.contains("Delivery:"), "Ability tooltip uses a compact player-facing MOBA layout.")
 	_check(ContentButton.describe_content(&"status.burn").contains("Max stacks: 3"), "Unified tooltip supports statuses.")
 
 	var snapshots := CombatSnapshotBuilder.build_player_army(run, root.get_node("ContentRegistry"))
@@ -235,7 +275,6 @@ func _offer(
 	offer.offer_id = offer_id
 	offer.offer_type = offer_type
 	offer.content_id = content_id
-	offer.rarity = "common"
 	offer.price = price
 	offer.target_type = target_type
 	offer.target_id = target_id

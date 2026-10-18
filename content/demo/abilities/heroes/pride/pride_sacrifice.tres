@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/sacrifice_soldier_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_pride_sacrifice.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="EffectBase"]
+script = ExtResource("3")
+effect_id = &"effect.pride_sacrifice"
+radius = 160.0
+stat_gain_percent = 10.0
+
+[sub_resource type="Resource" id="Effect1"]
+script = ExtResource("3")
+effect_id = &"effect.pride_sacrifice"
+radius = 160.0
+stat_gain_percent = 10.0
+
+[sub_resource type="Resource" id="Level1"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect1")])
+
+[sub_resource type="Resource" id="Effect2"]
+script = ExtResource("3")
+effect_id = &"effect.pride_sacrifice"
+radius = 160.0
+stat_gain_percent = 20.0
+
+[sub_resource type="Resource" id="Level2"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect2")])
+
+[sub_resource type="Resource" id="Effect3"]
+script = ExtResource("3")
+effect_id = &"effect.pride_sacrifice"
+radius = 160.0
+stat_gain_percent = 40.0
+
+[sub_resource type="Resource" id="Level3"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect3")])
+
+[sub_resource type="Resource" id="Effect4"]
+script = ExtResource("3")
+effect_id = &"effect.pride_sacrifice"
+radius = 160.0
+stat_gain_percent = 80.0
+
+[sub_resource type="Resource" id="Level4"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.pride_sacrifice"
+display_name = "A Worthy Tribute"
+description = "Sacrifices a random Soldier within {e0.radius} and permanently gains [buff]{e0.stat_gain_percent}% of its Max HP, damage and armor[/buff]."
+cooldown_seconds = 20.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("EffectBase")])
+priority = 110
+presentation_color = Color(0.76, 0.18, 0.58, 1)
+allowed_hero_ids = Array[StringName]([&"hero.control_savant"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])

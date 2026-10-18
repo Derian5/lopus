@@ -1,0 +1,9 @@
+{
+  "app":"arcadia-effects","v":2,
+  "doc":{"v":2,"id":"fx_envy_venom_dart","name":"Envy Venom Dart","comp":{"w":160,"h":80,"dur":0.8,"fps":60},"exp":{"cols":4,"rows":2,"frames":8,"cellW":64,"cellH":32,"t0":0,"t1":0.8,"mode":"rgba","thr":0,"ss":2},"layers":[
+    {"id":"lr_envy_dart_core","name":"Venom Needle","type":"sprite","start":0,"end":0.8,"blend":"add","opacity":1,"glowL":0.75,"glowLR":9,"sp":{"sprite":{"kind":"shape","id":"flame","p":{"taper":0.35,"var":1}},"size":66,"x":8,"y":0,"scale":{"keys":[{"t":0,"v":0.9},{"t":0.2,"v":1.08},{"t":0.4,"v":0.92},{"t":0.6,"v":1.05},{"t":0.8,"v":0.9}]},"aspect":1.2,"rot":0,"color":[70,255,94],"glow":1,"glowSize":1.45,"glowBlur":0.16}},
+    {"id":"lr_envy_dart_spine","name":"White Spine","type":"sprite","start":0,"end":0.8,"blend":"add","opacity":{"keys":[{"t":0,"v":0.8},{"t":0.2,"v":1},{"t":0.4,"v":0.75},{"t":0.6,"v":0.95},{"t":0.8,"v":0.8}]},"sp":{"sprite":{"kind":"shape","id":"streak","p":{}},"size":62,"x":4,"y":0,"scale":1,"aspect":1.7,"rot":0,"color":[225,255,220],"glow":0.75,"glowSize":1.35,"glowBlur":0.14}},
+    {"id":"lr_envy_dart_orb_a","name":"Orbit Poison A","type":"sprite","start":0,"end":0.8,"blend":"add","opacity":0.85,"sp":{"sprite":{"kind":"shape","id":"dot","p":{}},"size":13,"x":{"keys":[{"t":0,"v":18},{"t":0.2,"v":2},{"t":0.4,"v":-14},{"t":0.6,"v":2},{"t":0.8,"v":18}]},"y":{"keys":[{"t":0,"v":0},{"t":0.2,"v":-13},{"t":0.4,"v":0},{"t":0.6,"v":13},{"t":0.8,"v":0}]},"scale":1,"aspect":1,"rot":0,"color":[166,255,55],"glow":0.6,"glowSize":1.4,"glowBlur":0.18}},
+    {"id":"lr_envy_dart_aura","name":"Venom Aura","type":"sprite","start":0,"end":0.8,"blend":"add","opacity":0.55,"sp":{"sprite":{"kind":"shape","id":"soft","p":{}},"size":110,"x":0,"y":0,"scale":{"keys":[{"t":0,"v":0.85},{"t":0.2,"v":1.05},{"t":0.4,"v":0.9},{"t":0.6,"v":1.02},{"t":0.8,"v":0.85}]},"aspect":3,"rot":0,"color":[20,178,58],"glow":0.4,"glowSize":1.45,"glowBlur":0.2}}
+  ]},"tex":{}
+}

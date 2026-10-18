@@ -60,6 +60,9 @@ func load_run(registry: Node = null) -> Dictionary:
 	if not data.has("save_version"):
 		return _failure(&"corrupt", "Save file has no save_version.")
 	var version := int(data.save_version)
+	if version == 8:
+		data = _migrate_version_8(data)
+		version = RunState.CURRENT_SAVE_VERSION
 	if version != RunState.CURRENT_SAVE_VERSION:
 		return _failure(&"unsupported_version", "Save version %d is not supported; start a New Game." % version)
 	var shape_error := _validate_shape(data)
@@ -114,6 +117,20 @@ func _read_dictionary(path: String) -> Dictionary:
 	return {"ok": true, "code": &"ok", "message": "", "data": parser.data}
 
 
+func _migrate_version_8(source: Dictionary) -> Dictionary:
+	var data := source.duplicate(true)
+	data["save_version"] = RunState.CURRENT_SAVE_VERSION
+	var inventory: Dictionary = data.get("inventory", {})
+	for item in inventory.get("items", []):
+		if item is Dictionary:
+			item.erase("bound_target_id")
+	var market: Dictionary = data.get("market", {})
+	for offer in market.get("offers", []):
+		if offer is Dictionary and StringName(offer.get("offer_type", "")) == &"hero_item":
+			offer["target_id"] = ""
+	return data
+
+
 func _validate_shape(data: Dictionary) -> String:
 	for key in ["save_version", "run_seed", "run_phase", "run_status", "current_act", "encounter_index", "gold", "selected_encounter_id", "encounter_committed", "next_modifier_serial"]:
 		if not data.has(key):
@@ -137,6 +154,8 @@ func _validate_shape(data: Dictionary) -> String:
 		return "Pending Run Event targets must be an array."
 	if not data.pending_hero_ability_reward.has("offers") or not data.pending_hero_ability_reward.offers is Array:
 		return "Pending Hero ability reward offers must be an array."
+	if data.pending_hero_ability_reward.has("hero_level_up_queue") and not data.pending_hero_ability_reward.hero_level_up_queue is Array:
+		return "Pending Hero ability reward queue must be an array."
 	for offer in data.pending_hero_ability_reward.offers:
 		if not offer is Dictionary:
 			return "Pending Hero ability reward contains an invalid offer."
@@ -238,13 +257,6 @@ func _validate_run(run_state: RunState, registry: Node) -> String:
 			equipped_ability_ids[ability_id] = true
 		if hero.ability_ids.size() > HeroState.MAX_ABILITY_SLOTS:
 			return "Hero %s exceeds its ability slot limit." % hero.unique_id
-		var priority_ids: Dictionary = {}
-		for ability_id in hero.ability_priority:
-			if not hero.ability_ids.has(ability_id) or priority_ids.has(ability_id):
-				return "Hero %s has an invalid ability priority." % hero.unique_id
-			priority_ids[ability_id] = true
-		if hero.ability_priority.size() != hero.ability_ids.size():
-			return "Hero %s ability priority does not match its equipped build." % hero.unique_id
 		if hero.life_state == HeroState.EXECUTED and (not hero.ability_ids.is_empty() or not hero.owned_ability_ids.is_empty() or not hero.ability_levels.is_empty() or not hero.item_ids.is_empty()):
 			return "Executed Hero %s still exposes locked build content." % hero.unique_id
 		if hero.life_state == HeroState.EXECUTED and not hero.stat_modifiers.is_empty():
@@ -255,6 +267,11 @@ func _validate_run(run_state: RunState, registry: Node) -> String:
 		var equipment_error := _validate_equipment(hero.item_ids, run_state, equipped_ids)
 		if not equipment_error.is_empty():
 			return equipment_error
+		for instance_id in hero.item_ids:
+			var item_definition_id := run_state.inventory.get_definition_id(instance_id)
+			var item := registry.get_definition(item_definition_id, false) as ItemDefinition if registry != null else null
+			if item != null and not item.is_compatible_with_hero(hero_definition):
+				return "Hero %s equips an incompatible item." % hero.unique_id
 	var non_executed_hero_count := 0
 	for hero in run_state.heroes:
 		if hero.life_state != HeroState.EXECUTED:
@@ -287,9 +304,6 @@ func _validate_run(run_state: RunState, registry: Node) -> String:
 		var modifier_error := _validate_modifiers(soldier.stat_modifiers)
 		if not modifier_error.is_empty():
 			return modifier_error
-		var equipment_error := _validate_equipment(soldier.item_ids, run_state, equipped_ids)
-		if not equipment_error.is_empty():
-			return equipment_error
 	var executed_history: Dictionary = {}
 	var archived_item_ids: Dictionary = {}
 	for snapshot in run_state.execution_snapshots:
@@ -365,8 +379,8 @@ func _validate_run(run_state: RunState, registry: Node) -> String:
 		var fixed_tutorial := (
 			run_state.current_act == 1
 			and run_state.encounter_index == 0
-			and run_state.available_encounter_ids == [&"encounter.training_skirmish"]
-			and run_state.selected_encounter_id == &"encounter.training_skirmish"
+			and run_state.available_encounter_ids == [DemoRunFactory.FIRST_ENCOUNTER_ID]
+			and run_state.selected_encounter_id == DemoRunFactory.FIRST_ENCOUNTER_ID
 		)
 		if not fixed_tutorial and run_state.available_encounter_ids.size() != EncounterGenerator.MAX_CARDS:
 			return "Active run must contain exactly two Encounter Cards after the tutorial."
@@ -431,16 +445,29 @@ func _validate_run(run_state: RunState, registry: Node) -> String:
 				return "Pending Run Event has an invalid Soldier target."
 			pending_targets[target_id] = true
 	if not run_state.pending_hero_ability_reward.is_empty():
-		if run_state.run_status != RunState.STATUS_ACTIVE or run_state.run_phase != &"management":
-			return "Pending Hero ability reward is outside Management."
-		if run_state.pending_hero_ability_reward.offers.size() != HeroAbilityRewardService.OFFER_COUNT:
-			return "Pending Hero ability reward must contain three offers."
+		if run_state.run_status != RunState.STATUS_ACTIVE or run_state.run_phase not in [&"management", &"execution"]:
+			return "Pending Hero ability reward is outside a supported phase."
+		if run_state.pending_hero_ability_reward.hero_level_up_queue.is_empty():
+			return "Pending Hero ability reward has no level-up queue."
+		if run_state.run_phase == &"execution" and not run_state.pending_hero_ability_reward.offers.is_empty():
+			return "Execution can defer Hero level-up rewards but cannot contain active offers."
+		if run_state.run_phase == &"management" and (run_state.pending_hero_ability_reward.offers.is_empty() or run_state.pending_hero_ability_reward.offers.size() > HeroAbilityRewardService.OFFER_COUNT):
+			return "Pending Hero ability reward must contain one or two offers."
+		for queued_hero_id in run_state.pending_hero_ability_reward.hero_level_up_queue:
+			if not heroes_by_id.has(queued_hero_id):
+				return "Pending Hero ability reward queue references a missing Hero."
 		var reward_offer_ids: Dictionary = {}
+		var reward_ability_ids: Dictionary = {}
 		for offer in run_state.pending_hero_ability_reward.offers:
 			if offer == null or offer.offer_id.is_empty() or reward_offer_ids.has(offer.offer_id):
 				return "Pending Hero ability reward has invalid offer IDs."
 			reward_offer_ids[offer.offer_id] = true
+			if reward_ability_ids.has(offer.ability_id):
+				return "Pending Hero ability reward contains duplicate abilities."
+			reward_ability_ids[offer.ability_id] = true
 			var reward_hero: HeroState = heroes_by_id.get(offer.hero_unique_id)
+			if offer.hero_unique_id != run_state.pending_hero_ability_reward.hero_level_up_queue[0]:
+				return "Pending Hero ability reward offer does not match the current level-up Hero."
 			var reward_ability := registry.get_definition(offer.ability_id, false) as AbilityDefinition if registry != null else null
 			if reward_hero == null or reward_hero.life_state == HeroState.EXECUTED or reward_ability == null or not reward_ability.is_allowed_for_hero(reward_hero.definition_id):
 				return "Pending Hero ability reward references ineligible content."

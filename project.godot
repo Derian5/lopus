@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 DevMode="*res://autoload/dev_mode.gd"
 ContentRegistry="*res://autoload/content_registry.gd"
+UiPolish="*res://autoload/ui_polish.gd"
 
 [display]
 
@@ -29,6 +30,10 @@ window/size/window_width_override=1920
 window/size/window_height_override=1080
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom="res://ui/game_theme.tres"
 
 [input]
 

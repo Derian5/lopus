@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" format=3 uid="uid://bgicfdblag6i8"]
+
+[ext_resource type="Script" uid="uid://dbpyny7dkpanj" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c47iqedtnympj" path="res://content/definitions/effects/ability_effect.gd" id="1_erj6d"]
+[ext_resource type="Script" uid="uid://cuu4yeqmts77v" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" uid="uid://bjm8rcille2s2" path="res://content/definitions/effects/last_stand_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_pride_last_stand.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="EffectBase"]
+script = ExtResource("3")
+effect_id = &"effect.pride_last_stand"
+
+[sub_resource type="Resource" id="Effect1"]
+script = ExtResource("3")
+effect_id = &"effect.pride_last_stand"
+
+[sub_resource type="Resource" id="Level1"]
+script = ExtResource("2")
+effects = Array[ExtResource("1_erj6d")]([SubResource("Effect1")])
+
+[sub_resource type="Resource" id="Effect2"]
+script = ExtResource("3")
+duration = 6.0
+effect_id = &"effect.pride_last_stand"
+
+[sub_resource type="Resource" id="Level2"]
+script = ExtResource("2")
+effects = Array[ExtResource("1_erj6d")]([SubResource("Effect2")])
+
+[sub_resource type="Resource" id="Effect3"]
+script = ExtResource("3")
+duration = 12.0
+effect_id = &"effect.pride_last_stand"
+
+[sub_resource type="Resource" id="Level3"]
+script = ExtResource("2")
+effects = Array[ExtResource("1_erj6d")]([SubResource("Effect3")])
+
+[sub_resource type="Resource" id="Effect4"]
+script = ExtResource("3")
+duration = 24.0
+effect_id = &"effect.pride_last_stand"
+
+[sub_resource type="Resource" id="Level4"]
+script = ExtResource("2")
+effects = Array[ExtResource("1_erj6d")]([SubResource("Effect4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+kind = 1
+targeting_policy = 0
+effects = Array[ExtResource("1_erj6d")]([SubResource("EffectBase")])
+priority = 100
+presentation_color = Color(0.7, 0.42, 0.96, 1)
+allowed_hero_ids = Array[StringName]([&"hero.control_savant"])
+hero_levels = Array[ExtResource("2")]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
+id = &"ability.pride_last_stand"
+display_name = "Death Is Beneath Us"
+description = "Heroes and Soldiers keep fighting for [buff]{e0.duration}s at 0 HP[/buff], invulnerable and untargetable. Summons are excluded."

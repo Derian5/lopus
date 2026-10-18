@@ -326,9 +326,9 @@ GATE 1. COMBAT PROTOTYPE
 [x] 5.7. Реализовать базовые statuses:
     Burn, Stun, Slow, Armor Buff и Damage Buff.
 
-[x] 5.8. Реализовать ordered ability priority для героев.
+[x] 5.8. Использовать стабильный порядок экипированных слотов без ручной настройки priority.
 
-[x] 5.9. AI проверяет способности сверху вниз и использует первую доступную способность с valid target.
+[x] 5.9. AI проверяет экипированные способности по порядку слотов и использует первую доступную способность с valid target.
 
 [x] 5.10. Реализовать до 1 active и до 3 passive slots для Job build.
 
@@ -348,10 +348,10 @@ GATE 1. COMBAT PROTOTYPE
 ======================================================================
 
 [x] 6.1. Реализовать HeroState:
-    definition_id, level, xp, runtime status, ability IDs, item IDs, priority order.
+    definition_id, level, xp, runtime status, ability IDs и item IDs.
 
 [x] 6.2. Реализовать SoldierState:
-    unique_id, generated_name, current_job_id, veterancy XP/level, item IDs, lifetime statistics.
+    unique_id, generated_name, current_job_id, veterancy XP/level, lifetime statistics.
 
 [x] 6.3. Реализовать JobDefinition:
     stat modifiers, attack definition, AI behavior, available abilities и restrictions.
@@ -361,8 +361,6 @@ GATE 1. COMBAT PROTOTYPE
 [x] 6.5. Реализовать общую сборку combat snapshot из HeroState, SoldierState и JobBuildState.
 
 [x] 6.6. Реализовать 4 ability slots и 6 item slots героя.
-
-[x] 6.7. Реализовать 2 item slots солдата.
 
 [x] 6.8. Создать первые 3 placeholder Heroes с различными ролями:
     Carry Hero.
@@ -410,7 +408,7 @@ GATE 2. BUILD PROTOTYPE
 
 [x] 7.7. Реализовать настройку Job abilities для всех солдат этой Job.
 
-[x] 7.8. Реализовать настройку abilities героя и изменение priority кнопками вверх/вниз.
+[x] 7.8. Реализовать настройку abilities героя без отдельного управления priority.
 
 [x] 7.9. Drag-and-drop оставить необязательным улучшением после feature lock.
 
@@ -439,8 +437,6 @@ GATE 2. BUILD PROTOTYPE
 
 [x] 8.4. Применять permanent death к погибшим солдатам.
 
-[x] 8.5. Возвращать equipment погибшего солдата в Inventory.
-
 [x] 8.6. Создавать replacement Militia по правилам этапа 0.
 
 [x] 8.7. Начислять Hero XP непосредственно из combat events, пока герой жив.
@@ -457,7 +453,7 @@ GATE 2. BUILD PROTOTYPE
 Критерий завершения этапа 8
 
 - Потеря ветерана ощущается и корректно сохраняется.
-- Замена погибшего солдата не наследует его ID, veterancy или equipment.
+- Замена погибшего солдата не наследует его ID или veterancy.
 - Повторное применение CombatResult невозможно.
 
 ======================================================================
@@ -501,16 +497,16 @@ GATE 2. BUILD PROTOTYPE
 ЭТАП 9. РЕАЛИЗОВАТЬ ITEMS И INVENTORY
 ======================================================================
 
-[x] 9.1. Создать единый ItemDefinition для hero и soldier items.
+[x] 9.1. Создать ItemDefinition для hero items.
 
 [x] 9.2. Добавить поля:
-    allowed_target_type, allowed_job_ids, passive_effects, rarity, price и sell_price.
+    passive_effects, price, sell_price и hero_eligibility.
 
 [x] 9.3. Реализовать Inventory как список item instance IDs и definition IDs.
 
 [x] 9.4. Реализовать equip, unequip и swap.
 
-[x] 9.5. Проверять slot type и restrictions до изменения RunState.
+[x] 9.5. Проверять Hero target и slot до изменения RunState.
 
 [x] 9.6. Реализовать пассивные stat/effect modifiers предметов через существующий effect framework.
 
@@ -520,7 +516,7 @@ GATE 2. BUILD PROTOTYPE
 
 Критерий завершения этапа 9
 
-- Один framework обслуживает hero и soldier equipment.
+- Предметы экипируют только герои.
 - Смена предмета немедленно отражается в preview stats и следующем combat snapshot.
 - Новый простой предмет создается без изменения core-кода.
 
@@ -584,7 +580,7 @@ GATE 2. BUILD PROTOTYPE
 
 [x] 11.1. Начислять Gold только после Victory.
 
-[x] 11.2. Создать MarketOffer с content ID, type, rarity, price и target restrictions.
+[x] 11.2. Создать MarketOffer с content ID, type, price и target restrictions.
 
 [x] 11.3. Генерировать 5-7 offers через market RNG.
 
@@ -770,8 +766,6 @@ GATE 4. VERTICAL SLICE
 
 [ ] 16.6. Довести hero items примерно до 15.
 
-[ ] 16.7. Довести soldier items примерно до 4.
-
 [ ] 16.8. Создать 6-8 Act I encounter configurations из комбинаций врагов.
 
 [ ] 16.9. Создать 3 Act II encounters, демонстрирующих последствия Execution.
@@ -803,7 +797,7 @@ GATE 5. CONTENT PIPELINE
 
 [ ] 17.4. Перед Battle 2 открыть Job assignment и Job capacity.
 
-[ ] 17.5. Перед Battle 3 открыть abilities и priority.
+[ ] 17.5. Перед Battle 3 открыть abilities.
 
 [ ] 17.6. До первой значимой потери объяснить permanent death и veterancy.
 
@@ -931,7 +925,7 @@ GATE 5. CONTENT PIPELINE
 
 [ ] 21.4. Проверить отсутствие invalid offers для Dead и Executed heroes.
 
-[ ] 21.5. Проверить equipment после death, resurrection и execution.
+[ ] 21.5. Проверить Hero equipment после death, resurrection и execution.
 
 [ ] 21.6. Проверить Job capacity после покупок, reassignment и Load.
 
@@ -987,7 +981,7 @@ DEFINITION OF DEMO COMPLETE
 - Игрок видит состав и особенности будущих противников.
 - Игрок выбирает encounter и перестраивает армию.
 - Игрок покупает Jobs, Job capacity, abilities и items.
-- Игрок настраивает equipment и ability priority.
+- Игрок настраивает equipment и набор abilities.
 - Автобой проходит без прямого управления игроком.
 - После боя игрок понимает результат через presentation и statistics.
 - Солдаты погибают навсегда и заменяются Militia.
@@ -1012,7 +1006,6 @@ DEFINITION OF DEMO COMPLETE
 [ ] Увеличить hero abilities до 40 только при высокой скорости content pipeline.
 [ ] Увеличить Job abilities до 20.
 [ ] Увеличить hero items до 40.
-[ ] Увеличить soldier items до 10.
 [ ] Добавить дополнительные bosses только после готовности одного polished boss.
 [ ] Рассмотреть Elite encounters.
 [ ] Рассмотреть полный визуальный combat log.

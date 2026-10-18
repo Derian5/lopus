@@ -4,6 +4,7 @@ extends ContentDefinition
 
 @export_range(0.0, 1000000.0, 0.1, "or_greater") var weight := 1.0
 @export var one_time := true
+@export var theme_hero_id: StringName
 @export var conditions: Array[RunEventCondition] = []
 @export_range(0, 12, 1, "or_greater") var soldier_target_count := 0
 @export var target_allowed_job_ids: Array[StringName] = []

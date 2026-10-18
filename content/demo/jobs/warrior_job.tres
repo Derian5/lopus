@@ -6,8 +6,8 @@
 [sub_resource type="Resource" id="Modifiers"]
 script = ExtResource("2")
 max_hp = 320.0
-damage = 3.0
-attack_speed = 0.0
+damage = 13.0
+attack_speed = 0.5
 movement_speed = 0.0
 attack_range = 0.0
 armor = 50.0
@@ -16,12 +16,13 @@ armor = 50.0
 script = ExtResource("1")
 stat_modifiers = SubResource("Modifiers")
 attack_definition_id = &"attack.basic_melee"
-available_ability_ids = Array[StringName]([&"ability.stunning_blow", &"ability.whirlwind", &"ability.battle_fury"])
 restriction_tags = Array[StringName]([&"soldier"])
+professionalism_thresholds = Array[int]([3, 6])
+professionalism_ability_ids = Array[StringName]([&"ability.warrior_professionalism_bloodthirst_tier_1", &"ability.warrior_professionalism_bloodthirst_tier_2"])
 capacity_price = 90
 unlock_price = 160
 placeholder_color = Color(0.78, 0.3, 0.22, 1)
 id = &"job.warrior"
 display_name = "Warrior"
-description = "Durable frontline role with control and area damage."
+description = "Durable frontline fighter. Trained Warriors drain life and shred enemy armor."
 tags = Array[StringName]([&"job", &"melee", &"frontline"])

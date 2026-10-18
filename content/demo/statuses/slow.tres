@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="StatusDefinition" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="StatusDefinition" format=3 uid="uid://ssp3ev7l4py7"]
 
-[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="1"]
-[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="2"]
+[ext_resource type="Script" uid="uid://vxoj4qgo7rwe" path="res://content/definitions/status_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c47iqedtnympj" path="res://content/definitions/effects/ability_effect.gd" id="1_5bgb7"]
+[ext_resource type="Script" uid="uid://cvpxbdvecnh7k" path="res://content/definitions/effects/stat_modifier.gd" id="2"]
 
 [sub_resource type="Resource" id="Modifier_slow"]
 script = ExtResource("2")
@@ -11,9 +12,9 @@ value = 0.6
 
 [resource]
 script = ExtResource("1")
+default_duration = 4.0
+stat_modifiers = Array[ExtResource("2")]([SubResource("Modifier_slow")])
+polarity = 2
 id = &"status.slow"
 display_name = "Slow"
 description = "Reduces movement speed."
-default_duration = 4.0
-stat_modifiers = Array[StatModifier]([SubResource("Modifier_slow")])
-polarity = 2

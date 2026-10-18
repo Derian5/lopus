@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="4"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_priest_professionalism_cleansing_flame_tier_1.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Armor"]
+script = ExtResource("4")
+stat = &"armor"
+operation = 0
+value = 40.0
+
+[sub_resource type="Resource" id="CleansingFlame"]
+script = ExtResource("3")
+id = &"status.priest_professionalism_cleansing_flame"
+display_name = "Cleansing Flame"
+description = "Increases armor and prevents new negative statuses."
+default_duration = 4.0
+max_stacks = 1
+stack_policy = 0
+stat_modifiers = Array[StatModifier]([SubResource("Armor")])
+grants_negative_status_immunity = true
+polarity = 1
+
+[sub_resource type="Resource" id="ApplyFlame"]
+script = ExtResource("2")
+effect_id = &"effect.priest_professionalism_cleansing_flame"
+status = SubResource("CleansingFlame")
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.priest_professionalism_cleansing_flame_tier_1"
+display_name = "Cleansing Flame I"
+description = "The ally targeted by the most enemies gains [shield]+{e0.status.stat_modifiers.0.value} armor[/shield] and [buff]immunity to negative statuses[/buff] for {e0.status.default_duration}s."
+cooldown_seconds = 6.0
+targeting_policy = 7
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("ApplyFlame")])
+priority = 110
+presentation_color = Color(1, 0.62, 0.2, 1)
+available_to_heroes = false

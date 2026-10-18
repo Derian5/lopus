@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_threshold_guard.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/threshold_guard_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Resolve"]
+script = ExtResource("3")
+effect_id = &"effect.warden_iron_resolve"
+health_threshold = 0.35
+shield_max_hp_multiplier = 0.2
+armor_multiplier = 1.5
+duration = 6.0
+cooldown_seconds = 999.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.warden_iron_resolve"
+display_name = "Iron Resolve"
+description = "The first time it drops below {e0.health_threshold:pct}% HP, gains a [shield]shield of {e0.shield_max_hp_multiplier:pct}% Max HP[/shield] and [buff]+{e0.armor_multiplier:bonus_pct}% armor[/buff] for {e0.duration}s."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+tags = Array[StringName]([&"ability", &"passive", &"enemy", &"shield"])
+effects = Array[AbilityEffect]([SubResource("Resolve")])
+presentation_color = Color(0.72, 0.62, 0.52, 1)
+presentation_text = "Iron Resolve"
+available_to_heroes = false

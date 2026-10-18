@@ -1,0 +1,88 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/smoke_bomb_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_greed_smoke_bomb.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Base"]
+script = ExtResource("3")
+effect_id = &"effect.greed_smoke_bomb"
+radius = 200.0
+activation_enemy_radius = 100.0
+duration = 6.0
+dodge_percent = 20.0
+
+[sub_resource type="Resource" id="Effect1"]
+script = ExtResource("3")
+effect_id = &"effect.greed_smoke_bomb"
+radius = 200.0
+activation_enemy_radius = 100.0
+duration = 6.0
+dodge_percent = 20.0
+
+[sub_resource type="Resource" id="Effect2"]
+script = ExtResource("3")
+effect_id = &"effect.greed_smoke_bomb"
+radius = 200.0
+activation_enemy_radius = 100.0
+duration = 6.0
+dodge_percent = 40.0
+
+[sub_resource type="Resource" id="Effect3"]
+script = ExtResource("3")
+effect_id = &"effect.greed_smoke_bomb"
+radius = 200.0
+activation_enemy_radius = 100.0
+duration = 6.0
+dodge_percent = 60.0
+
+[sub_resource type="Resource" id="Effect4"]
+script = ExtResource("3")
+effect_id = &"effect.greed_smoke_bomb"
+radius = 200.0
+activation_enemy_radius = 100.0
+duration = 6.0
+dodge_percent = 80.0
+
+[sub_resource type="Resource" id="Level1"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect1")])
+
+[sub_resource type="Resource" id="Level2"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect2")])
+
+[sub_resource type="Resource" id="Level3"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect3")])
+
+[sub_resource type="Resource" id="Level4"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+area_radius = 200.0
+effects = Array[AbilityEffect]([SubResource("Effect4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.greed_smoke_bomb"
+display_name = "Smoke Bomb"
+description = "When an enemy comes within {e0.activation_enemy_radius}, drops a smoke cloud with radius {e0.radius} for {e0.duration}s. Allies inside [buff]dodge {e0.dodge_percent}% of incoming damage[/buff]."
+cooldown_seconds = 15.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Base")])
+priority = 90
+area_radius = 200.0
+presentation_color = Color(0.48, 0.5, 0.56, 1)
+presentation_text = "Smoke Bomb"
+allowed_hero_ids = Array[StringName]([&"hero.test_vanguard"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
+tags = Array[StringName]([&"ability", &"active", &"greed", &"smoke", &"dodge"])

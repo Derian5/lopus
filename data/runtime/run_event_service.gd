@@ -11,6 +11,9 @@ static func prepare_event(run_state: RunState, registry: Node) -> Dictionary:
 	var route := registry.get_definition(RunState.ROUTE_DEFINITION_ID, false) as RouteDefinition
 	if route == null:
 		return {"ok": false, "error": "Demo route definition is missing."}
+	var scripted_event_id := route.post_battle_event_id(run_state.current_act, run_state.encounter_index)
+	if not String(scripted_event_id).is_empty():
+		return prepare_specific_event(run_state, scripted_event_id, registry)
 	var staged_stream := RngStreamState.from_dictionary(run_state.event_rng.to_dictionary())
 	var candidates: Array[RunEventDefinition] = []
 	for definition in registry.definitions.values():
@@ -61,6 +64,34 @@ static func prepare_event(run_state: RunState, registry: Node) -> Dictionary:
 	return {"ok": true, "error": ""}
 
 
+static func prepare_specific_event(run_state: RunState, event_id: StringName, registry: Node) -> Dictionary:
+	if run_state == null or run_state.run_status != RunState.STATUS_ACTIVE or not run_state.pending_event.is_empty():
+		return {"ok": true, "error": ""}
+	var event := registry.get_definition(event_id, false) as RunEventDefinition
+	if event == null:
+		return {"ok": false, "error": "Scripted Run Event %s is missing." % event_id}
+	if event.one_time and run_state.triggered_event_ids.has(event.id):
+		return {"ok": true, "error": ""}
+	if not _conditions_met(event.conditions, run_state, [], registry):
+		return {"ok": false, "error": "Scripted Run Event %s does not meet its conditions." % event.id}
+	var eligible := _eligible_soldiers(run_state, event)
+	if eligible.size() < event.soldier_target_count:
+		return {"ok": false, "error": "Scripted Run Event %s has too few eligible Soldier targets." % event.id}
+	var staged_stream := RngStreamState.from_dictionary(run_state.event_rng.to_dictionary())
+	var target_ids: Array[String] = []
+	for index in event.soldier_target_count:
+		var selected_index := int(staged_stream.next_u32() % eligible.size())
+		target_ids.append(eligible[selected_index].unique_id)
+		eligible.remove_at(selected_index)
+	run_state.event_rng = staged_stream
+	run_state.pending_event.event_id = event.id
+	run_state.pending_event.node_id = event.entry_node_id
+	run_state.pending_event.target_ids = target_ids
+	if event.one_time:
+		run_state.triggered_event_ids.append(event.id)
+	return {"ok": true, "error": ""}
+
+
 static func choose(run_state: RunState, choice_id: StringName, registry: Node) -> Dictionary:
 	if run_state == null or run_state.pending_event.is_empty():
 		return {"ok": false, "error": "There is no pending event."}
@@ -79,6 +110,9 @@ static func choose(run_state: RunState, choice_id: StringName, registry: Node) -
 	var status := _apply_choice(staged, choice, registry)
 	if not status.ok:
 		return status
+	var reward_status := HeroAbilityRewardService.prepare_reward(staged, registry)
+	if not reward_status.ok:
+		return reward_status
 	if String(choice.next_node_id).is_empty():
 		staged.pending_event.clear()
 	else:
@@ -166,11 +200,14 @@ static func _apply_effect(run_state: RunState, target_ids: Array[String], effect
 			var progression := registry.get_definition(&"progression.demo", false) as ProgressionDefinition
 			if hero == null or progression == null or effect.amount == 0:
 				return _failure("Hero level change has no valid recipient.")
+			var old_level := hero.level
 			var target_level := clampi(hero.level + effect.amount, 1, progression.hero_level_xp_thresholds.size())
 			if target_level == hero.level:
 				return _failure("Hero level cannot change further.")
 			hero.xp = progression.hero_level_xp_thresholds[target_level - 1]
 			hero.level = progression.hero_level_for_xp(hero.xp)
+			if hero.level > old_level:
+				run_state.pending_hero_ability_reward.queue_level_ups(hero.unique_id, hero.level - old_level)
 		RunEventEffect.EffectType.SOLDIER_VETERANCY_DELTA:
 			var progression := registry.get_definition(&"progression.demo", false) as ProgressionDefinition
 			var soldiers := _target_soldiers(run_state, target_ids, effect)
@@ -183,8 +220,12 @@ static func _apply_effect(run_state: RunState, target_ids: Array[String], effect
 				soldier.veterancy_xp = progression.veterancy_xp_thresholds[target_level]
 				soldier.veterancy_level = progression.veterancy_level_for_xp(soldier.veterancy_xp)
 		RunEventEffect.EffectType.JOB_CAPACITY_DELTA:
-			if effect.job_id == &"job.militia" or not run_state.unlocked_job_ids.has(effect.job_id) or not registry.get_definition(effect.job_id, false) is JobDefinition:
+			var job := registry.get_definition(effect.job_id, false) as JobDefinition
+			if effect.job_id == &"job.militia" or job == null:
 				return _failure("Job capacity reward has no valid Job.")
+			var is_unlocked := run_state.unlocked_job_ids.has(effect.job_id)
+			if not is_unlocked and effect.amount < 0:
+				return _failure("Job capacity reward cannot reduce a locked Job.")
 			var old_capacity := int(run_state.job_capacities.get(String(effect.job_id), 0))
 			var new_capacity := old_capacity + effect.amount
 			var assigned := 0
@@ -193,8 +234,52 @@ static func _apply_effect(run_state: RunState, target_ids: Array[String], effect
 					assigned += 1
 			if new_capacity < assigned or new_capacity < 0 or new_capacity > run_state.soldiers.size():
 				return _failure("Job capacity cannot be changed by that amount.")
+			if not is_unlocked:
+				run_state.unlocked_job_ids.append(effect.job_id)
+				var build := JobBuildState.new()
+				build.job_id = effect.job_id
+				run_state.job_builds.append(build)
+				_convert_market_unlock_to_capacity(run_state, job)
 			run_state.job_capacities[String(effect.job_id)] = new_capacity
+		RunEventEffect.EffectType.GOLD_DELTA:
+			if effect.amount == 0 or run_state.gold + effect.amount < 0:
+				return _failure("Gold reward cannot be applied.")
+			run_state.gold += effect.amount
+		RunEventEffect.EffectType.HERO_XP_DELTA:
+			var progression := registry.get_definition(&"progression.demo", false) as ProgressionDefinition
+			var heroes := _available_heroes(run_state)
+			if progression == null or heroes.is_empty() or effect.amount == 0:
+				return _failure("Hero XP reward has no valid recipient.")
+			for hero in heroes:
+				var old_level := hero.level
+				hero.xp = maxi(0, hero.xp + effect.amount)
+				hero.level = progression.hero_level_for_xp(hero.xp)
+				if hero.level > old_level:
+					run_state.pending_hero_ability_reward.queue_level_ups(hero.unique_id, hero.level - old_level)
+		RunEventEffect.EffectType.GRANT_RANDOM_HERO_ITEM:
+			var heroes := _available_heroes(run_state)
+			var items: Array[ItemDefinition] = []
+			for definition in registry.definitions.values():
+				if not definition is ItemDefinition:
+					continue
+				for hero in heroes:
+					var hero_definition := registry.get_definition(hero.definition_id, false) as HeroDefinition
+					if definition.is_compatible_with_hero(hero_definition):
+						items.append(definition)
+						break
+			items.sort_custom(func(a: ItemDefinition, b: ItemDefinition) -> bool: return a.id < b.id)
+			if heroes.is_empty() or items.is_empty():
+				return _failure("Random Hero item reward has no valid recipient or item.")
+			var item := items[int(run_state.event_rng.next_u32() % items.size())]
+			run_state.inventory.create_item(item.id)
 	return {"ok": true, "error": ""}
+
+
+static func _convert_market_unlock_to_capacity(run_state: RunState, job: JobDefinition) -> void:
+	for offer in run_state.market.offers:
+		if offer.offer_type == &"job_unlock" and offer.content_id == job.id:
+			offer.offer_type = &"job_capacity"
+			offer.price = job.capacity_price
 
 
 static func _conditions_met(conditions: Array[RunEventCondition], run_state: RunState, target_ids: Array[String], registry: Node) -> bool:
@@ -248,6 +333,15 @@ static func _find_hero_by_definition(run_state: RunState, definition_id: StringN
 		if hero.definition_id == definition_id and hero.life_state != HeroState.EXECUTED:
 			return hero
 	return null
+
+
+static func _available_heroes(run_state: RunState) -> Array[HeroState]:
+	var result: Array[HeroState] = []
+	for hero in run_state.heroes:
+		if hero.life_state != HeroState.EXECUTED:
+			result.append(hero)
+	result.sort_custom(func(a: HeroState, b: HeroState) -> bool: return a.unique_id < b.unique_id)
+	return result
 
 
 static func _find_job_build(run_state: RunState, job_id: StringName) -> JobBuildState:

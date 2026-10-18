@@ -7,6 +7,8 @@ const DEAD := &"dead"
 const EXECUTED := &"executed"
 const MAX_ABILITY_SLOTS := 4
 const MAX_ITEM_SLOTS := 6
+const TARGET_CLOSEST := &"closest"
+const TARGET_FARTHEST := &"farthest"
 
 var unique_id := ""
 var definition_id: StringName
@@ -18,17 +20,17 @@ var ability_ids: Array[StringName] = []
 var owned_ability_ids: Array[StringName] = []
 var ability_levels: Dictionary = {}
 var item_ids: Array[StringName] = []
-var ability_priority: Array[StringName] = []
 var cooldowns: Dictionary = {}
 var statuses: Array[Dictionary] = []
 var stat_modifiers: Array[RuntimeStatModifier] = []
+var targeting_mode: StringName = TARGET_CLOSEST
+var damage_avoidance_override := -1
 
 
 func equip_ability(ability_id: StringName) -> bool:
 	if String(ability_id).is_empty() or not owned_ability_ids.has(ability_id) or ability_ids.has(ability_id) or ability_ids.size() >= MAX_ABILITY_SLOTS:
 		return false
 	ability_ids.append(ability_id)
-	ability_priority.append(ability_id)
 	return true
 
 
@@ -52,16 +54,6 @@ func upgrade_ability(ability_id: StringName) -> bool:
 	return true
 
 
-func set_ability_priority(priority: Array[StringName]) -> void:
-	ability_priority.clear()
-	for ability_id in priority:
-		if ability_ids.has(ability_id) and not ability_priority.has(ability_id):
-			ability_priority.append(ability_id)
-	for ability_id in ability_ids:
-		if not ability_priority.has(ability_id):
-			ability_priority.append(ability_id)
-
-
 func to_dictionary() -> Dictionary:
 	var modifier_data: Array = []
 	for modifier in stat_modifiers:
@@ -77,10 +69,11 @@ func to_dictionary() -> Dictionary:
 		"owned_ability_ids": StateSerialization.names_to_strings(owned_ability_ids),
 		"ability_levels": ability_levels.duplicate(true),
 		"item_ids": StateSerialization.names_to_strings(item_ids),
-		"ability_priority": StateSerialization.names_to_strings(ability_priority),
 		"cooldowns": cooldowns.duplicate(true),
 		"statuses": StateSerialization.dictionaries_to_data(statuses),
 		"stat_modifiers": modifier_data,
+		"targeting_mode": String(targeting_mode),
+		"damage_avoidance_override": damage_avoidance_override,
 	}
 
 
@@ -93,6 +86,16 @@ static func from_dictionary(data: Dictionary) -> HeroState:
 	state.life_state = StringName(data.get("life_state", ALIVE))
 	state.current_hp = float(data.get("current_hp", 0.0))
 	state.ability_ids = StateSerialization.strings_to_names(data.get("ability_ids", []))
+	var legacy_priority := StateSerialization.strings_to_names(data.get("ability_priority", []))
+	if not legacy_priority.is_empty():
+		var normalized: Array[StringName] = []
+		for ability_id in legacy_priority:
+			if state.ability_ids.has(ability_id) and not normalized.has(ability_id):
+				normalized.append(ability_id)
+		for ability_id in state.ability_ids:
+			if not normalized.has(ability_id):
+				normalized.append(ability_id)
+		state.ability_ids = normalized
 	state.owned_ability_ids = StateSerialization.strings_to_names(data.get("owned_ability_ids", []))
 	for ability_id in Dictionary(data.get("ability_levels", {})):
 		state.ability_levels[String(ability_id)] = int(data.ability_levels[ability_id])
@@ -100,10 +103,13 @@ static func from_dictionary(data: Dictionary) -> HeroState:
 		if not state.owned_ability_ids.has(ability_id):
 			state.owned_ability_ids.append(ability_id)
 	state.item_ids = StateSerialization.strings_to_names(data.get("item_ids", []))
-	state.ability_priority = StateSerialization.strings_to_names(data.get("ability_priority", []))
 	state.item_ids.resize(mini(state.item_ids.size(), MAX_ITEM_SLOTS))
 	state.cooldowns = Dictionary(data.get("cooldowns", {})).duplicate(true)
 	state.statuses = StateSerialization.data_to_dictionaries(data.get("statuses", []))
+	state.targeting_mode = StringName(data.get("targeting_mode", TARGET_CLOSEST))
+	if state.targeting_mode not in [TARGET_CLOSEST, TARGET_FARTHEST]:
+		state.targeting_mode = TARGET_CLOSEST
+	state.damage_avoidance_override = clampi(int(data.get("damage_avoidance_override", -1)), -1, 1)
 	for modifier_data in data.get("stat_modifiers", []):
 		if modifier_data is Dictionary:
 			state.stat_modifiers.append(RuntimeStatModifier.from_dictionary(modifier_data))

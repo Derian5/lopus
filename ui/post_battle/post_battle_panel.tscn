@@ -1,138 +1,227 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/post_battle/post_battle_panel.gd" id="1_panel"]
-
-[sub_resource type="StyleBoxFlat" id="StylePanel"]
-bg_color = Color(0.045, 0.052, 0.068, 0.97)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.55, 0.45, 0.24, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+[ext_resource type="Script" path="res://ui/common/ornate_frame.gd" id="10_frame"]
 
 [node name="PostBattlePanel" type="PanelContainer"]
 custom_minimum_size = Vector2(760, 520)
-theme_override_styles/panel = SubResource("StylePanel")
 script = ExtResource("1_panel")
 
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 22
-theme_override_constants/margin_right = 28
-theme_override_constants/margin_bottom = 22
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="ResultTitle" type="Label" parent="Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 36
+text = "VICTORY"
 horizontal_alignment = 1
+theme_type_variation = &"TitleLabel"
 
-[node name="DurationLabel" type="Label" parent="Margin/VBox"]
+[node name="BattleMeta" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="XpLabel" type="Label" parent="Margin/VBox/BattleMeta"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.69, 0.76, 1)
-horizontal_alignment = 1
-
-[node name="RewardLabel" type="Label" parent="Margin/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.73, 0.28, 1)
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.61, 0.67, 0.76, 1)
 theme_override_font_sizes/font_size = 18
-text = "GOLD  +0"
-horizontal_alignment = 1
+text = "TOTAL XP EARNED  0"
 
-[node name="DetailsScroll" type="ScrollContainer" parent="Margin/VBox"]
+[node name="MetaLabel" type="Label" parent="Margin/VBox/BattleMeta"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.78, 0.7, 0.58, 1)
+theme_override_font_sizes/font_size = 17
+text = ""
+
+[node name="RewardLabel" type="Label" parent="Margin/VBox/BattleMeta"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.7, 0.25, 1)
+theme_override_font_sizes/font_size = 19
+text = "GOLD  +0"
+horizontal_alignment = 2
+
+[node name="Separator" type="HSeparator" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="Tabs" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ExperienceTab" type="Button" parent="Margin/VBox/Tabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+theme_override_font_sizes/font_size = 16
+text = "XP"
+theme_type_variation = &"TabButton"
+
+[node name="DamageTab" type="Button" parent="Margin/VBox/Tabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+theme_override_font_sizes/font_size = 16
+text = "DAMAGE"
+theme_type_variation = &"TabButton"
+
+[node name="TankingTab" type="Button" parent="Margin/VBox/Tabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+theme_override_font_sizes/font_size = 16
+text = "TANKING"
+theme_type_variation = &"TabButton"
+
+[node name="HealingTab" type="Button" parent="Margin/VBox/Tabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+theme_override_font_sizes/font_size = 16
+text = "HEALING"
+theme_type_variation = &"TabButton"
+
+[node name="LossesTab" type="Button" parent="Margin/VBox/Tabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+theme_override_font_sizes/font_size = 16
+text = "LOSSES"
+theme_type_variation = &"TabButton"
+
+[node name="ContentFrame" type="PanelContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"InsetPanel"
+
+[node name="ContentMargin" type="MarginContainer" parent="Margin/VBox/ContentFrame"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="Margin/VBox/ContentFrame/ContentMargin"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="TabEyebrow" type="Label" parent="Margin/VBox/ContentFrame/ContentMargin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.53, 0.61, 0.72, 1)
+theme_override_font_sizes/font_size = 14
+text = "POST-BATTLE PROGRESSION"
+visible = false
+
+[node name="TitleRow" type="HBoxContainer" parent="Margin/VBox/ContentFrame/ContentMargin/Content"]
+layout_mode = 2
+
+[node name="TabTitle" type="Label" parent="Margin/VBox/ContentFrame/ContentMargin/Content/TitleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.87, 0.78, 1)
+theme_override_font_sizes/font_size = 22
+text = "EXPERIENCE ACQUIRED"
+
+[node name="TabSummary" type="Label" parent="Margin/VBox/ContentFrame/ContentMargin/Content/TitleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.91, 0.66, 0.28, 1)
+theme_override_font_sizes/font_size = 18
+text = ""
+horizontal_alignment = 2
+
+[node name="ColumnHeader" type="HBoxContainer" parent="Margin/VBox/ContentFrame/ContentMargin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PrimaryHeader" type="Label" parent="Margin/VBox/ContentFrame/ContentMargin/Content/ColumnHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+theme_override_colors/font_color = Color(0.46, 0.53, 0.64, 1)
+theme_override_font_sizes/font_size = 14
+text = "UNIT"
+
+[node name="ValueHeader" type="Label" parent="Margin/VBox/ContentFrame/ContentMargin/Content/ColumnHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.0
+theme_override_colors/font_color = Color(0.46, 0.53, 0.64, 1)
+theme_override_font_sizes/font_size = 14
+text = "XP"
+horizontal_alignment = 2
+
+[node name="DetailHeader" type="Label" parent="Margin/VBox/ContentFrame/ContentMargin/Content/ColumnHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_override_colors/font_color = Color(0.46, 0.53, 0.64, 1)
+theme_override_font_sizes/font_size = 14
+text = "PROGRESSION"
+
+[node name="RowsScroll" type="ScrollContainer" parent="Margin/VBox/ContentFrame/ContentMargin/Content"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="Details" type="VBoxContainer" parent="Margin/VBox/DetailsScroll"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="Metrics" type="HBoxContainer" parent="Margin/VBox/DetailsScroll/Details"]
-layout_mode = 2
-theme_override_constants/separation = 28
-
-[node name="DamageBox" type="VBoxContainer" parent="Margin/VBox/DetailsScroll/Details/Metrics"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Title" type="Label" parent="Margin/VBox/DetailsScroll/Details/Metrics/DamageBox"]
-layout_mode = 2
-text = "TOP DAMAGE"
-horizontal_alignment = 1
-
-[node name="TopDamageValue" type="Label" parent="Margin/VBox/DetailsScroll/Details/Metrics/DamageBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.46, 0.38, 1)
-theme_override_font_sizes/font_size = 18
-horizontal_alignment = 1
-
-[node name="HealingBox" type="VBoxContainer" parent="Margin/VBox/DetailsScroll/Details/Metrics"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Title" type="Label" parent="Margin/VBox/DetailsScroll/Details/Metrics/HealingBox"]
-layout_mode = 2
-text = "TOP HEALING"
-horizontal_alignment = 1
-
-[node name="TopHealingValue" type="Label" parent="Margin/VBox/DetailsScroll/Details/Metrics/HealingBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.38, 0.82, 0.58, 1)
-theme_override_font_sizes/font_size = 18
-horizontal_alignment = 1
-
-[node name="Separator" type="HSeparator" parent="Margin/VBox/DetailsScroll/Details"]
-layout_mode = 2
-
-[node name="DeathsTitle" type="Label" parent="Margin/VBox/DetailsScroll/Details"]
-layout_mode = 2
-text = "PLAYER LOSSES"
-
-[node name="DeathsValue" type="Label" parent="Margin/VBox/DetailsScroll/Details"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.74, 0.76, 0.8, 1)
-text = "No player losses"
-vertical_alignment = 1
-
-[node name="ProgressionTitle" type="Label" parent="Margin/VBox/DetailsScroll/Details"]
-layout_mode = 2
-text = "PROGRESSION"
-
-[node name="ProgressionValue" type="Label" parent="Margin/VBox/DetailsScroll/Details"]
+[node name="Rows" type="VBoxContainer" parent="Margin/VBox/ContentFrame/ContentMargin/Content/RowsScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.57, 0.78, 0.65, 1)
-text = "No progression changes"
-autowrap_mode = 2
-
-[node name="Hint" type="Label" parent="Margin/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.54, 0.62, 1)
-text = "Continue to return to management."
-horizontal_alignment = 1
+theme_override_constants/separation = 5
 
 [node name="ContinueButton" type="Button" parent="Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "CONTINUE"
+theme_type_variation = &"PrimaryButton"
+
+[node name="Ornament" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_frame")
+accent_color = Color(0.98, 0.78, 0.3, 1)
+glow = 0.35
+pulse = true
+inset = -14.0
+crest_width = 120.0
+side_notches = true
+corner_gem = &"gold"
 
 [connection signal="pressed" from="Margin/VBox/ContinueButton" to="." method="_on_continue_pressed"]

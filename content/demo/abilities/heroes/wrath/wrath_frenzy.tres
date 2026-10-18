@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/frenzy_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_frenzy.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Base"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_frenzy"
+attack_speed_multiplier = 2.0
+duration = 7.0
+
+[sub_resource type="Resource" id="Effect1"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_frenzy"
+attack_speed_multiplier = 2.0
+duration = 7.0
+
+[sub_resource type="Resource" id="Effect2"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_frenzy"
+attack_speed_multiplier = 4.0
+duration = 7.0
+
+[sub_resource type="Resource" id="Effect3"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_frenzy"
+attack_speed_multiplier = 6.0
+duration = 7.0
+
+[sub_resource type="Resource" id="Effect4"]
+script = ExtResource("3")
+effect_id = &"effect.wrath_frenzy"
+attack_speed_multiplier = 8.0
+duration = 7.0
+
+[sub_resource type="Resource" id="Level1"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect1")])
+
+[sub_resource type="Resource" id="Level2"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect2")])
+
+[sub_resource type="Resource" id="Level3"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect3")])
+
+[sub_resource type="Resource" id="Level4"]
+script = ExtResource("2")
+cooldown_seconds = 20.0
+effects = Array[AbilityEffect]([SubResource("Effect4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.wrath_frenzy"
+display_name = "Blind Frenzy"
+description = "3s after first damaging an enemy, [buff]attacks x{e0.attack_speed_multiplier} faster[/buff] for {e0.duration}s but [debuff]moves randomly and may hit allies[/debuff]."
+cooldown_seconds = 20.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Base")])
+priority = 80
+presentation_color = Color(1, 0.16, 0.08, 1)
+presentation_text = "Blind Frenzy"
+allowed_hero_ids = Array[StringName]([&"hero.ashen_duelist"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
+tags = Array[StringName]([&"ability", &"active", &"wrath", &"attack_speed", &"friendly_fire"])

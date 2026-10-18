@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 220.0
+damage = 9.0
+attack_speed = 1.0
+movement_speed = 110.0
+attack_range = 40.0
+armor = 4.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"melee"
+ability_ids = Array[StringName]([&"ability.bog_rotten_burst"])
+placeholder_color = Color(0.46, 0.56, 0.24, 1)
+id = &"enemy.bog_spawn"
+display_name = "Bog Spawn"
+description = "A bloated mire creature raised by the Bog King. It bursts in a spray of rot when slain."
+tags = Array[StringName]([&"enemy", &"summon", &"melee", &"troll"])

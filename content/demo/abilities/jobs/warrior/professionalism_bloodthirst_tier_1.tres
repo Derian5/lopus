@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/basic_attack_lifesteal_effect.gd" id="2"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_gluttony_lifesteal_aura.png" id="icon"]
+
+[sub_resource type="Resource" id="Lifesteal"]
+script = ExtResource("2")
+effect_id = &"effect.warrior_bloodthirst_lifesteal"
+lifesteal_percent = 50.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("icon")
+id = &"ability.warrior_professionalism_bloodthirst_tier_1"
+display_name = "Bloodthirst I"
+description = "Basic attacks [heal]heal for {e0.lifesteal_percent}%[/heal] of the damage dealt."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Lifesteal")])
+presentation_color = Color(0.82, 0.22, 0.2, 1)
+presentation_text = "Bloodthirst"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"passive", &"job", &"warrior", &"lifesteal"])

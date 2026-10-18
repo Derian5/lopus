@@ -1,20 +1,24 @@
-[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://cgvxiiyrb5drj"]
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=4 format=3 uid="uid://cgvxiiyrb5drj"]
 
-[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1_enemy"]
-[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2_stats"]
+[ext_resource type="Script" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
 
-[sub_resource type="Resource" id="StatBlock_melee"]
-script = ExtResource("2_stats")
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
 max_hp = 950.0
 damage = 19.0
+attack_speed = 1.0
 movement_speed = 95.0
 attack_range = 44.0
 armor = 24.0
 
 [resource]
-script = ExtResource("1_enemy")
-base_stats = SubResource("StatBlock_melee")
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"melee"
+ability_ids = Array[StringName]([&"ability.ogre_skull_crack"])
+placeholder_color = Color(0.62, 0.36, 0.22, 1)
 id = &"enemy.raider"
-display_name = "Raider"
-description = "A heavily armored melee raider that advances steadily under fire."
-tags = Array[StringName]([&"enemy", &"melee", &"raider"])
+display_name = "Ogre Brute"
+description = "A thick-skinned wasteland ogre that cracks skulls and stuns whoever stands in front of it."
+tags = Array[StringName]([&"enemy", &"melee", &"ogre", &"brute"])

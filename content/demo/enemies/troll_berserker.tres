@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 780.0
+damage = 15.0
+attack_speed = 1.5
+movement_speed = 118.0
+attack_range = 42.0
+armor = 10.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"melee"
+ability_ids = Array[StringName]([&"ability.troll_blood", &"ability.troll_berserk"])
+placeholder_color = Color(0.3, 0.55, 0.36, 1)
+id = &"enemy.troll_berserker"
+display_name = "Troll Berserker"
+description = "A fast, frenzied troll whose blood knits its wounds shut with every blow it takes."
+tags = Array[StringName]([&"enemy", &"melee", &"troll", &"regeneration"])

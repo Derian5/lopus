@@ -20,4 +20,7 @@ enum Polarity {
 @export var periodic_effects: Array[AbilityEffect] = []
 @export var stat_modifiers: Array[StatModifier] = []
 @export var prevents_actions := false
+@export var prevents_movement := false
+@export var breaks_on_hp_damage := false
+@export var grants_negative_status_immunity := false
 @export var polarity := Polarity.NEUTRAL

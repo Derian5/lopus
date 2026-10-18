@@ -1,16 +1,19 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" format=3 uid="uid://b24dcrhnte2cs"]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3 uid="uid://b24dcrhnte2cs"]
 
-[ext_resource type="Script" uid="uid://4tuimq2q6q86" path="res://content/definitions/encounter_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
-enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
-gold_reward = 175
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 195
+enemy_power = 0.9
 min_encounter_index = 5
-max_encounter_index = 10
+max_encounter_index = 8
 difficulty_hint = "High"
-key_properties = Array[String](["Five ranged attackers", "Rewards fast frontline pressure"])
+key_properties = Array[String](["Six Headhunters", "Rewards fast pressure"])
+is_unknown = false
+is_boss = false
 id = &"encounter.bolt_screen"
-display_name = "Bolt Screen"
-description = "A dangerous ranged formation behind a disposable screen."
-tags = Array[StringName]([&"encounter", &"act1", &"ranged"])
+display_name = "Spear Wall"
+description = "A screen of spear-throwers behind a line of brutes."
+tags = Array[StringName]([&"encounter", &"act1"])

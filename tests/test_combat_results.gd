@@ -16,19 +16,15 @@ func _run() -> void:
 	var progression := registry.get_definition(&"progression.demo") as ProgressionDefinition
 	_test_contribution_formula()
 	var run := DemoRunFactory.create_starting_run(8080)
-	EncounterService.select_encounter(run, &"encounter.training_skirmish")
+	var pre_level_xp := progression.hero_level_xp_thresholds[1] - 1
+	run.heroes[0].xp = pre_level_xp
+	EncounterService.select_encounter(run, &"encounter.tutorial_volley")
 	run.run_phase = &"combat"
 	run.soldiers[0].current_job_id = &"job.warrior"
 	run.soldiers[0].veterancy_xp = 30
 	run.soldiers[1].current_job_id = &"job.archer"
 	run.soldiers[1].veterancy_xp = 95
 	run.soldiers[1].veterancy_level = 1
-	var returned_instance_ids: Array[StringName] = [
-		StringName(run.inventory.items[0].instance_id),
-		StringName(run.inventory.items[1].instance_id),
-	]
-	run.soldiers[1].item_ids = returned_instance_ids.duplicate()
-	var original_inventory_size := run.inventory.items.size()
 	var original_dead_id := run.soldiers[1].unique_id
 
 	var statistics := CombatStatistics.new()
@@ -45,9 +41,9 @@ func _run() -> void:
 	temporary_summon.unit_kind = CombatUnitSnapshot.UnitKind.SUMMON
 	temporary_summon.summoner_runtime_id = run.soldiers[0].unique_id
 	statistics.register_unit(temporary_summon)
-	statistics.consume(CombatEvent.new(1.0, CombatEvent.DAMAGE_APPLIED, "hero-00", enemy.runtime_id, &"ability.fire_bolt", &"effect.damage", 100.0))
-	statistics.consume(CombatEvent.new(1.2, CombatEvent.HEALING_APPLIED, "hero-00", "soldier-00", &"ability.mending_light", &"effect.heal", 20.0))
-	statistics.consume(CombatEvent.new(1.3, CombatEvent.ABILITY_USED, "hero-00", enemy.runtime_id, &"ability.fire_bolt"))
+	statistics.consume(CombatEvent.new(1.0, CombatEvent.DAMAGE_APPLIED, "hero-00", enemy.runtime_id, &"ability.greed_dagger_nova", &"effect.damage", 100.0))
+	statistics.consume(CombatEvent.new(1.2, CombatEvent.HEALING_APPLIED, "hero-00", "soldier-00", &"ability.test_heal", &"effect.heal", 20.0))
+	statistics.consume(CombatEvent.new(1.3, CombatEvent.ABILITY_USED, "hero-00", enemy.runtime_id, &"ability.greed_dagger_nova"))
 	statistics.consume(CombatEvent.new(1.4, CombatEvent.DAMAGE_APPLIED, enemy.runtime_id, "soldier-00", &"attack.basic", &"attack.basic", 100.0))
 	statistics.consume(CombatEvent.new(1.5, CombatEvent.DAMAGE_APPLIED, enemy.runtime_id, original_dead_id, &"attack.basic", &"attack.basic", 30.0))
 	statistics.consume(CombatEvent.new(1.51, CombatEvent.DAMAGE_APPLIED, temporary_summon.runtime_id, enemy.runtime_id, &"attack.basic", &"attack.basic", 20.0))
@@ -57,7 +53,7 @@ func _run() -> void:
 	statistics.consume(CombatEvent.new(1.7, CombatEvent.UNIT_DIED, enemy.runtime_id, temporary_summon.runtime_id, &"", &"attack.basic"))
 	statistics.consume(CombatEvent.new(2.0, CombatEvent.UNIT_DIED, "hero-00", enemy.runtime_id, &"", &"effect.damage"))
 	statistics.consume(CombatEvent.new(3.0, CombatEvent.BATTLE_FINISHED, "player", "", &"", &"", 33.0))
-	var encounter := registry.get_definition(&"encounter.training_skirmish") as EncounterDefinition
+	var encounter := registry.get_definition(&"encounter.tutorial_volley") as EncounterDefinition
 	var result := CombatResult.from_statistics("result-stage8-test", statistics, encounter, false, progression)
 	_check(result.get_player_deaths().size() == 1, "Temporary summons are excluded from permanent player losses.")
 	var old_gold := run.gold
@@ -77,7 +73,8 @@ func _run() -> void:
 
 	_check(CombatResultApplicator.apply(result, run, registry), "A fresh CombatResult applies successfully.")
 	_check(run.gold == old_gold + encounter.gold_reward, "Victory Gold is added once.")
-	_check(run.heroes[0].xp == int(expected_hero_contribution.total_xp), "Hero XP is derived from damage, effective healing, and tanking contribution.")
+	_check(run.heroes[0].xp == pre_level_xp + int(expected_hero_contribution.total_xp), "Hero XP is derived from damage, effective healing, and tanking contribution.")
+	_check(run.pending_hero_ability_reward.hero_level_up_queue == [run.heroes[0].unique_id], "Crossing one Hero Level threshold queues one ability choice for that Hero.")
 	var expected_soldier_contribution := progression.contribution_breakdown({"damage_dealt": 20.0, "effective_healing": 10.0, "damage_tanked": 115.0})
 	var expected_soldier_xp := 30 + int(expected_soldier_contribution.total_xp)
 	_check(run.soldiers[0].veterancy_xp == expected_soldier_xp and run.soldiers[0].veterancy_level == progression.veterancy_level_for_xp(expected_soldier_xp), "A surviving soldier gains contribution XP and a veterancy level.")
@@ -91,14 +88,11 @@ func _run() -> void:
 	_check(run.soldiers.size() == 9, "Victory refills each dead soldier slot with Militia.")
 	var replacement := run.soldiers[-1]
 	_check(replacement.unique_id != original_dead_id, "Replacement Militia receives a new unique ID.")
-	_check(replacement.current_job_id == &"job.militia" and replacement.veterancy_xp == 0 and replacement.item_ids.is_empty(), "Replacement does not inherit Job, veterancy, or equipment.")
-	_check(run.inventory.items.size() == original_inventory_size, "Death return does not create duplicate item instances.")
-	_check(result.application_summary.returned_items.size() == 2, "Dead soldier equipment returns to Inventory.")
-	_check(StringName(result.application_summary.returned_items[0].instance_id) == returned_instance_ids[0] and StringName(result.application_summary.returned_items[1].instance_id) == returned_instance_ids[1], "Death return preserves stable item instance IDs.")
+	_check(replacement.current_job_id == &"job.militia" and replacement.veterancy_xp == 0, "Replacement does not inherit Job or veterancy.")
 	_check(result.application_summary.deaths.size() == 1 and result.application_summary.replacements.size() == 1, "CombatResult records death and refill consequences.")
 	_check(int(result.application_summary.deaths[0].potential_xp) == int(progression.contribution_breakdown({"damage_tanked": 30.0}).total_xp), "A dead Soldier reports contribution XP lost to permanent death.")
 	_check(not CombatResultApplicator.apply(result, run, registry), "The same CombatResult cannot apply twice.")
-	_check(run.gold == old_gold + encounter.gold_reward and run.heroes[0].xp == int(expected_hero_contribution.total_xp), "Rejected reapplication changes no rewards or XP.")
+	_check(run.gold == old_gold + encounter.gold_reward and run.heroes[0].xp == pre_level_xp + int(expected_hero_contribution.total_xp), "Rejected reapplication changes no rewards or XP.")
 
 	var restored := RunState.from_dictionary(run.to_dictionary())
 	_check(restored.applied_combat_result_ids.has(result.result_id), "Applied result IDs survive serialization.")
@@ -109,9 +103,9 @@ func _run() -> void:
 	run.heroes[0].level += 1
 	var leveled_snapshot := CombatSnapshotBuilder.build_hero(run.heroes[0], run.inventory, registry)
 	_check(leveled_snapshot.stats.max_hp > hero_snapshot.stats.max_hp and leveled_snapshot.stats.damage > hero_snapshot.stats.damage, "Hero level grants fixed stat growth.")
-	var veteran_snapshot := CombatSnapshotBuilder.build_soldier(run.soldiers[0], run.job_builds[0], run.inventory, registry)
+	var veteran_snapshot := CombatSnapshotBuilder.build_soldier(run.soldiers[0], null, registry)
 	run.soldiers[0].veterancy_level = 0
-	var recruit_snapshot := CombatSnapshotBuilder.build_soldier(run.soldiers[0], run.job_builds[0], run.inventory, registry)
+	var recruit_snapshot := CombatSnapshotBuilder.build_soldier(run.soldiers[0], null, registry)
 	_check(veteran_snapshot.stats.max_hp > recruit_snapshot.stats.max_hp, "Veterancy level grants a stat multiplier.")
 
 	var panel = POST_BATTLE_SCENE.instantiate()
@@ -119,11 +113,24 @@ func _run() -> void:
 	panel.show_result(result)
 	_check(panel.get_node("%ResultTitle").text == "VICTORY", "Post Battle panel shows victory state.")
 	_check(panel.get_node("%RewardLabel").text.contains("100"), "Post Battle panel shows Gold.")
-	var progression_text: String = panel.get_node("%ProgressionValue").text
-	_check(progression_text.contains("Hero XP") and progression_text.contains("Veterancy XP"), "Post Battle panel shows Hero XP and Veterancy XP.")
-	_check(progression_text.contains("DMG") and progression_text.contains("HEAL") and progression_text.contains("TANK"), "Post Battle explains all three contribution components.")
-	_check(progression_text.contains("XP LOST (DEAD)"), "Post Battle explains dead Soldier XP loss.")
-	_check(panel.get_node("%DeathsValue").text.contains("Militia 2"), "Post Battle panel lists deaths.")
+	_check(panel.get_node("%XpLabel").text.contains("TOTAL XP EARNED") and panel.get_node("%TabSummary").text.is_empty(), "Post Battle header shows total earned XP without duplicating it inside the XP tab.")
+	_check(panel.get_node_or_null("AtlasBackdrop") == null and panel.get_node_or_null("Margin/VBox/Hint") == null, "Post Battle omits the heraldic backdrop and ledger instruction.")
+	var dead_soldier_name := String(result.application_summary.deaths[0].display_name)
+	_check(panel.get_node("%LossesTab") != null and panel.get_node("%ExperienceTab") != null and panel.get_node("%DamageTab") != null and panel.get_node("%TankingTab") != null and panel.get_node("%HealingTab") != null, "Post Battle exposes five atlas-styled statistics tabs.")
+	var experience_text := _tree_text(panel.get_node("%Rows"))
+	_check(panel.selected_tab == 0 and experience_text.contains("HERO XP") and experience_text.contains("VETERANCY XP"), "Post Battle opens on Experience and separates Hero and Veterancy XP.")
+	_check(experience_text.contains("XP LOST WITH UNIT"), "Experience tab explains dead Soldier XP loss.")
+	panel.get_node("%DamageTab").pressed.emit()
+	_check(panel.selected_tab == 1 and panel.get_node("%TabTitle").text == "DAMAGE DEALT" and _tree_text(panel.get_node("%Rows")).contains("100.0"), "Damage tab ranks full company damage instead of showing only a maximum.")
+	panel.get_node("%TankingTab").pressed.emit()
+	_check(panel.selected_tab == 2 and panel.get_node("%TabTitle").text == "DAMAGE TANKED", "Tanking tab has a dedicated company ranking.")
+	panel.get_node("%HealingTab").pressed.emit()
+	_check(panel.selected_tab == 3 and panel.get_node("%TabTitle").text == "EFFECTIVE HEALING", "Healing tab has a dedicated effective-healing ranking.")
+	panel.get_node("%LossesTab").pressed.emit()
+	var losses_text := _tree_text(panel.get_node("%Rows"))
+	_check(panel.selected_tab == 4 and losses_text.contains(dead_soldier_name), "Losses is the final tab and lists dead units.")
+	_check(not losses_text.contains(String(result.application_summary.replacements[0].display_name)), "Losses does not list replacement recruits.")
+	_check(panel.find_child("TopDamageValue", true, false) == null and panel.find_child("TopHealingValue", true, false) == null, "Post Battle no longer renders maximum damage or healing callouts.")
 	panel.free()
 
 	_test_defeat_without_refill(registry)
@@ -208,8 +215,19 @@ func _test_combat_scene_integration() -> void:
 	combat.get_node("Page/VBox/Header/MenuButton").pressed.emit()
 	_check(not menu_requests.is_empty(), "The Menu button remains available during live combat.")
 	combat.get_node("Page/VBox/Header/SpeedUpButton").pressed.emit()
-	_check(combat.speed_index == 1, "The speed controls remain available during live combat.")
+	_check(combat.speed_index == 2 and is_equal_approx(Engine.time_scale, 2.0), "The speed controls remain available during live combat.")
+	combat.get_node("Page/VBox/Header/SpeedDownButton").pressed.emit()
+	combat.get_node("Page/VBox/Header/SpeedDownButton").pressed.emit()
+	_check(combat.speed_index == 0 and is_equal_approx(Engine.time_scale, 0.5) and combat.get_node("%SpeedLabel").text.contains("0.5"), "Combat speed includes a visible 0.5x option.")
 	await process_frame
+	var pause_button: Button = combat.get_node("%PauseButton")
+	pause_button.pressed.emit()
+	var paused_elapsed: float = combat.combat_session.elapsed_time
+	await process_frame
+	await process_frame
+	_check(combat.battle_paused and combat.combat_session.process_mode == Node.PROCESS_MODE_DISABLED and is_equal_approx(combat.combat_session.elapsed_time, paused_elapsed) and pause_button.text == "RESUME", "Pause stops battle simulation while leaving its UI available.")
+	pause_button.pressed.emit()
+	_check(not combat.battle_paused and combat.combat_session.process_mode == Node.PROCESS_MODE_INHERIT and pause_button.text == "PAUSE", "Resume restores battle simulation.")
 	var player_statistics: Control = combat.get_node("%PlayerStatistics")
 	var enemy_statistics: Control = combat.get_node("%EnemyStatistics")
 	var arena: Control = combat.get_node("Page/VBox/BattleArea/Arena")
@@ -228,8 +246,9 @@ func _test_combat_scene_integration() -> void:
 		combat.combat_session.combatant_selected.emit(combat.combat_session.combatants[0])
 	var selected_panel: Control = combat.get_node("%SelectedUnitPanel")
 	_check(combat.inspected_combatant != null and selected_panel.visible, "Selecting an arena unit opens its lower gameplay-information panel.")
-	_check(selected_panel.get_node("%Stats").text.contains("HP") and selected_panel.get_node("%Stats").text.contains("DAMAGE") and selected_panel.get_node("%Stats").text.contains("ARMOR"), "Selected-unit details show current HP, damage, and armor.")
-	_check(selected_panel.get_node("%Abilities").text.contains("ABILITIES") and selected_panel.get_node("%Equipment").text.contains("WEAPONS"), "Selected-unit details show abilities and equipment or basic weapon.")
+	_check(selected_panel.get_node("%StatsGrid").get_child_count() == 6, "Selected-unit details show six icon-backed combat characteristics.")
+	_check(selected_panel.get_node("%AbilityIcons").get_child_count() >= HeroState.MAX_ABILITY_SLOTS and selected_panel.get_node("%ItemIcons").get_child_count() == HeroState.MAX_ITEM_SLOTS, "Selected Hero details reserve icon slots for abilities and equipment.")
+	_check(selected_panel.find_child("Statuses", true, false) == null and selected_panel.get_node("%StatusIcons") is HBoxContainer, "Selected-unit details replace the text status list with circular indicators.")
 	Engine.time_scale = 20.0
 	var real_start := Time.get_ticks_msec()
 	while run.applied_combat_result_ids.is_empty():
@@ -241,6 +260,7 @@ func _test_combat_scene_integration() -> void:
 	_check(run.gold > old_gold, "Integrated victory applies encounter Gold.")
 	_check(combat.get_node("%PostBattlePanel").visible, "Integrated combat opens the Post Battle panel.")
 	_check(combat.get_node("Page/VBox/Footer/RestartButton").disabled, "Finished combat cannot be replayed for duplicate rewards.")
+	_check(combat.get_node("%PauseButton").disabled, "A finished battle cannot be paused.")
 	combat.size = Vector2(800, 600)
 	await process_frame
 	_check(is_equal_approx(player_statistics.size.y, combat.size.y / 3.0) and is_equal_approx(enemy_statistics.size.y, combat.size.y / 3.0), "Statistics panels occupy one third of the viewport height.")
@@ -260,6 +280,15 @@ func _has_soldier(run: RunState, runtime_id: String) -> bool:
 		if soldier.unique_id == runtime_id:
 			return true
 	return false
+
+
+func _tree_text(node: Node) -> String:
+	var lines := PackedStringArray()
+	if node is Label or node is Button:
+		lines.append(node.text)
+	for child in node.get_children():
+		lines.append(_tree_text(child))
+	return "\n".join(lines)
 
 
 func _check(condition: bool, message: String) -> void:

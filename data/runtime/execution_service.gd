@@ -42,14 +42,13 @@ static func execute(run_state: RunState, hero_id: String, registry: Node) -> Dic
 	hero.ability_ids.clear()
 	hero.owned_ability_ids.clear()
 	hero.ability_levels.clear()
-	hero.ability_priority.clear()
 	hero.cooldowns.clear()
 	hero.statuses.clear()
 	hero.stat_modifiers.clear()
 	hero.current_hp = 0.0
 	hero.life_state = HeroState.EXECUTED
 	staged.execution_snapshots.append(snapshot)
-	staged.soldiers.append(_create_militia(staged))
+	staged.soldiers.append(_create_militia(staged, registry))
 	staged.current_act = 2
 	staged.encounter_index = 0
 	staged.run_phase = &"management"
@@ -82,14 +81,15 @@ static func _create_snapshot(run_state: RunState, hero: HeroState, registry: Nod
 	return snapshot
 
 
-static func _create_militia(run_state: RunState) -> SoldierState:
+static func _create_militia(run_state: RunState, registry: Node) -> SoldierState:
 	var soldier := SoldierState.new()
 	var serial := run_state.execution_snapshots.size()
 	soldier.unique_id = "execution-militia-%02d" % serial
 	while _has_runtime_id(run_state, soldier.unique_id):
 		serial += 1
 		soldier.unique_id = "execution-militia-%02d" % serial
-	soldier.generated_name = "Militia %d" % (run_state.soldiers.size() + 1)
+	var militia := registry.get_definition(&"job.militia") as JobDefinition
+	SoldierNameGenerator.assign_name(soldier, militia.display_name, run_state.run_seed, run_state.soldiers)
 	return soldier
 
 

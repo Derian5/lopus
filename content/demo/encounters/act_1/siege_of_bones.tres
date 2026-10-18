@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.ogre_bonebreaker", &"enemy.ogre_bonebreaker", &"enemy.ogre_bonebreaker", &"enemy.ogre_bonebreaker", &"enemy.ogre_drummer", &"enemy.ogre_drummer", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
+reinforcement_enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider"])
+reinforcement_alive_threshold = 2
+reinforcement_entry_direction = 1
+gold_reward = 310
+enemy_power = 0.7
+min_encounter_index = 9
+max_encounter_index = 11
+difficulty_hint = "Elite"
+key_properties = Array[String](["Four leaping champions"])
+is_unknown = false
+is_boss = false
+id = &"encounter.siege_of_bones"
+display_name = "Siege of Bones"
+description = "Bonebreakers storm your line behind a hail of spears."
+tags = Array[StringName]([&"encounter", &"act1", &"reinforcements"])

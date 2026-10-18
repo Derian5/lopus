@@ -44,15 +44,13 @@ func _test_content_and_eligibility() -> void:
 			and ability.hero_levels.size() == AbilityDefinition.MAX_HERO_ABILITY_LEVEL,
 			"%s is a four-level Pride-exclusive ability." % ability_id
 		)
-	for legacy_id in [
-		&"ability.frost_dart",
+	for deleted_id in [
 		&"ability.fire_bolt",
 		&"ability.guardian_shield",
 		&"ability.battle_fury",
 		&"ability.hero_summon",
 	]:
-		var legacy := registry.get_definition(legacy_id) as AbilityDefinition
-		_check(not legacy.is_allowed_for_hero(PRIDE_ID), "Pride is excluded from legacy ability %s." % legacy_id)
+		_check(registry.get_definition(deleted_id, false) == null, "Deleted shared ability is not registered: %s." % deleted_id)
 
 
 func _test_last_stand() -> void:
@@ -121,8 +119,8 @@ func _test_targeting_cleanse_teleport_and_aura() -> void:
 
 	var slow := registry.get_definition(&"status.slow") as StatusDefinition
 	var armor_buff := registry.get_definition(&"status.armor_buff") as StatusDefinition
-	pride_unit.apply_status(slow, near_unit, &"ability.frost_dart")
-	pride_unit.apply_status(armor_buff, pride_unit, &"ability.guardian_shield")
+	pride_unit.apply_status(slow, near_unit, &"ability.test_slow")
+	pride_unit.apply_status(armor_buff, pride_unit, &"ability.test_positive_status")
 	var cleanse := _ability(&"ability.pride_cleanse", 1)
 	_check(session.resolve_ability_target(pride_unit, cleanse) == pride_unit, "Cleanse includes Pride when choosing the nearest affected ally.")
 	session.deliver_ability(pride_unit, pride_unit, cleanse)
@@ -133,8 +131,8 @@ func _test_targeting_cleanse_teleport_and_aura() -> void:
 	pride_unit.take_damage(1.0, near_unit, &"attack.basic", &"attack.basic", true)
 	_check(pride_unit.position.x > original_position.x and pride_unit.melee_teleport_cooldown_remaining > 0.0, "Melee damage teleports Pride away from the attacker.")
 	var cooldown_position := pride_unit.position
-	pride_unit.take_damage(1.0, near_unit, &"attack.basic", &"attack.basic", true)
-	_check(pride_unit.position == cooldown_position, "The melee teleport cannot trigger again during its cooldown.")
+	var cooldown_hit := pride_unit.take_damage(60.0, near_unit, &"attack.basic", &"attack.basic", true)
+	_check(is_equal_approx(pride_unit.position.distance_to(cooldown_position), pride_unit.damage_knockback_for(cooldown_hit)) and pride_unit.melee_teleport_cooldown_remaining > 0.0, "Melee teleport stays on cooldown while the global hit reaction still applies its damage-scaled knockback.")
 	session.free()
 
 

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 165
+enemy_power = 1.07
+min_encounter_index = 4
+max_encounter_index = 7
+difficulty_hint = "Moderate"
+key_properties = Array[String](["Large mixed force", "Durable melee majority"])
+is_unknown = false
+is_boss = false
+id = &"encounter.warband"
+display_name = "Marching Warband"
+description = "A full ogre warband on the march."
+tags = Array[StringName]([&"encounter", &"act1"])

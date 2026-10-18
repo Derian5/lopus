@@ -1,28 +1,17 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://pndgvycka4o6"]
 
-[ext_resource type="Script" path="res://ui/hero_selection/hero_selection.gd" id="1"]
+[ext_resource type="Script" uid="uid://42v310rcrjqc" path="res://ui/hero_selection/hero_selection.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://ui/hero_selection/hero_selection_card.tscn" id="3_card"]
+[ext_resource type="Script" path="res://ui/common/button_motion.gd" id="4_motion"]
 
-[sub_resource type="StyleBoxFlat" id="Background"]
-bg_color = Color(0.018, 0.025, 0.041, 1)
+[ext_resource type="Script" path="res://ui/common/screen_backdrop.gd" id="10_backdrop"]
 
-[sub_resource type="StyleBoxFlat" id="Card"]
-bg_color = Color(0.055, 0.068, 0.096, 0.98)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.32, 0.39, 0.53, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-
-[sub_resource type="StyleBoxFlat" id="Selected"]
-bg_color = Color(0.18, 0.46, 0.3, 0.96)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+[sub_resource type="StyleBoxFlat" id="FeedbackStyle"]
+bg_color = Color(0.2, 0.03, 0.04, 0.72)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="HeroSelection" type="Control"]
 layout_mode = 3
@@ -31,286 +20,179 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+script = ExtResource("1_script")
 
-[node name="Background" type="Panel" parent="."]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("Background")
+script = ExtResource("10_backdrop")
+mouse_filter = 2
 
-[node name="Page" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 22
-theme_override_constants/margin_right = 28
-theme_override_constants/margin_bottom = 22
+[node name="DesignRoot" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
 
-[node name="Layout" type="VBoxContainer" parent="Page"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Eyebrow" type="Label" parent="Page/Layout"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.68, 0.9, 1)
+[node name="Eyebrow" type="Label" parent="DesignRoot"]
+layout_mode = 0
+offset_left = 610.0
+offset_top = 10.0
+offset_right = 1310.0
+offset_bottom = 46.0
+theme_override_font_sizes/font_size = 20
 text = "ASSEMBLE THE FIRST COMPANY"
 horizontal_alignment = 1
+vertical_alignment = 1
+theme_type_variation = &"EyebrowLabel"
+visible = false
 
-[node name="Title" type="Label" parent="Page/Layout"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.82, 0.48, 1)
-theme_override_font_sizes/font_size = 30
+[node name="TitleDivider" type="ColorRect" parent="DesignRoot"]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 50.0
+offset_right = 1160.0
+offset_bottom = 52.0
+mouse_filter = 2
+color = Color(0.6, 0.68, 0.76, 0.45)
+visible = false
+
+[node name="Title" type="Label" parent="DesignRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 540.0
+offset_top = 50.0
+offset_right = 1380.0
+offset_bottom = 112.0
 text = "CHOOSE THREE HEROES"
 horizontal_alignment = 1
+vertical_alignment = 1
+theme_type_variation = &"TitleLabel"
 
-[node name="CounterLabel" type="Label" parent="Page/Layout"]
+[node name="CounterLabel" type="Label" parent="DesignRoot"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.63, 0.69, 0.8, 1)
+layout_mode = 0
+offset_left = 760.0
+offset_top = 110.0
+offset_right = 1160.0
+offset_bottom = 138.0
+theme_override_colors/font_color = Color(0.6, 0.76, 0.9, 1)
+theme_override_font_sizes/font_size = 19
 text = "HERO 1 / 7"
 horizontal_alignment = 1
+vertical_alignment = 1
+visible = false
 
-[node name="Carousel" type="HBoxContainer" parent="Page/Layout"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 18
+[node name="PreviousButton" type="Button" parent="DesignRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 54.0
+offset_top = 445.0
+offset_right = 118.0
+offset_bottom = 577.0
+theme_override_font_sizes/font_size = 44
+text = "<"
+theme_type_variation = &"LedgerButton"
+
+[node name="ButtonMotion" type="Node" parent="DesignRoot/PreviousButton"]
+script = ExtResource("4_motion")
+
+[node name="PreviousCard" parent="DesignRoot" instance=ExtResource("3_card")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 204.0
+offset_top = 205.0
+offset_right = 634.0
+offset_bottom = 905.0
+
+[node name="CenterCard" parent="DesignRoot" instance=ExtResource("3_card")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 745.0
+offset_top = 165.0
+offset_right = 1175.0
+offset_bottom = 865.0
+
+[node name="NextCard" parent="DesignRoot" instance=ExtResource("3_card")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1286.0
+offset_top = 205.0
+offset_right = 1716.0
+offset_bottom = 905.0
+
+[node name="NextButton" type="Button" parent="DesignRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1802.0
+offset_top = 445.0
+offset_right = 1866.0
+offset_bottom = 577.0
+theme_override_font_sizes/font_size = 44
+text = ">"
+theme_type_variation = &"LedgerButton"
+
+[node name="ButtonMotion" type="Node" parent="DesignRoot/NextButton"]
+script = ExtResource("4_motion")
+
+[node name="SelectedSlots" type="HBoxContainer" parent="DesignRoot"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 640.0
+offset_top = 884.0
+offset_right = 1280.0
+offset_bottom = 956.0
+mouse_filter = 2
+theme_override_constants/separation = 22
 alignment = 1
 
-[node name="PreviousButton" type="Button" parent="Page/Layout/Carousel"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(72, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 34
-text = "<"
-
-[node name="Card" type="PanelContainer" parent="Page/Layout/Carousel"]
-custom_minimum_size = Vector2(590, 500)
-layout_mode = 2
-theme_override_styles/panel = SubResource("Card")
-
-[node name="Margin" type="MarginContainer" parent="Page/Layout/Carousel/Card"]
-layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 20
-
-[node name="Content" type="VBoxContainer" parent="Page/Layout/Carousel/Card/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="PortraitFrame" type="Control" parent="Page/Layout/Carousel/Card/Margin/Content"]
-custom_minimum_size = Vector2(0, 168)
-layout_mode = 2
-
-[node name="PortraitPlaceholder" type="Panel" parent="Page/Layout/Carousel/Card/Margin/Content/PortraitFrame"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Initials" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/PortraitFrame/PortraitPlaceholder"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 58
-text = "TV"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Portrait" type="TextureRect" parent="Page/Layout/Carousel/Card/Margin/Content/PortraitFrame"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-expand_mode = 1
-stretch_mode = 6
-
-[node name="SelectedOverlay" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/PortraitFrame"]
+[node name="Feedback" type="Label" parent="DesignRoot"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = 154.0
-offset_bottom = 47.0
-theme_override_colors/font_color = Color(0.9, 1, 0.92, 1)
-theme_override_styles/normal = SubResource("Selected")
-text = "SELECTED  #1"
+offset_left = 610.0
+offset_top = 958.0
+offset_right = 1310.0
+offset_bottom = 982.0
+theme_override_colors/font_color = Color(1, 0.58, 0.48, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("FeedbackStyle")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HeroName" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.84, 0.55, 1)
-theme_override_font_sizes/font_size = 25
-text = "HERO NAME"
-horizontal_alignment = 1
-
-[node name="RoleLabel" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.47, 0.72, 0.88, 1)
-text = "ROLE"
-horizontal_alignment = 1
-
-[node name="Description" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.74, 0.78, 0.85, 1)
-text = "Hero description"
-horizontal_alignment = 1
-autowrap_mode = 2
-
-[node name="Divider" type="HSeparator" parent="Page/Layout/Carousel/Card/Margin/Content"]
-layout_mode = 2
-
-[node name="Stats" type="GridContainer" parent="Page/Layout/Carousel/Card/Margin/Content"]
-layout_mode = 2
-theme_override_constants/h_separation = 18
-theme_override_constants/v_separation = 4
-columns = 4
-
-[node name="HpLabel" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.63, 0.75, 1)
-text = "HP"
-
-[node name="HpValue" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "0"
-
-[node name="DamageLabel" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.63, 0.75, 1)
-text = "DAMAGE"
-
-[node name="DamageValue" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "0"
-
-[node name="AttackSpeedLabel" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.63, 0.75, 1)
-text = "ATTACK SPEED"
-
-[node name="AttackSpeedValue" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "0"
-
-[node name="MoveSpeedLabel" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.63, 0.75, 1)
-text = "MOVE SPEED"
-
-[node name="MoveSpeedValue" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "0"
-
-[node name="RangeLabel" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.63, 0.75, 1)
-text = "RANGE"
-
-[node name="RangeValue" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "0"
-
-[node name="ArmorLabel" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.63, 0.75, 1)
-text = "ARMOR"
-
-[node name="ArmorValue" type="Label" parent="Page/Layout/Carousel/Card/Margin/Content/Stats"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "0"
-
-[node name="SelectButton" type="Button" parent="Page/Layout/Carousel/Card/Margin/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-text = "SELECT"
-
-[node name="NextButton" type="Button" parent="Page/Layout/Carousel"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(72, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 34
-text = ">"
-
-[node name="ProgressLabel" type="Label" parent="Page/Layout"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.78, 0.43, 1)
-text = "0 / 3 HEROES CHOSEN"
-horizontal_alignment = 1
-
-[node name="SelectedRoster" type="Label" parent="Page/Layout"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.77, 0.88, 1)
-text = "No heroes selected"
-horizontal_alignment = 1
-autowrap_mode = 2
-
-[node name="Feedback" type="Label" parent="Page/Layout"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 22)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.92, 0.48, 0.38, 1)
-horizontal_alignment = 1
-
-[node name="Actions" type="HBoxContainer" parent="Page/Layout"]
-layout_mode = 2
-theme_override_constants/separation = 12
-alignment = 1
-
-[node name="BackButton" type="Button" parent="Page/Layout/Actions"]
-custom_minimum_size = Vector2(180, 48)
-layout_mode = 2
+[node name="BackButton" type="Button" parent="DesignRoot"]
+layout_mode = 0
+offset_left = 667.0
+offset_top = 985.0
+offset_right = 947.0
+offset_bottom = 1042.0
+theme_override_font_sizes/font_size = 17
 text = "BACK"
+theme_type_variation = &"LedgerButton"
 
-[node name="StartButton" type="Button" parent="Page/Layout/Actions"]
+[node name="ButtonMotion" type="Node" parent="DesignRoot/BackButton"]
+script = ExtResource("4_motion")
+
+[node name="StartButton" type="Button" parent="DesignRoot"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(260, 48)
-layout_mode = 2
+layout_mode = 0
+offset_left = 973.0
+offset_top = 985.0
+offset_right = 1253.0
+offset_bottom = 1042.0
+theme_override_font_sizes/font_size = 17
 disabled = true
 text = "START RUN"
+theme_type_variation = &"PrimaryButton"
 
-[connection signal="pressed" from="Page/Layout/Carousel/PreviousButton" to="." method="_on_previous_pressed"]
-[connection signal="pressed" from="Page/Layout/Carousel/Card/Margin/Content/SelectButton" to="." method="_on_select_pressed"]
-[connection signal="pressed" from="Page/Layout/Carousel/NextButton" to="." method="_on_next_pressed"]
-[connection signal="pressed" from="Page/Layout/Actions/BackButton" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="Page/Layout/Actions/StartButton" to="." method="_on_start_pressed"]
+[node name="ButtonMotion" type="Node" parent="DesignRoot/StartButton"]
+script = ExtResource("4_motion")
+
+[connection signal="pressed" from="DesignRoot/PreviousButton" to="." method="_on_previous_pressed"]
+[connection signal="pressed" from="DesignRoot/NextButton" to="." method="_on_next_pressed"]
+[connection signal="pressed" from="DesignRoot/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="DesignRoot/StartButton" to="." method="_on_start_pressed"]

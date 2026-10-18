@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/lust_recruit_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_lust_recruit.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Base"]
+script = ExtResource("3")
+effect_id = &"effect.lust_recruit"
+[sub_resource type="Resource" id="E1"]
+script = ExtResource("3")
+effect_id = &"effect.lust_recruit"
+hp_threshold = 100.0
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+effects = Array[AbilityEffect]([SubResource("E1")])
+[sub_resource type="Resource" id="E2"]
+script = ExtResource("3")
+effect_id = &"effect.lust_recruit"
+hp_threshold = 200.0
+[sub_resource type="Resource" id="L2"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+effects = Array[AbilityEffect]([SubResource("E2")])
+[sub_resource type="Resource" id="E3"]
+script = ExtResource("3")
+effect_id = &"effect.lust_recruit"
+hp_threshold = 400.0
+[sub_resource type="Resource" id="L3"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+effects = Array[AbilityEffect]([SubResource("E3")])
+[sub_resource type="Resource" id="E4"]
+script = ExtResource("3")
+effect_id = &"effect.lust_recruit"
+hp_threshold = 800.0
+[sub_resource type="Resource" id="L4"]
+script = ExtResource("2")
+cooldown_seconds = 15.0
+effects = Array[AbilityEffect]([SubResource("E4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.lust_recruit"
+display_name = "Irresistible Offer"
+description = "Recruits the nearest non-boss enemy within {e0.radius} with [cc]less than {e0.hp_threshold} HP[/cc]. It fights for you until the battle ends."
+cooldown_seconds = 15.0
+targeting_policy = 0
+effects = Array[AbilityEffect]([SubResource("Base")])
+priority = 90
+presentation_color = Color(0.92, 0.36, 0.66, 1)
+allowed_hero_ids = Array[StringName]([&"hero.glass_arcanist"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
+tags = Array[StringName]([&"ability", &"active", &"lust", &"recruit"])

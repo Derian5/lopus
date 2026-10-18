@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_0w5kh"]
 [ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_xx62v"]
+[ext_resource type="Texture2D" uid="uid://bcys8cgol4lde" path="res://arts/v1/Wraith.png" id="3_portrait"]
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_0w5kh")
-max_hp = 720.0
-damage = 56.0
-attack_speed = 1.75
-movement_speed = 120.0
+max_hp = 360.0
+damage = 14.0
+attack_speed = 0.45
+movement_speed = 94.0
 attack_range = 50.0
 armor = 22.0
 
@@ -16,6 +17,7 @@ armor = 22.0
 script = ExtResource("2_xx62v")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.86, 0.18, 0.16, 1)
+portrait = ExtResource("3_portrait")
 available_in_new_game = true
 selection_order = 2
 id = &"hero.ashen_duelist"

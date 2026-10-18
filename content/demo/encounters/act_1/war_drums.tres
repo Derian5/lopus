@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.ogre_drummer", &"enemy.ogre_drummer", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 160
+enemy_power = 1.01
+min_encounter_index = 4
+max_encounter_index = 7
+difficulty_hint = "Moderate"
+key_properties = Array[String](["Dread Drums slow your attacks", "War Chant shields the wounded"])
+is_unknown = false
+is_boss = false
+id = &"encounter.war_drums"
+display_name = "War Drums"
+description = "The drums sound over the wasteland and your soldiers' blows grow heavy."
+tags = Array[StringName]([&"encounter", &"act1"])

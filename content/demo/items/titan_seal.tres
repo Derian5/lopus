@@ -11,9 +11,7 @@ value = 1.15
 
 [resource]
 script = ExtResource("1")
-allowed_target_type = &"hero"
 passive_effects = Array[StatModifier]([SubResource("Health")])
-rarity = "rare"
 price = 220
 sell_price = 110
 id = &"item.hero.titan_seal"

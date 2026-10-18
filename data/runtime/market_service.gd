@@ -12,16 +12,11 @@ static func reroll_price(market: MarketState) -> int:
 
 static func begin_visit(run_state: RunState, registry: Node) -> Dictionary:
 	var staged_stream := RngStreamState.from_dictionary(run_state.market_rng.to_dictionary())
-	var generated := MarketGenerator.generate_offers(
-		run_state, registry, staged_stream, run_state.market.next_offer_serial
-	)
+	var generated := _generate_refresh(run_state, registry, staged_stream)
 	if not generated.ok:
 		return _failure(generated.error)
-	var staged_offers: Array[MarketOffer] = []
-	for offer in generated.offers:
-		staged_offers.append(offer)
 	run_state.market_rng = staged_stream
-	run_state.market.offers = staged_offers
+	run_state.market.offers = generated.offers
 	run_state.market.next_offer_serial = generated.next_offer_serial
 	run_state.market.reroll_count = 0
 	return {"ok": true, "error": ""}
@@ -44,13 +39,15 @@ static func buy_offer(run_state: RunState, offer_id: String, registry: Node) -> 
 
 	match offer.offer_type:
 		&"hero_item":
-			run_state.inventory.create_item(offer.content_id, offer.target_id)
-		&"soldier_item":
 			run_state.inventory.create_item(offer.content_id)
 		&"job_unlock":
-			run_state.unlocked_job_ids.append(offer.content_id)
-			run_state.job_capacities[String(offer.content_id)] = 1
-			_ensure_job_build(run_state, offer.content_id)
+			var key := String(offer.content_id)
+			if run_state.unlocked_job_ids.has(offer.content_id):
+				run_state.job_capacities[key] = int(run_state.job_capacities.get(key, 0)) + 1
+			else:
+				run_state.unlocked_job_ids.append(offer.content_id)
+				run_state.job_capacities[key] = 1
+				_ensure_job_build(run_state, offer.content_id)
 		&"job_capacity":
 			var key := String(offer.content_id)
 			run_state.job_capacities[key] = int(run_state.job_capacities.get(key, 0)) + 1
@@ -67,21 +64,24 @@ static func reroll(run_state: RunState, registry: Node) -> Dictionary:
 	if run_state.gold < price:
 		return _failure("Reroll blocked: need %d Gold, have %d." % [price, run_state.gold])
 	var staged_stream := RngStreamState.from_dictionary(run_state.market_rng.to_dictionary())
-	var generated := MarketGenerator.generate_offers(
-		run_state, registry, staged_stream, run_state.market.next_offer_serial
-	)
+	var generated := _generate_refresh(run_state, registry, staged_stream)
 	if not generated.ok:
 		return _failure(generated.error)
-	var staged_offers: Array[MarketOffer] = []
-	for offer in generated.offers:
-		staged_offers.append(offer)
 
 	run_state.gold -= price
 	run_state.market_rng = staged_stream
-	run_state.market.offers = staged_offers
+	run_state.market.offers = generated.offers
 	run_state.market.next_offer_serial = generated.next_offer_serial
 	run_state.market.reroll_count += 1
 	return {"ok": true, "error": "", "price": price}
+
+
+static func set_offer_pinned(run_state: RunState, offer_id: String, pinned: bool) -> Dictionary:
+	for offer in run_state.market.offers:
+		if offer.offer_id == offer_id:
+			offer.is_pinned = pinned
+			return {"ok": true, "error": "", "offer": offer}
+	return _failure("That Market offer is no longer available.")
 
 
 static func sell_item(run_state: RunState, instance_id: StringName, registry: Node) -> Dictionary:
@@ -106,12 +106,13 @@ static func _validate_purchase(run_state: RunState, offer: MarketOffer, registry
 	var definition: ContentDefinition = schema.definition
 	match offer.offer_type:
 		&"hero_item":
-			var hero := _find_hero(run_state, offer.target_id)
-			if hero == null or hero.life_state == HeroState.EXECUTED:
-				return _failure("That Hero is not eligible for Market offers.")
+			var item := definition as ItemDefinition
+			if not _has_compatible_hero(run_state, item, registry):
+				return _failure("No remaining Hero can equip that item.")
 		&"job_unlock":
 			if run_state.unlocked_job_ids.has(offer.content_id):
-				return _failure("That Job is already unlocked.")
+				if int(run_state.job_capacities.get(String(offer.content_id), 0)) >= run_state.soldiers.size():
+					return _failure("That Job cannot use more capacity.")
 		&"job_capacity":
 			if not run_state.unlocked_job_ids.has(offer.content_id):
 				return _failure("That Job is not unlocked.")
@@ -136,9 +137,9 @@ static func validate_offer_schema(run_state: RunState, offer: MarketOffer, regis
 		return _failure("Market content is missing.")
 	match offer.offer_type:
 		&"hero_item":
-			if not definition is ItemDefinition or definition.allowed_target_type != &"hero" or _find_hero(run_state, offer.target_id) == null:
+			if not definition is ItemDefinition or not offer.target_id.is_empty():
 				return _failure("Hero item offer restrictions are invalid.")
-			if not _same_job_ids(offer.allowed_job_ids, definition.allowed_job_ids):
+			if not offer.allowed_job_ids.is_empty():
 				return _failure("Hero item offer restrictions do not match its content.")
 		&"job_unlock", &"job_capacity":
 			if not definition is JobDefinition or offer.target_id != String(offer.content_id) or not _same_job_ids(offer.allowed_job_ids, [offer.content_id]):
@@ -150,11 +151,6 @@ static func validate_offer_schema(run_state: RunState, offer: MarketOffer, regis
 				return _failure("Job Ability offer restrictions are invalid.")
 			if not _same_job_ids(offer.allowed_job_ids, [job_id]):
 				return _failure("Job Ability restrictions do not match its target.")
-		&"soldier_item":
-			if not definition is ItemDefinition or definition.allowed_target_type != &"soldier" or not offer.target_id.is_empty():
-				return _failure("Soldier item offer restrictions are invalid.")
-			if not _same_job_ids(offer.allowed_job_ids, definition.allowed_job_ids):
-				return _failure("Soldier item offer restrictions do not match its content.")
 	return {"ok": true, "error": "", "definition": definition}
 
 
@@ -163,6 +159,14 @@ static func _find_hero(run_state: RunState, unique_id: String) -> HeroState:
 		if hero.unique_id == unique_id:
 			return hero
 	return null
+
+
+static func _has_compatible_hero(run_state: RunState, item: ItemDefinition, registry: Node) -> bool:
+	for hero in run_state.heroes:
+		var definition := registry.get_definition(hero.definition_id, false) as HeroDefinition
+		if hero.life_state != HeroState.EXECUTED and item.is_compatible_with_hero(definition):
+			return true
+	return false
 
 
 static func _find_job_build(run_state: RunState, job_id: StringName) -> JobBuildState:
@@ -189,6 +193,27 @@ static func _same_job_ids(first: Array[StringName], second: Array) -> bool:
 		if not second.has(job_id):
 			return false
 	return true
+
+
+static func _generate_refresh(run_state: RunState, registry: Node, stream: RngStreamState) -> Dictionary:
+	var minimum_count := MarketGenerator.MIN_OFFERS
+	for index in run_state.market.offers.size():
+		if run_state.market.offers[index].is_pinned:
+			minimum_count = maxi(minimum_count, index + 1)
+	var generated := MarketGenerator.generate_offers(
+		run_state, registry, stream, run_state.market.next_offer_serial, minimum_count
+	)
+	if not generated.ok:
+		return generated
+	var refreshed: Array[MarketOffer] = []
+	for offer in generated.offers:
+		refreshed.append(offer)
+	for index in run_state.market.offers.size():
+		var pinned_offer := run_state.market.offers[index]
+		if pinned_offer.is_pinned:
+			refreshed[index] = pinned_offer
+	generated["offers"] = refreshed
+	return generated
 
 
 static func _failure(message: String) -> Dictionary:

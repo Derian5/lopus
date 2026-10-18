@@ -1,18 +1,23 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/combat/combat_statistics_panel.gd" id="1_panel"]
 
+[ext_resource type="Script" path="res://ui/common/ornate_frame.gd" id="10_frame"]
+
 [sub_resource type="StyleBoxFlat" id="StylePanel"]
-bg_color = Color(0.025, 0.03, 0.04, 0.72)
+bg_color = Color(0.06, 0.042, 0.03, 0.94)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.35, 0.38, 0.45, 0.9)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+border_color = Color(0.66, 0.48, 0.27, 0.95)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.48)
+shadow_size = 8
+corner_detail = 1
 
 [node name="CombatStatisticsPanel" type="PanelContainer"]
 custom_minimum_size = Vector2(220, 0)
@@ -28,7 +33,7 @@ theme_override_constants/margin_bottom = 10
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 5
 
 [node name="Title" type="Label" parent="Margin/VBox"]
 unique_name_in_owner = true
@@ -36,6 +41,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "TEAM"
 horizontal_alignment = 1
+theme_type_variation = &"NumberLabel"
 
 [node name="Tabs" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
@@ -47,6 +53,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 text = "DAMAGE"
+theme_type_variation = &"TabButton"
 
 [node name="TankTab" type="Button" parent="Margin/VBox/Tabs"]
 unique_name_in_owner = true
@@ -54,6 +61,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 text = "TANK"
+theme_type_variation = &"TabButton"
 
 [node name="HealTab" type="Button" parent="Margin/VBox/Tabs"]
 unique_name_in_owner = true
@@ -61,6 +69,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
 text = "HEAL"
+theme_type_variation = &"TabButton"
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
 layout_mode = 2
@@ -72,4 +81,18 @@ vertical_scroll_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 3
+theme_override_constants/separation = 1
+
+[node name="Ornament" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_frame")
+cut = 12.0
+inset = 2.0
+crest_bottom = false
+crest_width = 44.0

@@ -7,6 +7,12 @@ extends ContentDefinition
 @export_range(0.0, 100.0, 1.0) var event_absence_percent := 50.0
 @export_range(0.0, 1000000.0, 0.1, "or_greater") var new_hero_ability_weight := 3.0
 @export_range(0.0, 1000000.0, 0.1, "or_greater") var hero_ability_upgrade_weight := 1.0
+@export_range(0.0, 10.0, 0.1, "or_greater") var hero_ability_upgrade_level_penalty := 1.0
+## Act I enemy power by battle index (multiplies enemy Max HP and Damage on top of
+## each encounter's own enemy_power). The wasteland grows harder as the army does.
+@export var act_one_enemy_power_curve := PackedFloat32Array()
+@export var opening_event_id: StringName
+@export var act_one_post_battle_event_ids: Array[StringName] = []
 
 
 func act_one_boss_index() -> int:
@@ -15,3 +21,16 @@ func act_one_boss_index() -> int:
 
 func final_encounter_index(act: int) -> int:
 	return act_one_boss_index() if act == 1 else act_two_battle_count - 1
+
+
+func post_battle_event_id(act: int, completed_battles: int) -> StringName:
+	if act != 1 or completed_battles <= 0 or completed_battles > act_one_post_battle_event_ids.size():
+		return &""
+	return act_one_post_battle_event_ids[completed_battles - 1]
+
+
+## Combined enemy Max HP / Damage multiplier for an encounter fought at encounter_index.
+func enemy_power_for(act: int, encounter_index: int) -> float:
+	if act != 1 or act_one_enemy_power_curve.is_empty():
+		return 1.0
+	return act_one_enemy_power_curve[clampi(encounter_index, 0, act_one_enemy_power_curve.size() - 1)]

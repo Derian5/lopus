@@ -1,17 +1,22 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" format=3 uid="uid://d3dg8x0iym1av"]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3 uid="uid://d3dg8x0iym1av"]
 
-[ext_resource type="Script" uid="uid://4tuimq2q6q86" path="res://content/definitions/encounter_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
-enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
-gold_reward = 220
-min_encounter_index = 5
-max_encounter_index = 10
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.ogre_bonebreaker"])
+reinforcement_enemy_ids = Array[StringName]([&"enemy.ogre_bonebreaker", &"enemy.ogre_bonebreaker", &"enemy.troll_berserker", &"enemy.troll_berserker"])
+reinforcement_alive_threshold = 2
+reinforcement_entry_direction = 0
+gold_reward = 340
+enemy_power = 0.81
+min_encounter_index = 6
+max_encounter_index = 11
 difficulty_hint = "High"
 key_properties = Array[String](["Composition concealed"])
 is_unknown = true
+is_boss = false
 id = &"encounter.unknown_ambush"
 display_name = "Unknown Ambush"
-description = "Scout reports are incomplete, but the bounty is exceptional."
-tags = Array[StringName]([&"encounter", &"act1", &"unknown"])
+description = "Scouts report an ambush but not who is waiting."
+tags = Array[StringName]([&"encounter", &"act1", &"reinforcements"])

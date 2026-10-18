@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="JobDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/job_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Modifiers"]
+script = ExtResource("2")
+max_hp = 495.0
+damage = 0.0
+attack_speed = -0.5
+movement_speed = 0.0
+attack_range = 0.0
+armor = 78.0
+
+[resource]
+script = ExtResource("1")
+stat_modifiers = SubResource("Modifiers")
+attack_definition_id = &"attack.basic_melee"
+available_ability_ids = Array[StringName]([])
+professionalism_thresholds = Array[int]([3, 6])
+professionalism_ability_ids = Array[StringName]([&"ability.shieldbearer_professionalism_reflect_tier_1", &"ability.shieldbearer_professionalism_reflect_tier_2"])
+restriction_tags = Array[StringName]([&"soldier"])
+capacity_price = 100
+unlock_price = 170
+placeholder_color = Color(0.34, 0.48, 0.62, 1)
+id = &"job.shieldbearer"
+display_name = "Shieldbearer"
+description = "Heavily armored frontline role with exceptional health and slow attacks."
+tags = Array[StringName]([&"job", &"melee", &"frontline", &"tank"])

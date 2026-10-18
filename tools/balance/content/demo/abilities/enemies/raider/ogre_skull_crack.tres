@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_ground_slam.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/apply_status_effect.gd" id="5"]
+
+[sub_resource type="Resource" id="CrackDamage"]
+script = ExtResource("3")
+effect_id = &"effect.ogre_skull_crack_damage"
+amount = 30.0
+
+[sub_resource type="Resource" id="ogre_skull_crack_stun"]
+script = ExtResource("4")
+id = &"status.ogre_skull_crack_stun"
+display_name = "Stun"
+description = "Prevents actions for a short duration."
+default_duration = 1.0
+max_stacks = 1
+stack_policy = 0
+prevents_actions = true
+polarity = 2
+
+[sub_resource type="Resource" id="CrackStun"]
+script = ExtResource("5")
+effect_id = &"effect.ogre_skull_crack_stun"
+status = SubResource("ogre_skull_crack_stun")
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.ogre_skull_crack"
+display_name = "Skull Crack"
+description = "Every 8 seconds the next basic attack deals 30 bonus damage and stuns the target for 1.0 seconds."
+activation_mode = 1
+cooldown_seconds = 8.0
+initial_cooldown_seconds = 3.0
+targeting_policy = 1
+delivery_method = 1
+priority = 60
+tags = Array[StringName]([&"ability", &"active", &"enemy", &"stun"])
+effects = Array[AbilityEffect]([SubResource("CrackDamage"), SubResource("CrackStun")])
+presentation_color = Color(0.78, 0.52, 0.3, 1)
+presentation_text = "Skull Crack"
+available_to_heroes = false

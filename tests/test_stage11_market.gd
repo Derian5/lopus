@@ -16,6 +16,7 @@ func _run() -> void:
 	_test_generation_and_bias()
 	_test_buy_transactions()
 	_test_reroll_transactions()
+	_test_pin_refresh_transactions()
 	_test_sell_transactions()
 	await _test_post_combat_visit()
 	if failures == 0:
@@ -46,15 +47,23 @@ func _test_generation_and_bias() -> void:
 
 	var eligible_types: Dictionary = {}
 	var has_innate_summon_offer := false
+	first.unlocked_job_ids.append(&"job.warrior")
+	first.job_capacities["job.warrior"] = 1
 	for candidate in MarketGenerator._collect_candidates(first, registry):
 		eligible_types[candidate.offer_type] = true
 		_check(candidate.offer_type != &"hero_ability", "Hero abilities are absent from the complete Market candidate pool.")
 		has_innate_summon_offer = has_innate_summon_offer or candidate.content_id in [&"ability.summoner_job_summon", &"ability.enemy_summon"]
-	for offer_type in [&"hero_item", &"job_unlock", &"job_capacity", &"job_ability"]:
+	for offer_type in [&"hero_item", &"job_unlock", &"job_capacity"]:
 		_check(eligible_types.has(offer_type), "Offer type %s has eligible data-driven content." % offer_type)
-	_check(not eligible_types.has(&"soldier_item"), "The current prototype has no Soldier item offers.")
+	_check(not eligible_types.has(&"job_ability"), "No Job Ability is offered while only Jobs without purchasable abilities are unlocked.")
+	first.unlocked_job_ids.append(&"job.archer")
+	first.job_capacities["job.archer"] = 1
+	var unlocked_types: Dictionary = {}
+	for candidate in MarketGenerator._collect_candidates(first, registry):
+		unlocked_types[candidate.offer_type] = true
+	_check(not unlocked_types.has(&"job_ability"), "Unlocking Archer does not create a Job Ability offer when none is authored.")
 	_check(not has_innate_summon_offer, "Innate Job and enemy summon abilities stay hidden from the Market.")
-	var malformed := _offer("malformed", &"soldier_item", &"item.hero.vanguard_blade", 1, &"soldier", "")
+	var malformed := _offer("malformed", &"unsupported_item", &"item.hero.vanguard_blade", 1, &"soldier", "")
 	_check(not MarketService.validate_offer_schema(first, malformed, registry).ok, "Offer restrictions must match their referenced content.")
 	malformed.target_type = &"hero"
 	_check(not malformed.is_valid(), "Offer types reject contradictory target types.")
@@ -82,20 +91,28 @@ func _test_generation_and_bias() -> void:
 	main.item_ids.append(expensive_item)
 	var main_score := MarketGenerator.hero_main_score(first, main, registry)
 	var neglected_score := MarketGenerator.hero_main_score(first, neglected, registry)
-	var main_bias := MarketGenerator.hero_bias_multiplier(first, main, "rare", registry)
-	var neglected_bias := MarketGenerator.hero_bias_multiplier(first, neglected, "rare", registry)
+	var main_bias := MarketGenerator.hero_bias_multiplier(first, main, registry)
+	var neglected_bias := MarketGenerator.hero_bias_multiplier(first, neglected, registry)
 	_check(main_score > neglected_score, "Main Score includes level, owned abilities, and equipped item value.")
 	_check(neglected_bias > main_bias and neglected_bias < 3.0, "Neglected Heroes receive a soft, non-guaranteed quality weight increase.")
 
 
 func _test_buy_transactions() -> void:
+	var test_job_ability := AbilityDefinition.new()
+	test_job_ability.id = &"ability.test_job_active"
+	test_job_ability.display_name = "Test Job Active"
+	test_job_ability.available_to_heroes = false
+	registry.register_definition(test_job_ability, false)
+	(registry.get_definition(&"job.archer") as JobDefinition).available_ability_ids.append(test_job_ability.id)
 	var run := DemoRunFactory.create_starting_run(2222)
+	run.unlocked_job_ids.append(&"job.warrior")
+	run.job_capacities["job.warrior"] = 1
 	run.gold = 1000
 	var purchase_cases: Array[Dictionary] = [
-		{"offer": _offer("buy-hi", &"hero_item", &"item.hero.vanguard_blade", 45, &"hero", run.heroes[0].unique_id), "kind": "hero_item"},
+		{"offer": _offer("buy-hi", &"hero_item", &"item.hero.vanguard_blade", 45, &"hero", ""), "kind": "hero_item"},
 		{"offer": _offer("buy-ju", &"job_unlock", &"job.archer", 50, &"job", "job.archer"), "kind": "job_unlock"},
 		{"offer": _offer("buy-jc", &"job_capacity", &"job.warrior", 55, &"job", "job.warrior"), "kind": "job_capacity"},
-		{"offer": _offer("buy-ja", &"job_ability", &"ability.whirlwind", 60, &"job", "job.warrior"), "kind": "job_ability"},
+		{"offer": _offer("buy-ja", &"job_ability", &"ability.test_job_active", 60, &"job", "job.archer"), "kind": "job_ability"},
 	]
 	for test_case in purchase_cases:
 		var offer: MarketOffer = test_case.offer
@@ -110,14 +127,19 @@ func _test_buy_transactions() -> void:
 			"hero_item":
 				_check(run.inventory.items.size() == items_before + 1, "Hero item purchase creates exactly one stable inventory instance.")
 				var purchased := run.inventory.items[-1]
-				_check(purchased.bound_target_id == run.heroes[0].unique_id, "Hero item purchase persists its advertised Hero restriction.")
-				var wrong_hero := EquipmentService.equip_or_swap(run, &"hero", 1, 0, StringName(purchased.instance_id), registry)
-				_check(not wrong_hero.ok, "A Hero-bound item cannot be equipped by another Hero.")
+				_check(not purchased.has("bound_target_id"), "Hero item purchases do not persist a personal Hero binding.")
+				var another_hero := EquipmentService.equip_or_swap(run, &"hero", 1, 0, StringName(purchased.instance_id), registry)
+				_check(another_hero.ok, "An unrestricted purchased item can be equipped by any Hero.")
 			"job_unlock": _check(run.unlocked_job_ids.has(&"job.archer") and int(run.job_capacities["job.archer"]) == 1, "Job purchase unlocks the Job with usable capacity.")
 			"job_capacity": _check(int(run.job_capacities["job.warrior"]) == capacity_before + 1, "Capacity purchase applies exactly one upgrade.")
-			"job_ability": _check(_job_build(run, &"job.warrior").owned_ability_ids.has(offer.content_id), "Job Ability purchase grants shared ownership.")
+			"job_ability": _check(_job_build(run, &"job.archer").owned_ability_ids.has(offer.content_id), "Job Ability purchase grants shared ownership.")
+	var stale_unlock := _offer("stale-unlock", &"job_unlock", &"job.warrior", 50, &"job", "job.warrior")
+	run.market.offers.append(stale_unlock)
+	var warrior_capacity_before := int(run.job_capacities["job.warrior"])
+	var stale_result := MarketService.buy_offer(run, stale_unlock.offer_id, registry)
+	_check(stale_result.ok and int(run.job_capacities["job.warrior"]) == warrior_capacity_before + 1, "A stale Job unlock offer from an older save purchases capacity instead of becoming unusable.")
 
-	var blocked := _offer("blocked", &"hero_ability", &"ability.fire_bolt", 999, &"hero", run.heroes[0].unique_id)
+	var blocked := _offer("blocked", &"hero_ability", &"ability.greed_dagger_nova", 999, &"hero", run.heroes[0].unique_id)
 	run.market.offers.append(blocked)
 	_check(not blocked.is_valid() and not MarketService.validate_offer_schema(run, blocked, registry).ok, "A forged Hero Ability Market offer is rejected by the schema.")
 	run.gold = 0
@@ -147,8 +169,42 @@ func _test_reroll_transactions() -> void:
 	_check(not failed.ok and run.to_dictionary() == before, "A rejected reroll consumes neither Gold nor RNG state.")
 
 
+func _test_pin_refresh_transactions() -> void:
+	var run := DemoRunFactory.create_starting_run(3334)
+	run.gold = 1000
+	var pinned_index := run.market.offers.size() - 1
+	var pinned_offer := run.market.offers[pinned_index]
+	_check(MarketService.set_offer_pinned(run, pinned_offer.offer_id, true).ok, "A Market position can be locked.")
+	var restored := RunState.from_dictionary(run.to_dictionary())
+	var old_ids: Array[String] = []
+	for offer in run.market.offers:
+		old_ids.append(offer.offer_id)
+	var rerolled := MarketService.reroll(run, registry)
+	var restored_reroll := MarketService.reroll(restored, registry)
+	_check(rerolled.ok and restored_reroll.ok, "A Market with a locked position can reroll.")
+	_check(run.market.to_dictionary() == restored.market.to_dictionary() and run.market_rng.to_dictionary() == restored.market_rng.to_dictionary(), "Locked rerolls remain deterministic after Load.")
+	_check(run.market.offers.size() > pinned_index and run.market.offers[pinned_index].offer_id == pinned_offer.offer_id and run.market.offers[pinned_index].is_pinned, "A locked offer keeps its exact position and lock across rerolls.")
+	for index in run.market.offers.size():
+		if index != pinned_index:
+			_check(not old_ids.has(run.market.offers[index].offer_id), "Unlocked Market positions receive fresh offers.")
+	var visit := MarketService.begin_visit(run, registry)
+	_check(visit.ok and run.market.offers[pinned_index].offer_id == pinned_offer.offer_id and run.market.reroll_count == 0, "Locked positions survive a new Market visit.")
+	_check(MarketService.set_offer_pinned(run, pinned_offer.offer_id, false).ok, "A Market position can be unlocked.")
+	_check(MarketService.reroll(run, registry).ok and run.market.offers.all(func(offer: MarketOffer) -> bool: return offer.offer_id != pinned_offer.offer_id), "An unlocked offer is replaced by the next reroll.")
+
+	var purchasable := run.market.offers[0]
+	MarketService.set_offer_pinned(run, purchasable.offer_id, true)
+	_check(MarketService.buy_offer(run, purchasable.offer_id, registry).ok and run.market.offers.all(func(offer: MarketOffer) -> bool: return not offer.is_pinned), "Buying a locked offer removes its lock with the offer.")
+	run.market.offers[0].is_pinned = true
+	run.gold = 0
+	var before := run.to_dictionary()
+	_check(not MarketService.reroll(run, registry).ok and run.to_dictionary() == before, "A rejected reroll preserves locked positions and RNG state.")
+
+
 func _test_sell_transactions() -> void:
 	var run := DemoRunFactory.create_starting_run(4444)
+	run.inventory.create_item(&"item.hero.vanguard_blade")
+	run.inventory.create_item(&"item.hero.titan_seal")
 	var equipped_id := StringName(run.inventory.items[0].instance_id)
 	EquipmentService.equip_or_swap(run, &"hero", 0, 0, equipped_id, registry)
 	var equipped_before := run.to_dictionary()
@@ -173,7 +229,10 @@ func _test_post_combat_visit() -> void:
 	await process_frame
 	main.active_run = DemoRunFactory.create_starting_run(5555)
 	main.active_run.market.reroll_count = 3
+	main.active_run.encounter_index += 1
 	main.active_run.run_phase = &"combat"
+	var pinned_offer_id: String = main.active_run.market.offers[0].offer_id
+	main.active_run.market.offers[0].is_pinned = true
 	var old_offer_ids := PackedStringArray()
 	for offer in main.active_run.market.offers:
 		old_offer_ids.append(offer.offer_id)
@@ -183,6 +242,7 @@ func _test_post_combat_visit() -> void:
 	for offer in main.active_run.market.offers:
 		new_offer_ids.append(offer.offer_id)
 	_check(main.active_run.market.reroll_count == 0 and old_offer_ids != new_offer_ids, "Returning from combat starts exactly one fresh Market visit.")
+	_check(main.active_run.market.offers[0].offer_id == pinned_offer_id and main.active_run.market.offers[0].is_pinned, "A locked Market position survives the post-combat refresh.")
 	var loaded := manager.load_run(registry)
 	_check(loaded.ok and loaded.run_state.market.to_dictionary() == main.active_run.market.to_dictionary(), "The post-combat Market visit is autosaved without regeneration on Load.")
 	main.free()
@@ -201,7 +261,6 @@ func _offer(
 	offer.offer_id = offer_id
 	offer.offer_type = offer_type
 	offer.content_id = content_id
-	offer.rarity = "common"
 	offer.price = price
 	offer.target_type = target_type
 	offer.target_id = target_id

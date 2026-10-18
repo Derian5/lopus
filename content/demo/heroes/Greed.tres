@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_oo51b"]
 [ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_k7d5m"]
+[ext_resource type="Texture2D" uid="uid://jki6olhq167i" path="res://arts/v1/Greeth.png" id="3_portrait"]
 
 [sub_resource type="Resource" id="StatBlock_hero"]
 script = ExtResource("1_oo51b")
-max_hp = 820.0
-damage = 38.0
-attack_speed = 1.5
+max_hp = 410.0
+damage = 9.5
+attack_speed = 0.85
 movement_speed = 105.0
 attack_range = 52.0
 armor = 28.0
@@ -16,6 +17,7 @@ armor = 28.0
 script = ExtResource("2_k7d5m")
 base_stats = SubResource("StatBlock_hero")
 placeholder_color = Color(0.95, 0.78, 0.2, 1)
+portrait = ExtResource("3_portrait")
 available_in_new_game = true
 selection_order = 1
 id = &"hero.test_vanguard"

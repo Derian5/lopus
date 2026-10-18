@@ -1,0 +1,133 @@
+{
+  "app": "arcadia-effects",
+  "v": 2,
+  "doc": {
+    "v": 2,
+    "id": "fx_pride_bolt_cast_sparks",
+    "name": "Pride Bolt Cast Sparks",
+    "comp": { "w": 128, "h": 128, "dur": 0.48, "fps": 60 },
+    "cam": { "comp": 0 },
+    "exp": {
+      "cols": 4,
+      "rows": 2,
+      "frames": 8,
+      "cellW": 64,
+      "cellH": 64,
+      "t0": 0,
+      "t1": 0.48,
+      "mode": "rgba",
+      "thr": 0,
+      "ss": 2
+    },
+    "textures": [],
+    "layers": [
+      {
+        "id": "lr_pride_cast_flash",
+        "name": "Cast Flash",
+        "type": "sprite",
+        "start": 0,
+        "end": 0.34,
+        "blend": "add",
+        "opacity": {
+          "keys": [
+            { "t": 0, "v": 1 },
+            { "t": 0.1, "v": 0.9 },
+            { "t": 0.34, "v": 0 }
+          ]
+        },
+        "glowL": 0.2,
+        "glowLR": 5,
+        "sp": {
+          "sprite": { "kind": "shape", "id": "spark", "p": {} },
+          "size": 24,
+          "x": 0,
+          "y": 0,
+          "scale": {
+            "keys": [
+              { "t": 0, "v": 0.55 },
+              { "t": 0.1, "v": 1.08 },
+              { "t": 0.34, "v": 1.4 }
+            ]
+          },
+          "aspect": 1,
+          "rot": 0,
+          "color": [239, 211, 255],
+          "glow": 0.35,
+          "glowSize": 1.25,
+          "glowBlur": 0.18
+        }
+      },
+      {
+        "id": "lr_pride_cast_sparks",
+        "name": "Radial Sparks",
+        "type": "emitter",
+        "start": 0,
+        "end": 0.48,
+        "blend": "add",
+        "opacity": 1,
+        "glowL": 0.45,
+        "glowLR": 6,
+        "em": {
+          "x": 0,
+          "y": 0,
+          "shape": "point",
+          "dir": "omni",
+          "angle": 0,
+          "spread": 360,
+          "speed": 310,
+          "speedRnd": 0.48,
+          "rate": 0,
+          "bursts": [
+            { "t": 0, "n": 14 }
+          ],
+          "seed": 731
+        },
+        "pt": {
+          "life": 0.34,
+          "lifeRnd": 0.22,
+          "render": "sprite",
+          "sprite": { "kind": "shape", "id": "streak", "p": {} },
+          "size": 13,
+          "sizeRnd": 0.42,
+          "sizeOL": {
+            "pts": [
+              { "t": 0, "v": 1 },
+              { "t": 0.55, "v": 0.72 },
+              { "t": 1, "v": 0.1 }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              { "t": 0, "v": 1 },
+              { "t": 0.28, "v": 0.9 },
+              { "t": 1, "v": 0 }
+            ]
+          },
+          "grad": {
+            "stops": [
+              { "t": 0, "c": [255, 255, 255] },
+              { "t": 0.35, "c": [226, 170, 255] },
+              { "t": 1, "c": [114, 37, 224] }
+            ]
+          },
+          "rot": 0,
+          "rotRnd": 0,
+          "spin": 0,
+          "spinRnd": 0,
+          "alignVel": true,
+          "stretch": 1.35,
+          "gravX": 0,
+          "gravY": 0,
+          "drag": 2.2,
+          "turbAmp": 22,
+          "turbFreq": 2,
+          "squash": 0,
+          "glow": 0.3,
+          "glowSize": 1.45,
+          "glowBlur": 0.16
+        }
+      }
+    ]
+  },
+  "tex": {}
+}

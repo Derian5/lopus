@@ -1,0 +1,221 @@
+{
+  "app": "arcadia-effects",
+  "v": 2,
+  "doc": {
+    "v": 2,
+    "id": "fx_pride_arcane_bolt",
+    "name": "Pride Arcane Bolt",
+    "comp": { "w": 160, "h": 80, "dur": 0.8, "fps": 60 },
+    "cam": { "comp": 0 },
+    "exp": {
+      "cols": 4,
+      "rows": 2,
+      "frames": 8,
+      "cellW": 64,
+      "cellH": 32,
+      "t0": 0,
+      "t1": 0.8,
+      "mode": "rgba",
+      "thr": 0,
+      "ss": 2
+    },
+    "textures": [],
+    "layers": [
+      {
+        "id": "lr_pride_bolt_glint",
+        "name": "Inner Streak",
+        "type": "sprite",
+        "start": 0,
+        "end": 0.8,
+        "blend": "add",
+        "opacity": {
+          "keys": [
+            { "t": 0, "v": 0.7 },
+            { "t": 0.2, "v": 1 },
+            { "t": 0.4, "v": 0.65 },
+            { "t": 0.6, "v": 0.95 },
+            { "t": 0.8, "v": 0.7 }
+          ]
+        },
+        "glowL": 0.35,
+        "glowLR": 8,
+        "sp": {
+          "sprite": { "kind": "shape", "id": "streak", "p": {} },
+          "size": 68,
+          "x": 3,
+          "y": 0,
+          "scale": {
+            "keys": [
+              { "t": 0, "v": 0.72 },
+              { "t": 0.2, "v": 1 },
+              { "t": 0.4, "v": 0.78 },
+              { "t": 0.6, "v": 0.96 },
+              { "t": 0.8, "v": 0.72 }
+            ]
+          },
+          "aspect": 1.55,
+          "rot": {
+            "keys": [
+              { "t": 0, "v": -3 },
+              { "t": 0.2, "v": 2 },
+              { "t": 0.4, "v": -1 },
+              { "t": 0.6, "v": 3 },
+              { "t": 0.8, "v": -3 }
+            ]
+          },
+          "color": [242, 218, 255],
+          "glow": 1.1,
+          "glowSize": 1.35,
+          "glowBlur": 0.18
+        }
+      },
+      {
+        "id": "lr_pride_bolt_core",
+        "name": "Arcane Core",
+        "type": "sprite",
+        "start": 0,
+        "end": 0.8,
+        "blend": "add",
+        "opacity": 1,
+        "glowL": 0.7,
+        "glowLR": 10,
+        "sp": {
+          "sprite": { "kind": "shape", "id": "flame", "p": { "taper": 0.48, "var": 2 } },
+          "size": 64,
+          "x": 5,
+          "y": 0,
+          "scale": {
+            "keys": [
+              { "t": 0, "v": 0.88 },
+              { "t": 0.2, "v": 1.08 },
+              { "t": 0.4, "v": 0.92 },
+              { "t": 0.6, "v": 1.04 },
+              { "t": 0.8, "v": 0.88 }
+            ]
+          },
+          "aspect": 1.25,
+          "rot": {
+            "keys": [
+              { "t": 0, "v": -2 },
+              { "t": 0.2, "v": 3 },
+              { "t": 0.4, "v": -1 },
+              { "t": 0.6, "v": 2 },
+              { "t": 0.8, "v": -2 }
+            ]
+          },
+          "color": [183, 83, 255],
+          "glow": 0.7,
+          "glowSize": 1.45,
+          "glowBlur": 0.16
+        }
+      },
+      {
+        "id": "lr_pride_bolt_mote_a",
+        "name": "Orbit Mote A",
+        "type": "sprite",
+        "start": 0,
+        "end": 0.8,
+        "blend": "add",
+        "opacity": 0.9,
+        "sp": {
+          "sprite": { "kind": "shape", "id": "soft", "p": {} },
+          "size": 19,
+          "x": {
+            "keys": [
+              { "t": 0, "v": 25 },
+              { "t": 0.2, "v": 7 },
+              { "t": 0.4, "v": -12 },
+              { "t": 0.6, "v": 7 },
+              { "t": 0.8, "v": 25 }
+            ]
+          },
+          "y": {
+            "keys": [
+              { "t": 0, "v": 0 },
+              { "t": 0.2, "v": -15 },
+              { "t": 0.4, "v": 0 },
+              { "t": 0.6, "v": 15 },
+              { "t": 0.8, "v": 0 }
+            ]
+          },
+          "scale": 1,
+          "aspect": 1,
+          "rot": 0,
+          "color": [224, 174, 255],
+          "glow": 0.6,
+          "glowSize": 1.4,
+          "glowBlur": 0.2
+        }
+      },
+      {
+        "id": "lr_pride_bolt_mote_b",
+        "name": "Orbit Mote B",
+        "type": "sprite",
+        "start": 0,
+        "end": 0.8,
+        "blend": "add",
+        "opacity": 0.72,
+        "sp": {
+          "sprite": { "kind": "shape", "id": "soft", "p": {} },
+          "size": 14,
+          "x": {
+            "keys": [
+              { "t": 0, "v": -10 },
+              { "t": 0.2, "v": 7 },
+              { "t": 0.4, "v": 24 },
+              { "t": 0.6, "v": 7 },
+              { "t": 0.8, "v": -10 }
+            ]
+          },
+          "y": {
+            "keys": [
+              { "t": 0, "v": 0 },
+              { "t": 0.2, "v": 12 },
+              { "t": 0.4, "v": 0 },
+              { "t": 0.6, "v": -12 },
+              { "t": 0.8, "v": 0 }
+            ]
+          },
+          "scale": 1,
+          "aspect": 1,
+          "rot": 0,
+          "color": [132, 67, 255],
+          "glow": 0.55,
+          "glowSize": 1.5,
+          "glowBlur": 0.2
+        }
+      },
+      {
+        "id": "lr_pride_bolt_aura",
+        "name": "Soft Aura",
+        "type": "sprite",
+        "start": 0,
+        "end": 0.8,
+        "blend": "add",
+        "opacity": 0.62,
+        "sp": {
+          "sprite": { "kind": "shape", "id": "soft", "p": {} },
+          "size": 112,
+          "x": 0,
+          "y": 0,
+          "scale": {
+            "keys": [
+              { "t": 0, "v": 0.86 },
+              { "t": 0.2, "v": 1.05 },
+              { "t": 0.4, "v": 0.9 },
+              { "t": 0.6, "v": 1.02 },
+              { "t": 0.8, "v": 0.86 }
+            ]
+          },
+          "aspect": 3.0,
+          "rot": 0,
+          "color": [116, 45, 220],
+          "glow": 0.4,
+          "glowSize": 1.45,
+          "glowBlur": 0.22
+        }
+      }
+    ]
+  },
+  "tex": {}
+}

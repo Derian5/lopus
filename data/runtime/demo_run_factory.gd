@@ -7,6 +7,7 @@ const HERO_IDS: Array[StringName] = [
 	&"hero.army_support",
 	&"hero.control_savant",
 ]
+const FIRST_ENCOUNTER_ID := &"encounter.tutorial_volley"
 
 
 static func create_starting_run(seed := 1, selected_hero_ids: Array[StringName] = []) -> RunState:
@@ -14,10 +15,7 @@ static func create_starting_run(seed := 1, selected_hero_ids: Array[StringName] 
 	run.run_seed = seed
 	run.initialize_rng_streams(seed)
 	run.gold = 300
-	run.unlocked_job_ids = [&"job.militia", &"job.warrior"]
-	run.job_capacities = {
-		"job.warrior": 3,
-	}
+	run.unlocked_job_ids = [&"job.militia"]
 	var hero_ids := HERO_IDS.duplicate() if selected_hero_ids.is_empty() else selected_hero_ids.duplicate()
 	var valid_hero_ids := hero_ids.size() == HERO_IDS.size()
 	var seen_hero_ids: Dictionary = {}
@@ -37,14 +35,8 @@ static func create_starting_run(seed := 1, selected_hero_ids: Array[StringName] 
 	for index in 9:
 		var soldier := SoldierState.new()
 		soldier.unique_id = "soldier-%02d" % index
-		soldier.generated_name = "Militia %d" % (index + 1)
+		SoldierNameGenerator.assign_name(soldier, "Militia", run.run_seed, run.soldiers)
 		run.soldiers.append(soldier)
-	run.job_builds.append(_job_build(&"job.warrior", &"ability.stunning_blow", [&"ability.battle_fury"]))
-	for item_id in [
-		&"item.hero.vanguard_blade",
-		&"item.hero.titan_seal",
-	]:
-		run.inventory.create_item(item_id)
 	var generated := MarketGenerator.generate_offers(run, _registry(), run.market_rng, run.market.next_offer_serial)
 	if generated.ok:
 		for offer in generated.offers:
@@ -52,19 +44,11 @@ static func create_starting_run(seed := 1, selected_hero_ids: Array[StringName] 
 		run.market.next_offer_serial = generated.next_offer_serial
 	else:
 		push_error(generated.error)
-	run.available_encounter_ids = [&"encounter.training_skirmish"]
-	var encounter_result := EncounterService.select_encounter(run, &"encounter.training_skirmish")
+	run.available_encounter_ids = [FIRST_ENCOUNTER_ID]
+	var encounter_result := EncounterService.select_encounter(run, FIRST_ENCOUNTER_ID)
 	if not encounter_result.ok:
 		push_error(encounter_result.error)
 	return run
-
-
-static func _job_build(job_id: StringName, active_id: StringName, passive_ids: Array[StringName]) -> JobBuildState:
-	var build := JobBuildState.new()
-	build.job_id = job_id
-	build.set_active_ability(active_id)
-	build.set_passives(passive_ids)
-	return build
 
 
 static func _registry() -> Node:

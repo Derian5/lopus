@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_gluttony_regeneration.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/gluttony_regeneration_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Blood"]
+script = ExtResource("3")
+effect_id = &"effect.bog_king_troll_blood"
+max_stacks = 8
+max_hp_percent_per_stack = 0.06
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.bog_king_troll_blood"
+display_name = "Ancient Troll Blood"
+description = "Each basic attack it takes adds a stack of [heal]regeneration: {e0.max_hp_percent_per_stack}% Max HP per second[/heal], up to {e0.max_stacks} stacks. Burst it down quickly."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+tags = Array[StringName]([&"ability", &"passive", &"enemy", &"regeneration"])
+effects = Array[AbilityEffect]([SubResource("Blood")])
+presentation_color = Color(0.36, 0.68, 0.32, 1)
+presentation_text = "Ancient Troll Blood"
+available_to_heroes = false

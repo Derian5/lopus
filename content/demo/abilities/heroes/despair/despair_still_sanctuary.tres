@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/despair_sanctuary_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_despair_still_sanctuary.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Base"]
+script = ExtResource("3")
+effect_id = &"effect.despair_still_sanctuary"
+health_threshold = 0.3
+max_hp_heal_percent = 6.0
+duration = 4.0
+interval = 1.0
+[sub_resource type="Resource" id="E1"]
+script = ExtResource("3")
+effect_id = &"effect.despair_still_sanctuary"
+health_threshold = 0.3
+max_hp_heal_percent = 6.0
+duration = 4.0
+interval = 1.0
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("2")
+cooldown_seconds = 6.0
+effects = Array[AbilityEffect]([SubResource("E1")])
+[sub_resource type="Resource" id="E2"]
+script = ExtResource("3")
+effect_id = &"effect.despair_still_sanctuary"
+health_threshold = 0.3
+max_hp_heal_percent = 7.0
+duration = 5.0
+interval = 1.0
+[sub_resource type="Resource" id="L2"]
+script = ExtResource("2")
+cooldown_seconds = 6.0
+effects = Array[AbilityEffect]([SubResource("E2")])
+[sub_resource type="Resource" id="E3"]
+script = ExtResource("3")
+effect_id = &"effect.despair_still_sanctuary"
+health_threshold = 0.3
+max_hp_heal_percent = 8.0
+duration = 6.0
+interval = 1.0
+[sub_resource type="Resource" id="L3"]
+script = ExtResource("2")
+cooldown_seconds = 6.0
+effects = Array[AbilityEffect]([SubResource("E3")])
+[sub_resource type="Resource" id="E4"]
+script = ExtResource("3")
+effect_id = &"effect.despair_still_sanctuary"
+health_threshold = 0.3
+max_hp_heal_percent = 9.0
+duration = 7.0
+interval = 1.0
+[sub_resource type="Resource" id="L4"]
+script = ExtResource("2")
+cooldown_seconds = 6.0
+effects = Array[AbilityEffect]([SubResource("E4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.despair_still_sanctuary"
+display_name = "Still Sanctuary"
+description = "Shelters the most wounded other ally below {e0.health_threshold:pct}% HP for {e0.duration}s: it cannot act or be harmed and [heal]heals {e0.max_hp_heal_percent}% Max HP per second[/heal]."
+cooldown_seconds = 6.0
+targeting_policy = 0
+effects = Array[AbilityEffect]([SubResource("Base")])
+priority = 100
+presentation_color = Color(0.45, 0.65, 0.95, 1)
+allowed_hero_ids = Array[StringName]([&"hero.iron_oracle"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
+tags = Array[StringName]([&"ability", &"active", &"despair", &"healing", &"protection"])

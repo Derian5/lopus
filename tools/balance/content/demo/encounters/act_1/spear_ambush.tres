@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.crossbowman"])
+gold_reward = 125
+enemy_power = 0.95
+min_encounter_index = 1
+max_encounter_index = 3
+difficulty_hint = "Low"
+key_properties = Array[String](["Four Headhunters target your back line", "Thin front"])
+is_unknown = false
+is_boss = false
+id = &"encounter.spear_ambush"
+display_name = "Spear Ambush"
+description = "Trolls in the dunes rain spears on anyone who wanders too far behind."
+tags = Array[StringName]([&"encounter", &"act1"])

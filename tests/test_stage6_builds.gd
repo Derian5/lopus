@@ -37,7 +37,7 @@ func _test_slot_limits() -> void:
 	hero.unlock_ability(&"ability.overflow")
 	_check(not hero.equip_ability(&"ability.overflow"), "Hero rejects a fifth ability.")
 	_check(HeroState.MAX_ITEM_SLOTS == 6, "Hero has six item slots.")
-	_check(SoldierState.MAX_ITEM_SLOTS == 2, "Soldier has two item slots.")
+	_check(not SoldierState.new().to_dictionary().has("item_ids"), "Soldiers have no equipment state.")
 
 
 func _test_starting_army_and_snapshots() -> void:
@@ -51,9 +51,9 @@ func _test_starting_army_and_snapshots() -> void:
 	_check(hero_ids == DemoRunFactory.HERO_IDS, "Starting heroes cover carry, support, and control roles.")
 
 	var builds := {
-		&"job.warrior": _build(&"job.warrior", &"ability.stunning_blow", [&"ability.battle_fury"]),
-		&"job.archer": _build(&"job.archer", &"ability.fire_bolt", [&"ability.battle_fury"]),
-		&"job.priest": _build(&"job.priest", &"ability.mending_light", []),
+		&"job.warrior": _build(&"job.warrior", &"", []),
+		&"job.archer": _build(&"job.archer", &"", []),
+		&"job.priest": _build(&"job.priest", &"", []),
 	}
 	run.job_builds.assign(builds.values())
 	for index in run.soldiers.size():
@@ -66,12 +66,12 @@ func _test_starting_army_and_snapshots() -> void:
 	var priest := snapshots[9]
 	_check(warrior.job_id == &"job.warrior" and warrior.stats.armor > archer.stats.armor, "Warrior snapshot is a durable frontline build.")
 	_check(archer.attack_type == &"ranged" and archer.stats.attack_range > warrior.stats.attack_range, "Archer snapshot has ranged behavior.")
-	_check(priest.abilities[0].id == &"ability.mending_light", "Priest snapshot receives its selected support ability.")
+	_check(priest.abilities.size() == 2 and priest.abilities[0].id == &"ability.priest_heal" and priest.abilities[1].id == &"ability.priest_professionalism_cleansing_flame_tier_1", "Three Priests receive innate Heal and derived Tier 1 professionalism without a selected Job ability.")
 	var summoner_soldier := SoldierState.new()
 	summoner_soldier.unique_id = "summoner-test"
 	summoner_soldier.generated_name = "Summoner Test"
 	summoner_soldier.current_job_id = &"job.summoner"
-	var summoner := CombatSnapshotBuilder.build_soldier(summoner_soldier, null, run.inventory, registry)
+	var summoner := CombatSnapshotBuilder.build_soldier(summoner_soldier, null, registry)
 	_check(summoner.abilities.size() == 1 and summoner.abilities[0].id == &"ability.summoner_job_summon", "Summoner Job receives its innate summon without a Job build or ability slot.")
 
 
@@ -82,9 +82,9 @@ func _test_definition_driven_extension() -> void:
 	enemy.display_name = "Runtime Test Enemy"
 	enemy.base_stats = StatBlock.new()
 	enemy.attack_type = &"ranged"
-	enemy.ability_ids = [&"ability.fire_bolt"]
+	enemy.ability_ids = [&"ability.enemy_summon"]
 	var snapshot := CombatSnapshotBuilder.build_enemy(enemy, "runtime-enemy", enemy.display_name, registry)
-	_check(snapshot.attack_type == &"ranged" and snapshot.abilities[0].id == &"ability.fire_bolt", "A new enemy uses definitions and shared combat mechanisms.")
+	_check(snapshot.attack_type == &"ranged" and snapshot.abilities[0].id == &"ability.enemy_summon", "A new enemy uses definitions and shared combat mechanisms.")
 	var ability := AbilityDefinition.new()
 	ability.id = &"ability.runtime_test"
 	var damage := DamageEffect.new()
@@ -112,9 +112,9 @@ func _test_veterancy_stat_growth() -> void:
 	progression.veterancy_armor_growth_per_level = 0.06
 	var run := DemoRunFactory.create_starting_run(6010)
 	var soldier := run.soldiers[0]
-	var recruit := CombatSnapshotBuilder.build_soldier(soldier, null, run.inventory, registry)
+	var recruit := CombatSnapshotBuilder.build_soldier(soldier, null, registry)
 	soldier.veterancy_level = 2
-	var veteran := CombatSnapshotBuilder.build_soldier(soldier, null, run.inventory, registry)
+	var veteran := CombatSnapshotBuilder.build_soldier(soldier, null, registry)
 	_check(is_equal_approx(veteran.stats.max_hp, recruit.stats.max_hp * 1.02), "Veterancy applies independent max HP growth.")
 	_check(is_equal_approx(veteran.stats.damage, recruit.stats.damage * 1.04), "Veterancy applies independent damage growth.")
 	_check(is_equal_approx(veteran.stats.attack_speed, recruit.stats.attack_speed * 1.06), "Veterancy applies independent attack speed growth.")
@@ -166,8 +166,8 @@ func _test_hero_stat_growth() -> void:
 
 
 func _test_distinct_builds() -> void:
-	var warrior_result := await _run_build_battle(&"job.warrior", &"ability.stunning_blow")
-	var archer_result := await _run_build_battle(&"job.archer", &"ability.fire_bolt")
+	var warrior_result := await _run_build_battle(&"job.warrior", &"")
+	var archer_result := await _run_build_battle(&"job.archer", &"")
 	var duration_delta := absf(float(warrior_result.duration) - float(archer_result.duration))
 	var damage_delta := absf(float(warrior_result.damage) - float(archer_result.damage))
 	var baseline := maxf(minf(float(warrior_result.damage), float(archer_result.damage)), 1.0)
@@ -187,10 +187,7 @@ func _test_distinct_builds() -> void:
 func _run_build_battle(job_id: StringName, active_id: StringName) -> Dictionary:
 	var registry := root.get_node("ContentRegistry")
 	var run := RunState.new()
-	var passives: Array[StringName] = []
-	if job_id != &"job.priest":
-		passives.append(&"ability.battle_fury")
-	run.job_builds.append(_build(job_id, active_id, passives))
+	run.job_builds.append(_build(job_id, active_id, []))
 	for index in 9:
 		var soldier := SoldierState.new()
 		soldier.unique_id = "build-soldier-%02d" % index

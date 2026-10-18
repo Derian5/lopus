@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/summon_merge_effect.gd" id="2"]
+[ext_resource type="Resource" path="res://content/demo/enemies/summoned_amalgam.tres" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_summoner_professionalism_merge_tier_1.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Merge"]
+script = ExtResource("2")
+effect_id = &"effect.summoner_professionalism_merge_tier_1"
+merged_unit = ExtResource("3")
+stat_multiplier = 1.0
+attack_speed_bonus_per_summon = 0.2
+duration = 10.0
+minimum_summons = 2
+summoner_contribution_percent = 25.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.summoner_professionalism_merge_tier_1"
+display_name = "Convergence I"
+description = "Fuses all owned summons into one (first after {icd}s) for {e0.duration}s with [summon]{e0.stat_multiplier:pct}% of their combined Max HP, damage and armor[/summon] and [buff]+{e0.attack_speed_bonus_per_summon:pct}% attack speed per fused summon[/buff]. Needs {e0.minimum_summons} summons."
+cooldown_seconds = 20.0
+initial_cooldown_seconds = 20.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Merge")])
+priority = 130
+presentation_color = Color(0.32, 0.82, 0.4, 1)
+available_to_heroes = false

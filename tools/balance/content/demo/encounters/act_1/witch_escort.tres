@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.troll_priest", &"enemy.troll_priest"])
+gold_reward = 155
+enemy_power = 1.08
+min_encounter_index = 4
+max_encounter_index = 6
+difficulty_hint = "Moderate"
+key_properties = Array[String](["Healing and venom", "Brutes shield the casters"])
+is_unknown = false
+is_boss = false
+id = &"encounter.witch_escort"
+display_name = "Witch Doctor's Escort"
+description = "Brutes guard two Witch Doctors who mend every wound."
+tags = Array[StringName]([&"encounter", &"act1"])

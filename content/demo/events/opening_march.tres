@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="RunEventDefinition" format=3]
+
+[ext_resource type="Script" path="res://content/definitions/run_event_definition.gd" id="1_event"]
+[ext_resource type="Script" path="res://content/definitions/run_event_node.gd" id="2_node"]
+[ext_resource type="Script" path="res://content/definitions/run_event_choice.gd" id="3_choice"]
+
+[sub_resource type="Resource" id="ChoiceWorld"]
+script = ExtResource("3_choice")
+choice_id = &"continue_to_mission"
+text = "Continue"
+next_node_id = &"mission"
+
+[sub_resource type="Resource" id="NodeWorld"]
+script = ExtResource("2_node")
+node_id = &"world"
+title = "A Kingdom in Chains"
+body = "The kingdom has suffered for years beneath a cruel crown. Its people are divided, its roads are unsafe, and every season brings new tribute for the king."
+choices = Array[ExtResource("3_choice")]([SubResource("ChoiceWorld")])
+
+[sub_resource type="Resource" id="ChoiceMission"]
+script = ExtResource("3_choice")
+choice_id = &"continue_to_elves"
+text = "Continue"
+next_node_id = &"elves"
+
+[sub_resource type="Resource" id="NodeMission"]
+script = ExtResource("2_node")
+node_id = &"mission"
+title = "The March Begins"
+body = "Three Heroes have sworn to overthrow the king. Courage alone will not take the throne, however. They must gather an army and win allies before challenging his rule."
+choices = Array[ExtResource("3_choice")]([SubResource("ChoiceMission")])
+
+[sub_resource type="Resource" id="ChoiceElves"]
+script = ExtResource("3_choice")
+choice_id = &"continue_to_road"
+text = "Take the forest road"
+next_node_id = &"ogres"
+
+[sub_resource type="Resource" id="NodeElves"]
+script = ExtResource("2_node")
+node_id = &"elves"
+title = "An Elven Alliance"
+body = "The elves beyond the ancient forest may answer the call. The Heroes set out to ask for their aid against the king."
+choices = Array[ExtResource("3_choice")]([SubResource("ChoiceElves")])
+
+[sub_resource type="Resource" id="ChoiceOgres"]
+script = ExtResource("3_choice")
+choice_id = &"fight_ogres"
+text = "Face the ogres"
+
+[sub_resource type="Resource" id="NodeOgres"]
+script = ExtResource("2_node")
+node_id = &"ogres"
+title = "The Road Is Blocked"
+body = "The journey has barely begun when massive ogres emerge onto the road. There will be no passage without a fight."
+choices = Array[ExtResource("3_choice")]([SubResource("ChoiceOgres")])
+
+[resource]
+script = ExtResource("1_event")
+weight = 0.0
+theme_hero_id = &"hero.control_savant"
+entry_node_id = &"world"
+nodes = Array[ExtResource("2_node")]([SubResource("NodeWorld"), SubResource("NodeMission"), SubResource("NodeElves"), SubResource("NodeOgres")])
+id = &"event.opening_march"
+display_name = "The Road to Rebellion"
+description = "The Heroes begin their campaign against the king."
+tags = Array[StringName]([&"event", &"story", &"opening"])

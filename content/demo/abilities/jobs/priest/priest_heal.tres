@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/heal_effect.gd" id="2"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_priest_heal.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Heal"]
+script = ExtResource("2")
+effect_id = &"effect.priest_heal"
+amount = 50.0
+veterancy_bonus_percent_per_level = 25.0
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.priest_heal"
+display_name = "Heal"
+description = "[heal]Heals {e0.amount}[/heal] to the ally with the lowest HP within {search}, moving within {cast} first. [heal]+{e0.veterancy_bonus_percent_per_level}% healing[/heal] per Veterancy level."
+cooldown_seconds = 3.0
+targeting_policy = 6
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Heal")])
+priority = 120
+target_search_radius = 600.0
+cast_range = 300.0
+presentation_color = Color(0.38, 0.88, 0.34, 1)
+presentation_text = "Heal"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"active", &"heal", &"job"])

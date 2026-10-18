@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.summoner", &"enemy.summoner", &"enemy.summoner"])
+gold_reward = 125
+enemy_power = 1.5
+min_encounter_index = 2
+max_encounter_index = 4
+difficulty_hint = "Low"
+key_properties = Array[String](["Endless Bog Spitters", "Kill the Hexers first"])
+is_unknown = false
+is_boss = false
+id = &"encounter.hexers_mire"
+display_name = "Hexer's Mire"
+description = "Troll Hexers keep calling spitters from a stinking bog."
+tags = Array[StringName]([&"encounter", &"act1"])

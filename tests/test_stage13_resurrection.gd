@@ -27,7 +27,8 @@ func _run() -> void:
 
 func _test_death_and_transaction() -> void:
 	var run := DemoRunFactory.create_starting_run(13001)
-	EncounterService.select_encounter(run, &"encounter.training_skirmish")
+	run.inventory.create_item(&"item.hero.vanguard_blade")
+	EncounterService.select_encounter(run, &"encounter.tutorial_volley")
 	run.run_phase = &"combat"
 	var hero := run.heroes[0]
 	hero.item_ids.append(StringName(run.inventory.items[0].instance_id))
@@ -82,10 +83,11 @@ func _test_management_ui() -> void:
 	screen.run_state_changed.connect(func(action: StringName) -> void: actions.append(action))
 	await process_frame
 	await process_frame
-	_check(screen.get_node("%ResurrectionRows").get_child_count() == 1, "Resurrection UI lists Dead Heroes and excludes Executed Heroes.")
-	screen._resurrect_hero(run.heroes[0].unique_id)
+	var resurrect_button := screen.get_node("%ResurrectionButton") as Button
+	_check(screen.find_child("ResurrectionRows", true, false) == null and resurrect_button.visible and resurrect_button.text.contains("150"), "A selected Dead Hero shows the Resurrection action below their stats without a sidebar list.")
+	resurrect_button.pressed.emit()
 	_check(actions.has(&"hero_resurrected") and run.heroes[0].life_state == HeroState.ALIVE, "Management Resurrection requests autosave after success.")
-	_check(screen.get_node("%ResurrectionRows").get_child_count() == 0, "A resurrected Hero immediately leaves the Resurrection list.")
+	_check(not resurrect_button.visible, "The Resurrection action immediately disappears after the selected Hero returns to life.")
 	screen.free()
 
 
@@ -95,7 +97,7 @@ func _test_soldier_only_victory() -> void:
 	for hero in run.heroes:
 		hero.life_state = HeroState.DEAD
 		hero.current_hp = 0.0
-	EncounterService.select_encounter(run, &"encounter.training_skirmish")
+	EncounterService.select_encounter(run, &"encounter.tutorial_volley")
 	run.run_phase = &"combat"
 	var combat = COMBAT_SCENE.instantiate()
 	root.add_child(combat)

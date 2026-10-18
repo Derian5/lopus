@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_wrath_leap_slam.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/leap_slam_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Leap"]
+script = ExtResource("3")
+effect_id = &"effect.ogre_bone_leap"
+damage = 70.0
+impact_radius = 110.0
+knockback_distance = 80.0
+stun_duration = 1.2
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("2")
+id = &"ability.ogre_bone_leap"
+display_name = "Bone-Breaking Leap"
+description = "Every 11 seconds leaps onto a random enemy within 520, dealing 70 damage, knocking back and stunning enemies within 110 for 1.2 seconds."
+cooldown_seconds = 11.0
+initial_cooldown_seconds = 2.5
+targeting_policy = 3
+delivery_method = 0
+area_radius = 110.0
+target_search_radius = 520.0
+priority = 110
+tags = Array[StringName]([&"ability", &"active", &"enemy", &"movement", &"stun"])
+effects = Array[AbilityEffect]([SubResource("Leap")])
+presentation_color = Color(0.86, 0.42, 0.2, 1)
+presentation_text = "Bone-Breaking Leap"
+available_to_heroes = false

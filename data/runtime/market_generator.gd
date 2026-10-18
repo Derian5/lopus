@@ -4,30 +4,19 @@ extends RefCounted
 
 const MIN_OFFERS := 5
 const MAX_OFFERS := 7
-const RARITY_WEIGHTS := {
-	"common": 100.0,
-	"uncommon": 55.0,
-	"rare": 25.0,
-	"legendary": 8.0,
-}
-const RARITY_VALUES := {
-	"common": 1,
-	"uncommon": 2,
-	"rare": 3,
-	"legendary": 4,
-}
-
-
 static func generate_offers(
 	run_state: RunState,
 	registry: Node,
 	stream: RngStreamState,
-	first_serial: int
+	first_serial: int,
+	minimum_count: int = MIN_OFFERS
 ) -> Dictionary:
 	var candidates := _collect_candidates(run_state, registry)
-	if candidates.size() < MIN_OFFERS:
+	minimum_count = clampi(minimum_count, MIN_OFFERS, MAX_OFFERS)
+	if candidates.size() < minimum_count:
 		return {"ok": false, "error": "Not enough eligible Market content."}
 	var desired_count := MIN_OFFERS + int(stream.next_u32() % (MAX_OFFERS - MIN_OFFERS + 1))
+	desired_count = maxi(desired_count, minimum_count)
 	desired_count = mini(desired_count, candidates.size())
 	var selected: Array[Dictionary] = []
 	_pick_from_group(candidates, selected, stream, true)
@@ -44,7 +33,6 @@ static func generate_offers(
 		offer.offer_id = "market-%08d" % serial
 		offer.offer_type = candidate.offer_type
 		offer.content_id = candidate.content_id
-		offer.rarity = candidate.rarity
 		offer.price = candidate.price
 		offer.target_type = candidate.target_type
 		offer.target_id = candidate.target_id
@@ -64,7 +52,7 @@ static func hero_main_score(run_state: RunState, hero: HeroState, registry: Node
 	for ability_id in hero.owned_ability_ids:
 		var ability := registry.get_definition(ability_id, false) as AbilityDefinition
 		if ability != null:
-			score += float(RARITY_VALUES.get(ability.rarity, 1) * 30 * hero.ability_level(ability_id))
+			score += float(30 * hero.ability_level(ability_id))
 	for instance_id in hero.item_ids:
 		var item_id := run_state.inventory.get_definition_id(instance_id)
 		var item := registry.get_definition(item_id, false) as ItemDefinition
@@ -73,7 +61,7 @@ static func hero_main_score(run_state: RunState, hero: HeroState, registry: Node
 	return score
 
 
-static func hero_bias_multiplier(run_state: RunState, hero: HeroState, rarity: String, registry: Node) -> float:
+static func hero_bias_multiplier(run_state: RunState, hero: HeroState, registry: Node) -> float:
 	var living: Array[HeroState] = []
 	for candidate in run_state.heroes:
 		if candidate.life_state != HeroState.EXECUTED:
@@ -89,25 +77,27 @@ static func hero_bias_multiplier(run_state: RunState, hero: HeroState, rarity: S
 	if is_equal_approx(minimum, maximum):
 		return 1.0
 	var neglect := (maximum - hero_main_score(run_state, hero, registry)) / (maximum - minimum)
-	return 1.0 + neglect * float(RARITY_VALUES.get(rarity, 1)) * 0.35
+	return 1.0 + neglect * 0.35
 
 
 static func _collect_candidates(run_state: RunState, registry: Node) -> Array[Dictionary]:
 	var candidates: Array[Dictionary] = []
 	var items := _definitions(registry, ItemDefinition)
 	var jobs := _definitions(registry, JobDefinition)
-	for hero in run_state.heroes:
-		if hero.life_state == HeroState.EXECUTED:
-			continue
-		for item_definition in items:
-			var item := item_definition as ItemDefinition
-			if item.allowed_target_type != &"hero":
+	for item_definition in items:
+		var item := item_definition as ItemDefinition
+		for hero in run_state.heroes:
+			var hero_definition := registry.get_definition(hero.definition_id, false) as HeroDefinition
+			if hero.life_state == HeroState.EXECUTED or not item.is_compatible_with_hero(hero_definition):
 				continue
-			candidates.append(_candidate(
-				&"hero_item", item.id, item.rarity, item.price,
-				&"hero", hero.unique_id, item.allowed_job_ids,
-				float(RARITY_WEIGHTS.get(item.rarity, 1.0)) * hero_bias_multiplier(run_state, hero, item.rarity, registry), true
-			))
+			# Multiple stock copies preserve Market density without binding any copy to this Hero.
+			var candidate := _candidate(
+				&"hero_item", item.id, item.price,
+				&"hero", "", [],
+				100.0 * hero_bias_multiplier(run_state, hero, registry), true
+			)
+			candidate["stock_key"] = hero.unique_id
+			candidates.append(candidate)
 
 	for job_definition in jobs:
 		var job := job_definition as JobDefinition
@@ -115,14 +105,14 @@ static func _collect_candidates(run_state: RunState, registry: Node) -> Array[Di
 			continue
 		if not run_state.unlocked_job_ids.has(job.id):
 			candidates.append(_candidate(
-				&"job_unlock", job.id, "uncommon", job.unlock_price,
+				&"job_unlock", job.id, job.unlock_price,
 				&"job", String(job.id), [job.id], 48.0, false
 			))
 			continue
 		var capacity := int(run_state.job_capacities.get(String(job.id), 0))
 		if capacity < run_state.soldiers.size():
 			candidates.append(_candidate(
-				&"job_capacity", job.id, "common", job.capacity_price,
+				&"job_capacity", job.id, job.capacity_price,
 				&"job", String(job.id), [job.id], 85.0, false
 			))
 		var build := _find_job_build(run_state, job.id)
@@ -133,25 +123,9 @@ static func _collect_candidates(run_state: RunState, registry: Node) -> Array[Di
 			if ability == null:
 				continue
 			candidates.append(_candidate(
-				&"job_ability", ability.id, ability.rarity, ability.price,
-				&"job", String(job.id), [job.id], float(RARITY_WEIGHTS.get(ability.rarity, 1.0)), false
+				&"job_ability", ability.id, ability.price,
+				&"job", String(job.id), [job.id], 100.0, false
 			))
-
-	for item_definition in items:
-		var item := item_definition as ItemDefinition
-		if item.allowed_target_type != &"soldier":
-			continue
-		var applicable := item.allowed_job_ids.is_empty()
-		for job_id in item.allowed_job_ids:
-			if run_state.unlocked_job_ids.has(job_id):
-				applicable = true
-				break
-		if not applicable:
-			continue
-		candidates.append(_candidate(
-			&"soldier_item", item.id, item.rarity, item.price,
-			&"soldier", "", item.allowed_job_ids, float(RARITY_WEIGHTS.get(item.rarity, 1.0)), false
-		))
 	candidates.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return _candidate_key(a) < _candidate_key(b)
 	)
@@ -161,7 +135,6 @@ static func _collect_candidates(run_state: RunState, registry: Node) -> Array[Di
 static func _candidate(
 	offer_type: StringName,
 	content_id: StringName,
-	rarity: String,
 	price: int,
 	target_type: StringName,
 	target_id: String,
@@ -175,7 +148,6 @@ static func _candidate(
 	return {
 		"offer_type": offer_type,
 		"content_id": content_id,
-		"rarity": rarity,
 		"price": price,
 		"target_type": target_type,
 		"target_id": target_id,
@@ -220,7 +192,7 @@ static func _weighted_index(candidates: Array[Dictionary], stream: RngStreamStat
 
 
 static func _candidate_key(candidate: Dictionary) -> String:
-	return "%s|%s|%s" % [candidate.offer_type, candidate.content_id, candidate.target_id]
+	return "%s|%s|%s|%s" % [candidate.offer_type, candidate.content_id, candidate.target_id, candidate.get("stock_key", "")]
 
 
 static func _definitions(registry: Node, script_type: Variant) -> Array[ContentDefinition]:

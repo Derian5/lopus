@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.massive_ogre", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_priest"])
+reinforcement_enemy_ids = Array[StringName]([&"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker"])
+reinforcement_alive_threshold = 2
+reinforcement_entry_direction = 1
+gold_reward = 215
+enemy_power = 0.86
+min_encounter_index = 6
+max_encounter_index = 11
+difficulty_hint = "High"
+key_properties = Array[String](["Bloodrage and regeneration"])
+is_unknown = false
+is_boss = false
+id = &"encounter.blood_frenzy"
+display_name = "Blood Frenzy"
+description = "A Juggernaut leads a frenzied pack. More berserkers howl in the distance."
+tags = Array[StringName]([&"encounter", &"act1", &"reinforcements"])

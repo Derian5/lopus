@@ -29,7 +29,7 @@ static func _purchase_source(staged: RunState, source: Dictionary, registry: Nod
 			break
 	if offer == null:
 		return _failure("That Market offer is no longer available.")
-	if offer.offer_type not in [&"job_ability", &"hero_item", &"soldier_item"]:
+	if offer.offer_type not in [&"job_ability", &"hero_item"]:
 		return _failure("This offer has no build slot. Double-click it to buy.")
 	var old_instances: Dictionary = {}
 	for item in staged.inventory.items:
@@ -37,7 +37,7 @@ static func _purchase_source(staged: RunState, source: Dictionary, registry: Nod
 	var result := MarketService.buy_offer(staged, offer_id, registry)
 	if not result.ok:
 		return result
-	if offer.offer_type in [&"hero_item", &"soldier_item"]:
+	if offer.offer_type == &"hero_item":
 		for item in staged.inventory.items:
 			var instance_id := StringName(item.get("instance_id", ""))
 			if not old_instances.has(instance_id):
@@ -84,8 +84,6 @@ static func _return_item_to_inventory(staged: RunState, source: Dictionary) -> D
 	var item_ids: Array[StringName]
 	if owner_kind == &"hero" and owner_index >= 0 and owner_index < staged.heroes.size():
 		item_ids = staged.heroes[owner_index].item_ids
-	elif owner_kind == &"soldier" and owner_index >= 0 and owner_index < staged.soldiers.size():
-		item_ids = staged.soldiers[owner_index].item_ids
 	else:
 		return _failure("That equipment owner is no longer available.")
 	if slot_index < 0 or slot_index >= item_ids.size() or item_ids[slot_index] != StringName(source.get("instance_id", "")):
@@ -106,11 +104,10 @@ static func _assign_job(staged: RunState, soldier_index: int, job_id: StringName
 		return _failure("This soldier already has that Job.")
 	if job_id != &"job.militia" and _assigned_count(staged, job_id) >= int(staged.job_capacities.get(String(job_id), 0)):
 		return _failure("Assignment blocked: %s capacity is full." % _display_name(registry, job_id))
-	var validation := EquipmentService.can_change_job(staged, soldier_index, job_id, registry)
-	if not validation.ok:
-		return validation
+	var old_job_name := _display_name(registry, soldier.current_job_id)
 	soldier.current_job_id = job_id
 	soldier.definition_id = job_id
+	SoldierNameGenerator.update_job_name(soldier, old_job_name, _display_name(registry, job_id))
 	soldier.veterancy_xp = 0
 	soldier.veterancy_level = 0
 	return {"ok": true, "error": "", "action": &"job_changed"}
@@ -138,15 +135,11 @@ static func _equip_ability(staged: RunState, source: Dictionary, target: Diction
 			return _failure("Select a valid Hero ability slot.")
 		if hero.ability_ids.has(ability_id):
 			return _failure("That ability is already equipped.")
-		if slot_index >= hero.ability_priority.size():
+		if slot_index >= hero.ability_ids.size():
 			if not hero.equip_ability(ability_id):
 				return _failure("All Hero ability slots are full.")
 		else:
-			var old_id := hero.ability_priority[slot_index]
-			var old_index := hero.ability_ids.find(old_id)
-			if old_index >= 0:
-				hero.ability_ids[old_index] = ability_id
-			hero.ability_priority[slot_index] = ability_id
+			hero.ability_ids[slot_index] = ability_id
 		return {"ok": true, "error": "", "action": &"hero_ability_changed"}
 	if owner_kind == &"job":
 		var job_id := StringName(target.get("owner_id", ""))

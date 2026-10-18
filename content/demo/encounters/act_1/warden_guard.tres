@@ -1,15 +1,19 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" format=3 uid="uid://cwyswani406aw"]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3 uid="uid://cwyswani406aw"]
 
-[ext_resource type="Script" uid="uid://4tuimq2q6q86" path="res://content/definitions/encounter_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
-enemy_ids = Array[StringName]([&"enemy.iron_warden", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman"])
+enemy_ids = Array[StringName]([&"enemy.iron_warden", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman", &"enemy.crossbowman", &"enemy.ogre_drummer"])
 gold_reward = 300
+enemy_power = 0.87
+min_encounter_index = 0
+max_encounter_index = 100
 difficulty_hint = "Boss"
-key_properties = Array[String](["Armored boss", "Control and area damage", "Balanced escort"])
+key_properties = Array[String](["Armored boss with Iron Resolve", "Dread Drums", "Balanced escort"])
+is_unknown = false
 is_boss = true
 id = &"encounter.warden_guard"
 display_name = "The Iron Warden"
-description = "Break the Warden and his disciplined guard to leave Act I alive."
+description = "The ogre warlord of the wasteland waits with his guard."
 tags = Array[StringName]([&"encounter", &"act1", &"boss"])

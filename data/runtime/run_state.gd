@@ -2,7 +2,7 @@ class_name RunState
 extends RefCounted
 
 
-const CURRENT_SAVE_VERSION := 8
+const CURRENT_SAVE_VERSION := 9
 const STATUS_ACTIVE: StringName = &"active"
 const STATUS_DEFEAT: StringName = &"defeat"
 const STATUS_DEMO_COMPLETE: StringName = &"demo_complete"
@@ -38,6 +38,8 @@ var triggered_event_ids: Array[StringName] = []
 var pending_event := PendingRunEventState.new()
 var pending_hero_ability_reward := PendingHeroAbilityReward.new()
 var next_modifier_serial := 1
+## Custom starting positions: unit unique_id -> normalized Vector2 (see FormationService).
+var formation_positions: Dictionary = {}
 
 
 func initialize_rng_streams(seed: int) -> void:
@@ -96,6 +98,7 @@ func to_dictionary() -> Dictionary:
 		"pending_event": pending_event.to_dictionary(),
 		"pending_hero_ability_reward": pending_hero_ability_reward.to_dictionary(),
 		"next_modifier_serial": next_modifier_serial,
+		"formation_positions": FormationService.to_serializable(formation_positions),
 	}
 
 
@@ -147,4 +150,5 @@ static func from_dictionary(data: Dictionary) -> RunState:
 	state.pending_event = PendingRunEventState.from_dictionary(data.get("pending_event", {}))
 	state.pending_hero_ability_reward = PendingHeroAbilityReward.from_dictionary(data.get("pending_hero_ability_reward", {}))
 	state.next_modifier_serial = maxi(1, int(data.get("next_modifier_serial", 1)))
+	state.formation_positions = FormationService.from_serializable(data.get("formation_positions", {}))
 	return state

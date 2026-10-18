@@ -33,6 +33,7 @@ func _test_registry() -> void:
 		&"job.militia",
 		&"job.warrior",
 		&"job.archer",
+		&"job.shieldbearer",
 		&"job.priest",
 		&"job.summoner",
 		&"enemy.raider",
@@ -40,10 +41,13 @@ func _test_registry() -> void:
 		&"enemy.summoner",
 		&"enemy.summoned_brawler",
 		&"enemy.summoned_shooter",
-		&"encounter.training_skirmish",
-		&"ability.fire_bolt",
-		&"ability.hero_summon",
+		&"encounter.tutorial_volley",
+		&"ability.greed_golden_reserve",
+		&"ability.greed_shadowstep",
 		&"ability.summoner_job_summon",
+		&"ability.priest_professionalism_cleansing_flame_tier_1",
+		&"ability.summoner_professionalism_merge_tier_1",
+		&"enemy.summoned_amalgam",
 		&"ability.enemy_summon",
 		&"status.burn",
 		&"item.hero.vanguard_blade",
@@ -54,7 +58,7 @@ func _test_registry() -> void:
 
 	_check(registry.get_definition(&"missing.content", false) == null, "Missing definitions return null.")
 	var route := registry.get_definition(&"route.demo") as RouteDefinition
-	_check(route.act_one_boss_wave == 12 and route.act_one_boss_index() == 11 and route.act_two_battle_count == 12, "Demo route exposes battle count and the one-based Boss wave as content data.")
+	_check(route.act_one_boss_wave == 13 and route.act_one_boss_index() == 12 and route.act_two_battle_count == 12, "Demo route exposes battle count and the one-based Boss wave as content data.")
 
 	var registry_script: Script = load("res://autoload/content_registry.gd")
 	var isolated_registry = registry_script.new()
@@ -92,10 +96,13 @@ func _test_state_round_trips() -> void:
 	hero.equip_ability(&"ability.one")
 	hero.equip_ability(&"ability.two")
 	hero.item_ids = [&"item-00000001"]
-	hero.ability_priority = [&"ability.two", &"ability.one"]
 	hero.cooldowns = {"ability.one": 1.25}
 	hero.statuses = [{"id": "status.burn", "duration": 2.5, "stacks": 2}]
 	_assert_round_trip(hero.to_dictionary(), HeroState.from_dictionary(hero.to_dictionary()).to_dictionary(), "HeroState")
+	var legacy_hero_data := hero.to_dictionary()
+	legacy_hero_data["ability_priority"] = ["ability.two", "ability.one"]
+	var migrated_hero := HeroState.from_dictionary(legacy_hero_data)
+	_check(migrated_hero.ability_ids == [&"ability.two", &"ability.one"] and not migrated_hero.to_dictionary().has("ability_priority"), "Legacy Hero ability priority migrates once into slot order and is no longer saved.")
 
 	var soldier := SoldierState.new()
 	soldier.unique_id = "soldier-1"
@@ -104,11 +111,13 @@ func _test_state_round_trips() -> void:
 	soldier.veterancy_xp = 20
 	soldier.veterancy_level = 1
 	soldier.current_hp = 75.0
-	soldier.item_ids = [&"item-00000002"]
 	soldier.lifetime_statistics = {"kills": 2, "battles_survived": 3}
 	soldier.cooldowns = {"ability.job.test": 0.5}
 	soldier.statuses = [{"id": "status.armor", "duration": 4.0}]
 	_assert_round_trip(soldier.to_dictionary(), SoldierState.from_dictionary(soldier.to_dictionary()).to_dictionary(), "SoldierState")
+	var legacy_soldier_data := soldier.to_dictionary()
+	legacy_soldier_data["item_ids"] = ["item-legacy"]
+	_check(not SoldierState.from_dictionary(legacy_soldier_data).to_dictionary().has("item_ids"), "Legacy Soldier equipment is ignored during load.")
 
 	var job_build := JobBuildState.new()
 	job_build.job_id = &"job.militia"
@@ -127,13 +136,14 @@ func _test_state_round_trips() -> void:
 	offer.offer_id = "offer-1"
 	offer.offer_type = &"hero_item"
 	offer.content_id = &"item.hero.vanguard_blade"
-	offer.rarity = "common"
 	offer.price = 50
 	offer.target_type = &"hero"
-	offer.target_id = "hero-01"
+	offer.target_id = ""
+	offer.is_pinned = true
 	market.offers = [offer]
 	market.reroll_count = 2
 	_assert_round_trip(market.to_dictionary(), MarketState.from_dictionary(market.to_dictionary()).to_dictionary(), "MarketState")
+	_check(not MarketOffer.from_dictionary({}).is_pinned, "Legacy Market offers default to unlocked.")
 
 	var snapshot := ExecutionSnapshot.new()
 	snapshot.hero_definition_id = &"hero.test_vanguard"

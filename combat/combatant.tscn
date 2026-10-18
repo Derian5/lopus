@@ -1,12 +1,17 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cxufxpeta2t37"]
 
-[ext_resource type="Script" path="res://combat/combatant.gd" id="1_combatant"]
+[ext_resource type="Script" uid="uid://crjo420tbc2v4" path="res://combat/combatant.gd" id="1_combatant"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_placeholder"]
 radius = 16.0
 
-[node name="Combatant" type="CharacterBody2D"]
+[node name="Combatant" type="CharacterBody2D" unique_id=2009262975]
 script = ExtResource("1_combatant")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="UnitSprite" type="AnimatedSprite2D" parent="."]
+visible = false
+show_behind_parent = true
+texture_filter = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=516533705]
 shape = SubResource("CircleShape_placeholder")

@@ -1,0 +1,176 @@
+[gd_resource type="Resource" script_class="RunEventDefinition" format=3 uid="uid://bwjb2qq1bolag"]
+
+[ext_resource type="Script" uid="uid://doousjkw7uvwu" path="res://content/definitions/run_event_definition.gd" id="1_event"]
+[ext_resource type="Script" uid="uid://blniki8s66th3" path="res://content/definitions/run_event_condition.gd" id="1_sb62b"]
+[ext_resource type="Script" uid="uid://buy8me4cbo54b" path="res://content/definitions/run_event_node.gd" id="2_node"]
+[ext_resource type="Script" uid="uid://duy5soidh7i32" path="res://content/definitions/run_event_choice.gd" id="3_choice"]
+[ext_resource type="Script" uid="uid://6yc60mmrkn0j" path="res://content/definitions/run_event_effect.gd" id="4_effect"]
+
+[sub_resource type="Resource" id="Resource_gnnu0"]
+script = ExtResource("1_sb62b")
+maximum = 1
+metadata/_custom_type_script = "uid://blniki8s66th3"
+
+[sub_resource type="Resource" id="FocusUnits"]
+script = ExtResource("3_choice")
+choice_id = &"focus_units"
+text = "Focus on units."
+next_node_id = &"unit_focus"
+
+[sub_resource type="Resource" id="FocusWealth"]
+script = ExtResource("3_choice")
+choice_id = &"focus_wealth"
+text = "Focus on wealth."
+next_node_id = &"wealth_result"
+
+[sub_resource type="Resource" id="FocusHeroes"]
+script = ExtResource("3_choice")
+choice_id = &"focus_heroes"
+text = "Focus on the Heroes."
+next_node_id = &"heroes_result"
+
+[sub_resource type="Resource" id="EntryNode"]
+script = ExtResource("2_node")
+node_id = &"entry"
+title = "A Strategic Disagreement"
+body = "The Heroes began planning for the future. They could not agree on what the army should prioritize."
+choices = Array[ExtResource("3_choice")]([SubResource("FocusUnits"), SubResource("FocusWealth"), SubResource("FocusHeroes")])
+
+[sub_resource type="Resource" id="ChooseMelee"]
+script = ExtResource("3_choice")
+choice_id = &"choose_melee"
+text = "Melee fighters."
+next_node_id = &"warrior_result"
+
+[sub_resource type="Resource" id="ChooseRanged"]
+script = ExtResource("3_choice")
+choice_id = &"choose_ranged"
+text = "Ranged fighters."
+next_node_id = &"archer_result"
+
+[sub_resource type="Resource" id="ChooseSummoners"]
+script = ExtResource("3_choice")
+choice_id = &"choose_summoners"
+text = "Summoning mages."
+next_node_id = &"summoner_result"
+
+[sub_resource type="Resource" id="UnitFocusNode"]
+script = ExtResource("2_node")
+node_id = &"unit_focus"
+title = "Future Forces"
+body = "Which ones?"
+choices = Array[ExtResource("3_choice")]([SubResource("ChooseMelee"), SubResource("ChooseRanged"), SubResource("ChooseSummoners")])
+
+[sub_resource type="Resource" id="WarriorCapacity"]
+script = ExtResource("4_effect")
+effect_id = &"event_effect.strategy_warrior_capacity"
+effect_type = 6
+job_id = &"job.warrior"
+amount = 2
+
+[sub_resource type="Resource" id="AcceptWarriors"]
+script = ExtResource("3_choice")
+choice_id = &"accept_warriors"
+text = "Continue."
+effects = Array[ExtResource("4_effect")]([SubResource("WarriorCapacity")])
+
+[sub_resource type="Resource" id="WarriorResultNode"]
+script = ExtResource("2_node")
+node_id = &"warrior_result"
+title = "Fresh Recruits"
+body = "Fresh meat... Gain 2 Warrior positions."
+choices = Array[ExtResource("3_choice")]([SubResource("AcceptWarriors")])
+
+[sub_resource type="Resource" id="ArcherCapacity"]
+script = ExtResource("4_effect")
+effect_id = &"event_effect.strategy_archer_capacity"
+effect_type = 6
+job_id = &"job.archer"
+amount = 2
+
+[sub_resource type="Resource" id="AcceptArchers"]
+script = ExtResource("3_choice")
+choice_id = &"accept_archers"
+text = "Continue."
+effects = Array[ExtResource("4_effect")]([SubResource("ArcherCapacity")])
+
+[sub_resource type="Resource" id="ArcherResultNode"]
+script = ExtResource("2_node")
+node_id = &"archer_result"
+title = "A Safer Distance"
+body = "Better not to waste troops in melee. Gain 2 Archer positions."
+choices = Array[ExtResource("3_choice")]([SubResource("AcceptArchers")])
+
+[sub_resource type="Resource" id="SummonerCapacity"]
+script = ExtResource("4_effect")
+effect_id = &"event_effect.strategy_summoner_capacity"
+effect_type = 6
+job_id = &"job.summoner"
+
+[sub_resource type="Resource" id="AcceptSummoner"]
+script = ExtResource("3_choice")
+choice_id = &"accept_summoner"
+text = "Continue."
+effects = Array[ExtResource("4_effect")]([SubResource("SummonerCapacity")])
+
+[sub_resource type="Resource" id="SummonerResultNode"]
+script = ExtResource("2_node")
+node_id = &"summoner_result"
+title = "Temporary Reinforcements"
+body = "Temporary meat is better than permanently dead meat. Gain 1 Summoner position."
+choices = Array[ExtResource("3_choice")]([SubResource("AcceptSummoner")])
+
+[sub_resource type="Resource" id="GoldReward"]
+script = ExtResource("4_effect")
+effect_id = &"event_effect.strategy_gold"
+effect_type = 7
+amount = 250
+
+[sub_resource type="Resource" id="AcceptWealth"]
+script = ExtResource("3_choice")
+choice_id = &"accept_wealth"
+text = "Continue."
+effects = Array[ExtResource("4_effect")]([SubResource("GoldReward")])
+
+[sub_resource type="Resource" id="WealthResultNode"]
+script = ExtResource("2_node")
+node_id = &"wealth_result"
+title = "A Golden Future"
+body = "I can see someone's influence... Gain 250 Gold."
+choices = Array[ExtResource("3_choice")]([SubResource("AcceptWealth")])
+
+[sub_resource type="Resource" id="HeroXpReward"]
+script = ExtResource("4_effect")
+effect_id = &"event_effect.strategy_hero_xp"
+effect_type = 8
+amount = 100
+
+[sub_resource type="Resource" id="HeroItemReward"]
+script = ExtResource("4_effect")
+effect_id = &"event_effect.strategy_hero_item"
+effect_type = 9
+
+[sub_resource type="Resource" id="AcceptHeroFocus"]
+script = ExtResource("3_choice")
+choice_id = &"accept_hero_focus"
+text = "Continue."
+effects = Array[ExtResource("4_effect")]([SubResource("HeroXpReward"), SubResource("HeroItemReward")])
+
+[sub_resource type="Resource" id="HeroesResultNode"]
+script = ExtResource("2_node")
+node_id = &"heroes_result"
+title = "The Heroes' Decision"
+body = "A little biased... but the soldiers were not invited to the meeting. Every Hero gains 100 XP, and one random Hero receives a random artifact."
+choices = Array[ExtResource("3_choice")]([SubResource("AcceptHeroFocus")])
+
+[resource]
+script = ExtResource("1_event")
+weight = 0.0
+theme_hero_id = &"hero.test_vanguard"
+conditions = Array[ExtResource("1_sb62b")]([SubResource("Resource_gnnu0")])
+entry_node_id = &"entry"
+nodes = Array[ExtResource("2_node")]([SubResource("EntryNode"), SubResource("UnitFocusNode"), SubResource("WarriorResultNode"), SubResource("ArcherResultNode"), SubResource("SummonerResultNode"), SubResource("WealthResultNode"), SubResource("HeroesResultNode")])
+id = &"event.strategy_disagreement"
+display_name = "A Strategic Disagreement"
+description = "The Heroes debate whether the company should prioritize troops, wealth, or themselves."
+tags = Array[StringName]([&"event", &"strategy", &"heroes", &"jobs"])

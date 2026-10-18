@@ -1,27 +1,35 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://bfp1qmnati37f"]
 
-[ext_resource type="Script" path="res://combat/combat.gd" id="1_combat"]
+[ext_resource type="Script" uid="uid://d0fx5j1rucq10" path="res://combat/combat.gd" id="1_combat"]
 [ext_resource type="PackedScene" path="res://combat/combat_session.tscn" id="2_session"]
 [ext_resource type="PackedScene" path="res://ui/post_battle/post_battle_panel.tscn" id="3_post_battle"]
 [ext_resource type="PackedScene" path="res://ui/combat/combat_statistics_panel.tscn" id="4_statistics"]
 [ext_resource type="PackedScene" path="res://ui/combat/selected_unit_panel.tscn" id="5_selected"]
+[ext_resource type="PackedScene" path="res://ui/management/run_event_popup.tscn" id="6_run_event"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBackground"]
-bg_color = Color(0.09, 0.075, 0.065, 1)
+bg_color = Color(0.012, 0.014, 0.019, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleArena"]
-bg_color = Color(0.16, 0.14, 0.115, 1)
+bg_color = Color(0.105, 0.09, 0.07, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.35, 0.3, 0.22, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+border_color = Color(0.54, 0.43, 0.25, 0.95)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.62)
+shadow_size = 12
+corner_detail = 1
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
 
-[node name="Combat" type="Control"]
+[node name="Combat" type="Control" unique_id=1774357119]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,7 +38,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_combat")
 
-[node name="Background" type="Panel" parent="."]
+[node name="Background" type="Panel" parent="." unique_id=372461828]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -39,7 +47,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBackground")
 
-[node name="Page" type="MarginContainer" parent="."]
+[node name="Page" type="MarginContainer" parent="." unique_id=958024185]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -51,129 +59,169 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 20
 
-[node name="VBox" type="VBoxContainer" parent="Page"]
+[node name="VBox" type="VBoxContainer" parent="Page" unique_id=228864400]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Header" type="HBoxContainer" parent="Page/VBox"]
+[node name="Header" type="HBoxContainer" parent="Page/VBox" unique_id=135960447]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="Page/VBox/Header"]
+[node name="Title" type="Label" parent="Page/VBox/Header" unique_id=1674947385]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
 theme_override_font_sizes/font_size = 26
 text = "BATTLE"
+theme_type_variation = &"HeaderLabel"
+self_modulate = Color(1, 1, 1, 0)
 
-[node name="SpeedDownButton" type="Button" parent="Page/VBox/Header"]
+[node name="SpeedDownButton" type="Button" parent="Page/VBox/Header" unique_id=1161878527]
 custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
-text = "−"
 
-[node name="SpeedLabel" type="Label" parent="Page/VBox/Header"]
+[node name="Glyph" type="Label" parent="Page/VBox/Header/SpeedDownButton" unique_id=457840172]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
+text = "−"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpeedLabel" type="Label" parent="Page/VBox/Header" unique_id=543056375]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.75, 0.8, 1)
 text = "SPEED  x1"
 
-[node name="SpeedUpButton" type="Button" parent="Page/VBox/Header"]
+[node name="SpeedUpButton" type="Button" parent="Page/VBox/Header" unique_id=1784669656]
 custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
-text = "+"
 
-[node name="MenuButton" type="Button" parent="Page/VBox/Header"]
+[node name="Glyph" type="Label" parent="Page/VBox/Header/SpeedUpButton" unique_id=2122542996]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseButton" type="Button" parent="Page/VBox/Header" unique_id=1682487950]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 42)
+layout_mode = 2
+text = "PAUSE"
+
+[node name="MenuButton" type="Button" parent="Page/VBox/Header" unique_id=168641140]
 custom_minimum_size = Vector2(100, 42)
 layout_mode = 2
 text = "MENU"
 
-[node name="BattleArea" type="VBoxContainer" parent="Page/VBox"]
+[node name="BattleArea" type="VBoxContainer" parent="Page/VBox" unique_id=310909419]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="Arena" type="PanelContainer" parent="Page/VBox/BattleArea"]
+[node name="Arena" type="PanelContainer" parent="Page/VBox/BattleArea" unique_id=992701082]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleArena")
 
-[node name="CombatSession" parent="Page/VBox/BattleArea/Arena" instance=ExtResource("2_session")]
+[node name="CombatSession" parent="Page/VBox/BattleArea/Arena" unique_id=1934017012 instance=ExtResource("2_session")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Footer" type="HBoxContainer" parent="Page/VBox"]
+[node name="Footer" type="HBoxContainer" parent="Page/VBox" unique_id=489461527]
 layout_mode = 2
 
-[node name="Hint" type="Label" parent="Page/VBox/Footer"]
+[node name="Hint" type="Label" parent="Page/VBox/Footer" unique_id=799744735]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.52, 0.5, 0.46, 1)
-text = "Esc: menu    - / =: speed    Click a unit: details"
+text = "Esc: menu    - / =: speed    Pause: stop battle    Click a unit: details"
+self_modulate = Color(1, 1, 1, 0)
 
-[node name="RestartButton" type="Button" parent="Page/VBox/Footer"]
+[node name="RestartButton" type="Button" parent="Page/VBox/Footer" unique_id=1615799373]
 custom_minimum_size = Vector2(130, 48)
 layout_mode = 2
 text = "RESTART"
 
-[node name="ManagementButton" type="Button" parent="Page/VBox/Footer"]
+[node name="ManagementButton" type="Button" parent="Page/VBox/Footer" unique_id=1206691153]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
 disabled = true
 text = "CONTINUE"
+theme_type_variation = &"PrimaryButton"
 
-[node name="PlayerStatistics" parent="." instance=ExtResource("4_statistics")]
+[node name="PlayerStatistics" parent="." unique_id=885549192 instance=ExtResource("4_statistics")]
 unique_name_in_owner = true
 layout_mode = 1
+anchors_preset = -1
 anchor_top = 0.1
 anchor_bottom = 0.433333
 offset_left = 24.0
-offset_right = 284.0
+offset_right = 314.0
 grow_vertical = 2
 
-[node name="EnemyStatistics" parent="." instance=ExtResource("4_statistics")]
+[node name="EnemyStatistics" parent="." unique_id=1525156956 instance=ExtResource("4_statistics")]
 unique_name_in_owner = true
 layout_mode = 1
+anchors_preset = -1
 anchor_left = 1.0
 anchor_top = 0.1
 anchor_right = 1.0
 anchor_bottom = 0.433333
-offset_left = -284.0
+offset_left = -314.0
 offset_right = -24.0
 grow_horizontal = 0
 grow_vertical = 2
 
-[node name="SelectedUnitPanel" parent="." instance=ExtResource("5_selected")]
+[node name="SelectedUnitPanel" parent="." unique_id=1236655749 instance=ExtResource("5_selected")]
 unique_name_in_owner = true
 layout_mode = 1
-anchor_left = 0.15
+anchors_preset = -1
+anchor_left = 0.22
 anchor_top = 1.0
-anchor_right = 0.85
+anchor_right = 0.78
 anchor_bottom = 1.0
-offset_top = -262.0
+offset_top = -350.0
 offset_bottom = -78.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="PostBattlePanel" parent="." instance=ExtResource("3_post_battle")]
+[node name="PostBattlePanel" parent="." unique_id=1135508201 instance=ExtResource("3_post_battle")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -380.0
-offset_top = -260.0
-offset_right = 380.0
-offset_bottom = 260.0
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 0.1
+anchor_right = 0.8
+anchor_bottom = 0.9
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="RunEventPopup" parent="." unique_id=866133092 instance=ExtResource("6_run_event")]
+unique_name_in_owner = true
+layout_mode = 1
+
 [connection signal="pressed" from="Page/VBox/Header/SpeedDownButton" to="." method="_on_speed_down_button_pressed"]
 [connection signal="pressed" from="Page/VBox/Header/SpeedUpButton" to="." method="_on_speed_up_button_pressed"]
+[connection signal="pressed" from="Page/VBox/Header/PauseButton" to="." method="_on_pause_button_pressed"]
 [connection signal="pressed" from="Page/VBox/Header/MenuButton" to="." method="_on_menu_button_pressed"]
 [connection signal="pressed" from="Page/VBox/Footer/RestartButton" to="." method="_on_restart_button_pressed"]
 [connection signal="pressed" from="Page/VBox/Footer/ManagementButton" to="." method="_on_management_button_pressed"]

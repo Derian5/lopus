@@ -22,9 +22,17 @@ var unit_kind := UnitKind.SOLDIER
 var job_id: StringName
 var veterancy_level := 0
 var attack_type: StringName = &"melee"
+var targeting_mode: StringName = &"closest"
+var damage_avoidance_override := -1
+var avoids_damage: bool:
+	get:
+		return damage_avoidance_override == 1 or (damage_avoidance_override < 0 and attack_type == &"ranged")
+	set(value):
+		damage_avoidance_override = 1 if value else 0
 var stats := CombatStats.new()
 var placeholder_color := Color.WHITE
 var abilities: Array[AbilityDefinition] = []
+var post_combat_xp_bonus_percent := 0.0
 var equipped_item_instance_ids: Array[StringName] = []
 var equipped_item_definition_ids: Array[StringName] = []
 var summoner_runtime_id := ""
@@ -38,6 +46,8 @@ var boss_phase_damage_multiplier := 1.0
 var boss_phase_attack_speed_multiplier := 1.0
 var boss_telegraph_color := Color(1.0, 0.25, 0.12, 0.9)
 var boss_phase_telegraph_text := ""
+## Normalized custom starting position; negative = automatic formation.
+var formation_position := Vector2(-1.0, -1.0)
 
 
 func duplicate_snapshot() -> CombatUnitSnapshot:
@@ -50,9 +60,12 @@ func duplicate_snapshot() -> CombatUnitSnapshot:
 	copy.job_id = job_id
 	copy.veterancy_level = veterancy_level
 	copy.attack_type = attack_type
+	copy.targeting_mode = targeting_mode
+	copy.damage_avoidance_override = damage_avoidance_override
 	copy.stats = stats.duplicate_stats()
 	copy.placeholder_color = placeholder_color
 	copy.abilities = abilities.duplicate()
+	copy.post_combat_xp_bonus_percent = post_combat_xp_bonus_percent
 	copy.equipped_item_instance_ids = equipped_item_instance_ids.duplicate()
 	copy.equipped_item_definition_ids = equipped_item_definition_ids.duplicate()
 	copy.summoner_runtime_id = summoner_runtime_id
@@ -66,4 +79,5 @@ func duplicate_snapshot() -> CombatUnitSnapshot:
 	copy.boss_phase_attack_speed_multiplier = boss_phase_attack_speed_multiplier
 	copy.boss_telegraph_color = boss_telegraph_color
 	copy.boss_phase_telegraph_text = boss_phase_telegraph_text
+	copy.formation_position = formation_position
 	return copy

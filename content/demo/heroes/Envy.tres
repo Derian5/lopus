@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="1_v43km"]
 [ext_resource type="Script" uid="uid://c28ctqljuo31t" path="res://content/definitions/hero_definition.gd" id="2_fsxpw"]
+[ext_resource type="Texture2D" uid="uid://cx2m45iv88msq" path="res://arts/v1/Envy.png" id="3_portrait"]
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_v43km")
-max_hp = 670.0
-damage = 38.0
-attack_speed = 1.4000000000000001
+max_hp = 335.0
+damage = 9.0
+attack_speed = 0.9
 movement_speed = 102.0
 attack_range = 280.0
 armor = 6.0
@@ -16,6 +17,7 @@ armor = 6.0
 script = ExtResource("2_fsxpw")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.24, 0.72, 0.3, 1)
+portrait = ExtResource("3_portrait")
 available_in_new_game = true
 selection_order = 3
 id = &"hero.army_support"

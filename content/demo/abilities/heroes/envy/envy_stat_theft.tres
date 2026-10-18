@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/ability_level_definition.gd" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/envy_stat_theft_effect.gd" id="3"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_envy_stat_theft.png" id="generated_icon"]
+
+[sub_resource type="Resource" id="Base"]
+script = ExtResource("3")
+effect_id = &"effect.envy_stat_theft"
+steal_percent = 10.0
+duration = 12.0
+
+[sub_resource type="Resource" id="E1"]
+script = ExtResource("3")
+effect_id = &"effect.envy_stat_theft"
+steal_percent = 10.0
+duration = 12.0
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("2")
+cooldown_seconds = 3.0
+effects = Array[AbilityEffect]([SubResource("E1")])
+[sub_resource type="Resource" id="E2"]
+script = ExtResource("3")
+effect_id = &"effect.envy_stat_theft"
+steal_percent = 20.0
+duration = 12.0
+[sub_resource type="Resource" id="L2"]
+script = ExtResource("2")
+cooldown_seconds = 3.0
+effects = Array[AbilityEffect]([SubResource("E2")])
+[sub_resource type="Resource" id="E3"]
+script = ExtResource("3")
+effect_id = &"effect.envy_stat_theft"
+steal_percent = 40.0
+duration = 12.0
+[sub_resource type="Resource" id="L3"]
+script = ExtResource("2")
+cooldown_seconds = 3.0
+effects = Array[AbilityEffect]([SubResource("E3")])
+[sub_resource type="Resource" id="E4"]
+script = ExtResource("3")
+effect_id = &"effect.envy_stat_theft"
+steal_percent = 80.0
+duration = 12.0
+[sub_resource type="Resource" id="L4"]
+script = ExtResource("2")
+cooldown_seconds = 3.0
+effects = Array[AbilityEffect]([SubResource("E4")])
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("generated_icon")
+id = &"ability.envy_stat_theft"
+display_name = "Covetous Exchange"
+description = "Steals [debuff]{e0.steal_percent}% of a random enemy's Max HP, damage, attack speed and armor[/debuff] for {e0.duration}s and [buff]gives it to a random ally[/buff] other than Envy. Bosses are immune."
+cooldown_seconds = 3.0
+targeting_policy = 0
+effects = Array[AbilityEffect]([SubResource("Base")])
+priority = 100
+presentation_color = Color(0.25, 0.85, 0.35, 1)
+allowed_hero_ids = Array[StringName]([&"hero.army_support"])
+hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
+tags = Array[StringName]([&"ability", &"active", &"envy", &"steal"])

@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/effects/nearby_ally_stat_bonus_effect.gd" id="2"]
+[ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_lust_guardian_desire.png" id="icon"]
+
+[sub_resource type="Resource" id="Numbers"]
+script = ExtResource("2")
+effect_id = &"effect.militia_strength_in_numbers"
+stat = "armor"
+value_per_ally = 3.0
+radius = 160.0
+max_allies = 5
+
+[resource]
+script = ExtResource("1")
+presentation_icon = ExtResource("icon")
+id = &"ability.militia_strength_in_numbers"
+display_name = "Strength in Numbers"
+description = "Gains [buff]+{e0.value_per_ally} armor[/buff] for each other Militia within {e0.radius}, up to [buff]+{e0.value_per_ally*e0.max_allies} armor[/buff]."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[AbilityEffect]([SubResource("Numbers")])
+presentation_color = Color(0.62, 0.66, 0.74, 1)
+presentation_text = "Strength in Numbers"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"passive", &"job", &"militia", &"armor"])

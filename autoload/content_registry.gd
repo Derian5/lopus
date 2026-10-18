@@ -2,9 +2,7 @@ extends Node
 
 
 const CONTENT_DIRECTORIES: Array[String] = ["res://content/demo"]
-const ITEM_TARGET_TYPES: Array[StringName] = [&"hero", &"soldier"]
-const ITEM_RARITIES: Array[String] = ["common", "uncommon", "rare", "legendary"]
-const ENCOUNTER_DIFFICULTIES: Array[String] = ["Low", "Moderate", "High", "Boss"]
+const ENCOUNTER_DIFFICULTIES: Array[String] = ["Low", "Moderate", "High", "Elite", "Boss"]
 const MODIFIABLE_STATS: Array[String] = ["max_hp", "damage", "attack_speed", "movement_speed", "attack_range", "armor"]
 const MIN_SELECTABLE_HEROES := 3
 
@@ -78,7 +76,7 @@ func validate_registered_definitions(report_error := true) -> bool:
 		valid = _record_error("Demo route battle counts are invalid.", report_error) and valid
 	elif route.event_absence_percent < 0.0 or route.event_absence_percent > 100.0:
 		valid = _record_error("Demo route event absence percentage is outside 0..100.", report_error) and valid
-	elif route.new_hero_ability_weight <= 0.0 or route.hero_ability_upgrade_weight <= 0.0:
+	elif route.new_hero_ability_weight <= route.hero_ability_upgrade_weight or route.hero_ability_upgrade_weight <= 0.0 or route.hero_ability_upgrade_level_penalty <= 0.0:
 		valid = _record_error("Demo route Hero ability reward weights are invalid.", report_error) and valid
 	for definition in definitions.values():
 		if definition is BossDefinition:
@@ -102,10 +100,20 @@ func validate_registered_definitions(report_error := true) -> bool:
 			valid = false
 		elif definition is AbilityDefinition and not _validate_ability(definition, report_error):
 			valid = false
+		elif definition is StatusDefinition and not _validate_status(definition, report_error):
+			valid = false
 		elif definition is EncounterDefinition and not _validate_encounter(definition, report_error):
 			valid = false
 	if route != null and not _validate_encounter_routes(route, report_error):
 		valid = false
+	if route != null:
+		if not definitions.get(route.opening_event_id) is RunEventDefinition:
+			valid = _record_error("Demo route references an unknown opening Run Event.", report_error) and valid
+		if route.act_one_post_battle_event_ids.size() > route.act_one_boss_wave:
+			valid = _record_error("Demo route defines too many Act I post-battle events.", report_error) and valid
+		for event_id in route.act_one_post_battle_event_ids:
+			if not String(event_id).is_empty() and not definitions.get(event_id) is RunEventDefinition:
+				valid = _record_error("Demo route references an unknown post-battle Run Event %s." % event_id, report_error) and valid
 	if selectable_hero_count < MIN_SELECTABLE_HEROES:
 		valid = _record_error("New Game requires at least three selectable Heroes.", report_error) and valid
 	return valid
@@ -133,8 +141,8 @@ func _validate_boss(boss: BossDefinition, report_error: bool) -> bool:
 
 func _validate_ability(ability: AbilityDefinition, report_error: bool) -> bool:
 	var valid := true
-	if not ITEM_RARITIES.has(ability.rarity):
-		valid = _record_error("Ability %s has invalid rarity: %s" % [ability.id, ability.rarity], report_error) and valid
+	if ability.activation_mode == AbilityDefinition.ActivationMode.REPLACE_BASIC_ATTACK and ability.kind != AbilityDefinition.AbilityKind.ACTIVE:
+		valid = _record_error("Replacement ability %s must be active." % ability.id, report_error) and valid
 	if ability.price < 0:
 		valid = _record_error("Ability %s has a negative price." % ability.id, report_error) and valid
 	if ability.targeting_policy == AbilityDefinition.TargetingPolicy.RANDOM_ENEMY_WITHOUT_STATUS:
@@ -189,6 +197,82 @@ func _validate_ability_effect(ability: AbilityDefinition, effect: AbilityEffect,
 		return _record_error("Ability %s%s has invalid attack speed aura values." % [ability.id, context], report_error)
 	if effect is BasicAttackEmpowerEffect and (effect.lifesteal_percent < 0.0 or effect.size_multiplier <= 0.0 or effect.duration <= 0.0):
 		return _record_error("Ability %s%s has invalid basic attack empowerment values." % [ability.id, context], report_error)
+	if effect is GoldArmyScalingEffect and effect.percent_per_gold <= 0.0:
+		return _record_error("Ability %s%s has an invalid Gold scaling percentage." % [ability.id, context], report_error)
+	if effect is ItemStatScalingEffect and effect.bonus_percent <= 0.0:
+		return _record_error("Ability %s%s has an invalid item scaling percentage." % [ability.id, context], report_error)
+	if effect is TeleportStealthEffect and effect.duration <= 0.0:
+		return _record_error("Ability %s%s has an invalid stealth duration." % [ability.id, context], report_error)
+	if effect is KillRewardEffect and (effect.gold_per_kill <= 0 or effect.permanent_damage_per_kill <= 0.0):
+		return _record_error("Ability %s%s has invalid kill rewards." % [ability.id, context], report_error)
+	if effect is RadialEnemyDamageEffect and (effect.radius <= 0.0 or effect.damage <= 0.0):
+		return _record_error("Ability %s%s has invalid radial damage values." % [ability.id, context], report_error)
+	if effect is SmokeBombEffect and (effect.radius <= 0.0 or effect.activation_enemy_radius <= 0.0 or effect.duration <= 0.0 or effect.dodge_percent <= 0.0 or effect.dodge_percent > 100.0):
+		return _record_error("Ability %s%s has invalid smoke bomb values." % [ability.id, context], report_error)
+	if effect is MeleeRetaliationEffect and (effect.radius <= 0.0 or effect.damage_multiplier <= 0.0):
+		return _record_error("Ability %s%s has invalid melee retaliation values." % [ability.id, context], report_error)
+	if effect is AttackReflectEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.reflect_percent <= 0.0 or effect.reflect_percent > 100.0):
+		return _record_error("Ability %s%s has an invalid attack reflection percentage." % [ability.id, context], report_error)
+	if effect is FocusedDamageEffect and (effect.damage_per_stack <= 0.0 or effect.stack_duration <= 0.0):
+		return _record_error("Ability %s%s has invalid focused damage values." % [ability.id, context], report_error)
+	if effect is FrenzyEffect and (effect.attack_speed_multiplier <= 0.0 or effect.duration <= 0.0):
+		return _record_error("Ability %s%s has invalid frenzy values." % [ability.id, context], report_error)
+	if effect is LeapSlamEffect and (effect.damage <= 0.0 or effect.impact_radius <= 0.0 or effect.knockback_distance <= 0.0 or effect.stun_duration <= 0.0):
+		return _record_error("Ability %s%s has invalid leap slam values." % [ability.id, context], report_error)
+	if effect is ThresholdGuardEffect and (effect.health_threshold <= 0.0 or effect.health_threshold > 1.0 or effect.shield_max_hp_multiplier <= 0.0 or effect.armor_multiplier <= 0.0 or effect.duration <= 0.0 or effect.cooldown_seconds <= 0.0):
+		return _record_error("Ability %s%s has invalid threshold guard values." % [ability.id, context], report_error)
+	if effect is GroundSlamEffect and (effect.damage_multiplier <= 0.0 or effect.radius <= 0.0):
+		return _record_error("Ability %s%s has invalid ground slam values." % [ability.id, context], report_error)
+	if effect is EnvyStatTheftEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.steal_percent <= 0.0 or effect.duration <= 0.0):
+		return _record_error("Ability %s%s has invalid Envy stat theft values." % [ability.id, context], report_error)
+	if effect is EnvyStrongestAllyDamageEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.bonus_percent <= 0.0):
+		return _record_error("Ability %s%s has an invalid Envy damage-copy percentage." % [ability.id, context], report_error)
+	if effect is EnvyIllusionEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.stat_percent <= 0.0 or effect.max_active_summons < 1):
+		return _record_error("Ability %s%s has invalid Envy illusion values." % [ability.id, context], report_error)
+	if effect is EnvyExecuteEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.health_threshold <= 0.0 or effect.health_threshold > 1.0):
+		return _record_error("Ability %s%s has an invalid Envy execute threshold." % [ability.id, context], report_error)
+	if effect is EnvyPostCombatXpEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.bonus_percent <= 0.0):
+		return _record_error("Ability %s%s has an invalid Envy XP bonus." % [ability.id, context], report_error)
+	if effect is EnvyDartVolleyEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.damage <= 0.0 or effect.movement_slow_percent <= 0.0 or effect.movement_slow_percent >= 100.0 or effect.max_targets < 1):
+		return _record_error("Ability %s%s has invalid Envy dart values." % [ability.id, context], report_error)
+	if effect is LustGuardTauntEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.activation_radius <= 0.0 or effect.ally_radius <= 0.0 or effect.armor_bonus <= 0.0 or effect.duration <= 0.0):
+		return _record_error("Ability %s%s has invalid Lust guard values." % [ability.id, context], report_error)
+	if effect is LustDeathScalingEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.percent_per_death <= 0.0):
+		return _record_error("Ability %s%s has invalid Lust death scaling." % [ability.id, context], report_error)
+	if effect is LustRecruitEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.hp_threshold <= 0.0 or effect.radius <= 0.0):
+		return _record_error("Ability %s%s has invalid Lust recruitment values." % [ability.id, context], report_error)
+	if effect is LustTargetSlowEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.slow_percent <= 0.0 or effect.slow_percent >= 100.0):
+		return _record_error("Ability %s%s has an invalid Lust target slow." % [ability.id, context], report_error)
+	if effect is LustBondEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.lifesteal_percent <= 0.0 or effect.attack_speed_multiplier <= 1.0):
+		return _record_error("Ability %s%s has invalid Lust bond values." % [ability.id, context], report_error)
+	if effect is LustBasicKnockbackEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.hits_required < 1 or effect.knockback_distance <= 0.0 or effect.stun_duration <= 0.0):
+		return _record_error("Ability %s%s has invalid Lust basic attack values." % [ability.id, context], report_error)
+	if effect is GluttonyLifestealAuraEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.radius <= 0.0 or effect.lifesteal_percent <= 0.0 or effect.lifesteal_percent > 100.0):
+		return _record_error("Ability %s%s has invalid Gluttony lifesteal aura values." % [ability.id, context], report_error)
+	if effect is GluttonyRegenerationEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.max_stacks < 1 or effect.max_hp_percent_per_stack <= 0.0):
+		return _record_error("Ability %s%s has invalid Gluttony regeneration values." % [ability.id, context], report_error)
+	if effect is GluttonyDamageAuraEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.radius <= 0.0 or effect.damage <= 0.0 or effect.interval <= 0.0):
+		return _record_error("Ability %s%s has invalid Gluttony damage aura values." % [ability.id, context], report_error)
+	if effect is GluttonySiphonEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.CLOSEST_ENEMY or ability.delivery_method != AbilityDefinition.DeliveryMethod.MELEE_HIT or effect.damage <= 0.0):
+		return _record_error("Ability %s%s has invalid Gluttony siphon values." % [ability.id, context], report_error)
+	if effect is GluttonyDeathExplosionEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.radius <= 0.0 or effect.damage <= 0.0):
+		return _record_error("Ability %s%s has invalid Gluttony death explosion values." % [ability.id, context], report_error)
+	if effect is GluttonyGreaseEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.CLOSEST_ENEMY or ability.delivery_method != AbilityDefinition.DeliveryMethod.AREA_AROUND_TARGET or effect.miss_percent <= 0.0 or effect.miss_percent > 100.0 or effect.duration <= 0.0):
+		return _record_error("Ability %s%s has invalid Gluttony grease values." % [ability.id, context], report_error)
+	if effect is DespairTeamProcEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.proc_chance_percent <= 0.0 or effect.proc_chance_percent > 100.0 or effect.total_damage_percent < 100.0):
+		return _record_error("Ability %s%s has invalid Despair team proc values." % [ability.id, context], report_error)
+	if effect is DespairAttackSlowEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.max_stacks < 1 or effect.attack_speed_reduction_per_stack <= 0.0 or effect.maximum_reduction_percent <= 0.0 or effect.maximum_reduction_percent > 80.0):
+		return _record_error("Ability %s%s has invalid Despair attack slow values." % [ability.id, context], report_error)
+	if effect is DespairSleepEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.CLOSEST_ENEMY or effect.duration <= 0.0):
+		return _record_error("Ability %s%s has invalid Despair sleep values." % [ability.id, context], report_error)
+	if effect is DespairSanctuaryEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.health_threshold <= 0.0 or effect.health_threshold > 1.0 or effect.max_hp_heal_percent <= 0.0 or effect.duration <= 0.0 or effect.interval <= 0.0):
+		return _record_error("Ability %s%s has invalid Despair sanctuary values." % [ability.id, context], report_error)
+	if effect is DespairVinesEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.target_count < 1 or effect.damage <= 0.0 or effect.duration <= 0.0 or effect.interval <= 0.0):
+		return _record_error("Ability %s%s has invalid Despair vines values." % [ability.id, context], report_error)
+	if effect is DespairGrowthEffect and (ability.kind != AbilityDefinition.AbilityKind.PASSIVE or effect.max_hp_percent_per_second <= 0.0 or effect.damage_percent_per_second <= 0.0 or effect.armor_percent_per_second <= 0.0 or effect.movement_speed_percent_per_second <= 0.0 or effect.attack_speed_percent_per_second <= 0.0 or effect.maximum_bonus_percent <= 0.0 or effect.interval <= 0.0):
+		return _record_error("Ability %s%s has invalid Despair growth values." % [ability.id, context], report_error)
+	if effect is DespairPressureShieldEffect and (ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or effect.shield_amount <= 0.0 or effect.attack_speed_multiplier <= 0.0 or effect.attack_speed_multiplier >= 1.0 or effect.duration <= 0.0):
+		return _record_error("Ability %s%s has invalid Despair pressure shield values." % [ability.id, context], report_error)
 	if effect is SummonEffect:
 		var summon := effect as SummonEffect
 		if ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or ability.delivery_method != AbilityDefinition.DeliveryMethod.INSTANT:
@@ -199,7 +283,30 @@ func _validate_ability_effect(ability: AbilityDefinition, effect: AbilityEffect,
 			return _record_error("Ability %s%s has an invalid active summon limit." % [ability.id, context], report_error)
 		if summon.summoner_contribution_percent < 0.0 or summon.summoner_contribution_percent > 100.0:
 			return _record_error("Ability %s%s has a summon contribution percentage outside 0..100." % [ability.id, context], report_error)
+	if effect is SummonMergeEffect:
+		var merge := effect as SummonMergeEffect
+		if ability.kind != AbilityDefinition.AbilityKind.ACTIVE or ability.targeting_policy != AbilityDefinition.TargetingPolicy.SELF or ability.delivery_method != AbilityDefinition.DeliveryMethod.INSTANT:
+			return _record_error("Summon merge ability %s%s must be active, self-targeted, and instant." % [ability.id, context], report_error)
+		if merge.merged_unit == null or not definitions.get(merge.merged_unit.id) is EnemyDefinition or merge.merged_unit is BossDefinition:
+			return _record_error("Ability %s%s has an invalid merged summon unit." % [ability.id, context], report_error)
+		if merge.stat_multiplier <= 0.0 or merge.attack_speed_bonus_per_summon < 0.0 or merge.duration <= 0.0 or merge.minimum_summons < 2:
+			return _record_error("Ability %s%s has invalid summon merge values." % [ability.id, context], report_error)
+		if merge.summoner_contribution_percent < 0.0 or merge.summoner_contribution_percent > 100.0:
+			return _record_error("Ability %s%s has a merge contribution percentage outside 0..100." % [ability.id, context], report_error)
 	return true
+
+
+func _validate_status(status: StatusDefinition, report_error: bool) -> bool:
+	var valid := true
+	if status.max_stacks < 1 or status.default_duration < 0.0 or status.periodic_interval < 0.0:
+		valid = _record_error("Status %s has invalid duration, interval, or stack values." % status.id, report_error) and valid
+	if status.breaks_on_hp_damage and not status.prevents_actions:
+		valid = _record_error("Status %s breaks on HP damage without preventing actions." % status.id, report_error) and valid
+	if status.grants_negative_status_immunity and status.polarity != StatusDefinition.Polarity.POSITIVE:
+		valid = _record_error("Status %s grants negative-status immunity without positive polarity." % status.id, report_error) and valid
+	if status.periodic_interval > 0.0 and status.periodic_effects.is_empty():
+		valid = _record_error("Status %s has an interval without periodic effects." % status.id, report_error) and valid
+	return valid
 
 
 func _validate_job(job: JobDefinition, report_error: bool) -> bool:
@@ -213,6 +320,20 @@ func _validate_job(job: JobDefinition, report_error: bool) -> bool:
 		elif not definitions.get(ability_id) is AbilityDefinition:
 			valid = _record_error("Job %s references unknown ability %s." % [job.id, ability_id], report_error) and valid
 		seen[ability_id] = true
+	if job.professionalism_thresholds.size() != job.professionalism_ability_ids.size():
+		valid = _record_error("Job %s professionalism thresholds and abilities must have equal lengths." % job.id, report_error) and valid
+	var previous_threshold := 0
+	for threshold in job.professionalism_thresholds:
+		if threshold <= previous_threshold:
+			valid = _record_error("Job %s professionalism thresholds must be positive and increasing." % job.id, report_error) and valid
+		previous_threshold = threshold
+	var professionalism_ids: Dictionary = {}
+	for ability_id in job.professionalism_ability_ids:
+		if String(ability_id).is_empty() or professionalism_ids.has(ability_id):
+			valid = _record_error("Job %s has an empty or duplicate professionalism ability ID." % job.id, report_error) and valid
+		elif not definitions.get(ability_id) is AbilityDefinition:
+			valid = _record_error("Job %s references unknown professionalism ability %s." % [job.id, ability_id], report_error) and valid
+		professionalism_ids[ability_id] = true
 	return valid
 
 
@@ -234,6 +355,8 @@ func _validate_run_event(event: RunEventDefinition, report_error: bool) -> bool:
 	var valid := true
 	if event.weight < 0.0 or event.nodes.is_empty() or String(event.entry_node_id).is_empty():
 		valid = _record_error("Run Event %s has invalid weight or an empty graph." % event.id, report_error) and valid
+	if not definitions.get(event.theme_hero_id) is HeroDefinition:
+		valid = _record_error("Run Event %s references an unknown theme Hero %s." % [event.id, event.theme_hero_id], report_error) and valid
 	for condition in event.conditions:
 		if not _validate_run_event_condition(event, condition, false, report_error):
 			valid = false
@@ -329,6 +452,11 @@ func _validate_run_event_effect(event: RunEventDefinition, effect: RunEventEffec
 		RunEventEffect.EffectType.JOB_CAPACITY_DELTA:
 			if effect.amount == 0 or effect.job_id == &"job.militia" or not definitions.get(effect.job_id) is JobDefinition:
 				valid = _record_error("Run Event %s has an invalid Job capacity effect." % event.id, report_error) and valid
+		RunEventEffect.EffectType.GOLD_DELTA, RunEventEffect.EffectType.HERO_XP_DELTA:
+			if effect.amount == 0:
+				valid = _record_error("Run Event %s has an empty numeric reward." % event.id, report_error) and valid
+		RunEventEffect.EffectType.GRANT_RANDOM_HERO_ITEM:
+			pass
 	if effect.effect_type == RunEventEffect.EffectType.STAT_MODIFIER:
 		if effect.target_scope == RunEventEffect.TargetScope.HERO and not definitions.get(effect.hero_definition_id) is HeroDefinition:
 			valid = _record_error("Run Event %s stat effect references an unknown Hero." % event.id, report_error) and valid
@@ -400,6 +528,10 @@ func _validate_encounter_routes(route: RouteDefinition, report_error: bool) -> b
 					unknown.append(encounter)
 				else:
 					known.append(encounter)
+			if act == 1 and battle_index == 0:
+				if not definitions.get(DemoRunFactory.FIRST_ENCOUNTER_ID) is EncounterDefinition:
+					valid = _record_error("The fixed tutorial Encounter is missing.", report_error) and valid
+				continue
 			if known.size() < EncounterGenerator.MIN_CARDS:
 				valid = _record_error("Act %d battle %d needs at least two known Encounter Cards." % [act, battle_index + 1], report_error) and valid
 			if unknown.size() > 1:
@@ -425,15 +557,8 @@ func _validate_encounter_routes(route: RouteDefinition, report_error: bool) -> b
 
 func _validate_item(item: ItemDefinition, report_error: bool) -> bool:
 	var valid := true
-	if not ITEM_TARGET_TYPES.has(item.allowed_target_type):
-		valid = _record_error("Item %s has invalid target type: %s" % [item.id, item.allowed_target_type], report_error) and valid
-	if not ITEM_RARITIES.has(item.rarity):
-		valid = _record_error("Item %s has invalid rarity: %s" % [item.id, item.rarity], report_error) and valid
-	if item.allowed_target_type == &"hero" and not item.allowed_job_ids.is_empty():
-		valid = _record_error("Hero item %s cannot declare Job restrictions." % item.id, report_error) and valid
-	for job_id in item.allowed_job_ids:
-		if not definitions.get(job_id) is JobDefinition:
-			valid = _record_error("Item %s references unknown Job: %s" % [item.id, job_id], report_error) and valid
+	if item.hero_eligibility not in ItemDefinition.HeroEligibility.values():
+		valid = _record_error("Item %s has invalid Hero eligibility." % item.id, report_error) and valid
 	for modifier in item.passive_effects:
 		if modifier == null or not MODIFIABLE_STATS.has(modifier.stat):
 			valid = _record_error("Item %s has an invalid passive stat modifier." % item.id, report_error) and valid

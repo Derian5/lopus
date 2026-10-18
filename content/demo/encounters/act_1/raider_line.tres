@@ -1,16 +1,19 @@
-[gd_resource type="Resource" script_class="EncounterDefinition" format=3 uid="uid://bx3hns2os2vmq"]
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3 uid="uid://bx3hns2os2vmq"]
 
-[ext_resource type="Script" uid="uid://4tuimq2q6q86" path="res://content/definitions/encounter_definition.gd" id="1"]
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.crossbowman"])
-gold_reward = 130
+gold_reward = 120
+enemy_power = 1.55
 min_encounter_index = 1
-max_encounter_index = 10
+max_encounter_index = 3
 difficulty_hint = "Low"
-key_properties = Array[String](["Dense melee frontline", "Minimal ranged pressure"])
+key_properties = Array[String](["Dense melee front", "One spear-thrower hunting your back line"])
+is_unknown = false
+is_boss = false
 id = &"encounter.raider_line"
-display_name = "Raider Line"
-description = "A broad melee line protects a single crossbowman."
-tags = Array[StringName]([&"encounter", &"act1", &"melee"])
+display_name = "Brute Patrol"
+description = "Ogre Brutes on patrol with a single troll scout."
+tags = Array[StringName]([&"encounter", &"act1"])

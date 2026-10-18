@@ -11,9 +11,7 @@ value = 6.0
 
 [resource]
 script = ExtResource("1")
-allowed_target_type = &"hero"
 passive_effects = Array[StatModifier]([SubResource("Damage")])
-rarity = "common"
 price = 100
 sell_price = 50
 id = &"item.hero.vanguard_blade"

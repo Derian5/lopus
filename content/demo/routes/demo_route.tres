@@ -4,8 +4,14 @@
 
 [resource]
 script = ExtResource("1")
-act_one_boss_wave = 12
+act_one_boss_wave = 13
+act_one_enemy_power_curve = PackedFloat32Array(1, 1, 1.45, 1.7, 2.4, 2.65, 2.85, 3.05, 3.2, 3.4, 3.7, 3.95, 4.2)
 act_two_battle_count = 12
+new_hero_ability_weight = 3.0
+hero_ability_upgrade_weight = 1.0
+hero_ability_upgrade_level_penalty = 1.0
+opening_event_id = &"event.opening_march"
+act_one_post_battle_event_ids = Array[StringName]([&"event.strategy_disagreement"])
 id = &"route.demo"
 display_name = "Demo Route"
 description = "Battle counts and the Act I Boss wave for the demo route."
