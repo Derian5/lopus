@@ -34,7 +34,7 @@ static func _purchase_source(staged: RunState, source: Dictionary, registry: Nod
 	var old_instances: Dictionary = {}
 	for item in staged.inventory.items:
 		old_instances[StringName(item.get("instance_id", ""))] = true
-	var result := MarketService.buy_offer(staged, offer_id, registry)
+	var result := MarketService.buy_offer(staged, offer_id, registry, false)
 	if not result.ok:
 		return result
 	if offer.offer_type == &"hero_item":
@@ -149,6 +149,8 @@ static func _equip_ability(staged: RunState, source: Dictionary, target: Diction
 		var build := _job_build(staged, job_id)
 		if job == null or not job.available_ability_ids.has(ability_id) or not build.owned_ability_ids.has(ability_id):
 			return _failure("That ability is not owned by this Job.")
+		if build.has_owned_upgrade(ability_id, registry):
+			return _failure("That skill level has been replaced by its purchased upgrade.")
 		var slot_kind := StringName(target.get("slot_kind", ""))
 		if slot_kind == &"active":
 			if ability.kind != AbilityDefinition.AbilityKind.ACTIVE:
@@ -157,9 +159,14 @@ static func _equip_ability(staged: RunState, source: Dictionary, target: Diction
 		elif slot_kind == &"passive":
 			if ability.kind != AbilityDefinition.AbilityKind.PASSIVE:
 				return _failure("Only passive abilities fit this slot.")
+			var slot_index := int(target.get("slot_index", -1))
+			if slot_index < 0 or slot_index >= 3:
+				return _failure("Select a valid Job passive slot.")
 			if build.passive_ability_ids.has(ability_id):
 				return _failure("That passive is already equipped.")
-			var slot_index := int(target.get("slot_index", -1))
+			if build.passive_ability_ids.has(ability.upgrades_ability_id):
+				build.passive_ability_ids[build.passive_ability_ids.find(ability.upgrades_ability_id)] = ability_id
+				return {"ok": true, "error": "", "action": &"job_build_changed"}
 			if slot_index < build.passive_ability_ids.size():
 				build.passive_ability_ids[slot_index] = ability_id
 			elif not build.add_passive_ability(ability_id):

@@ -11,6 +11,8 @@ extends ContentDefinition
 ## Act I enemy power by battle index (multiplies enemy Max HP and Damage on top of
 ## each encounter's own enemy_power). The wasteland grows harder as the army does.
 @export var act_one_enemy_power_curve := PackedFloat32Array()
+## Act II enemy power by battle index (Act II continues from where Act I ended).
+@export var act_two_enemy_power_curve := PackedFloat32Array()
 @export var opening_event_id: StringName
 @export var act_one_post_battle_event_ids: Array[StringName] = []
 
@@ -31,6 +33,7 @@ func post_battle_event_id(act: int, completed_battles: int) -> StringName:
 
 ## Combined enemy Max HP / Damage multiplier for an encounter fought at encounter_index.
 func enemy_power_for(act: int, encounter_index: int) -> float:
-	if act != 1 or act_one_enemy_power_curve.is_empty():
+	var curve := act_one_enemy_power_curve if act == 1 else (act_two_enemy_power_curve if act == 2 else PackedFloat32Array())
+	if curve.is_empty():
 		return 1.0
-	return act_one_enemy_power_curve[clampi(encounter_index, 0, act_one_enemy_power_curve.size() - 1)]
+	return curve[clampi(encounter_index, 0, curve.size() - 1)]

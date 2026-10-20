@@ -67,13 +67,13 @@ func _test_gold_and_item_scaling() -> void:
 	_check(is_equal_approx(scaled_army[0].stats.movement_speed, baseline_army[0].stats.movement_speed) and is_equal_approx(scaled_army[3].stats.movement_speed, baseline_army[3].stats.movement_speed), "Golden Reserve never changes movement speed.")
 
 	var item_run := DemoRunFactory.create_starting_run(9402)
-	item_run.inventory.create_item(&"item.hero.vanguard_blade")
+	item_run.inventory.create_item(&"item.gravedigger_fang")
 	var item_hero := item_run.heroes[0]
 	_add_hero_ability(item_hero, &"ability.greed_gilded_armory", 1)
 	item_hero.item_ids.append(StringName(item_run.inventory.items[0].instance_id))
 	var item_snapshot := CombatSnapshotBuilder.build_hero(item_hero, item_run.inventory, registry)
 	var greed_definition := registry.get_definition(GREED_ID) as HeroDefinition
-	_check(is_equal_approx(item_snapshot.stats.damage, greed_definition.base_stats.damage + 6.0 * 1.16), "Gilded Armory increases only Greed's equipped item modifier at Level 1.")
+	_check(is_equal_approx(item_snapshot.stats.damage, greed_definition.base_stats.damage + 60.0 * 1.16), "Gilded Armory increases only Greed's equipped item modifier at Level 1.")
 
 
 func _test_shadowstep_daggers_and_smoke() -> void:

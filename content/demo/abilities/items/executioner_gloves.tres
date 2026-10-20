@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/executioner_gloves.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/execute_on_hit_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_executioner_gloves_0"
+health_threshold = 0.2
+gold_per_execute = 15
+max_gold = 90
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_executioner_gloves"
+display_name = "Execution"
+description = "Basic attacks [dmg]execute[/dmg] enemies left below {e0.health_threshold:pct}% HP (not bosses). After a won battle [gold]+{e0.gold_per_execute} Gold per execution[/gold] (up to {e0.max_gold})."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Execution"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

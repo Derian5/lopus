@@ -6,11 +6,11 @@
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_0w5kh")
-max_hp = 360.0
+max_hp = 690.0
 damage = 14.0
 attack_speed = 0.45
 movement_speed = 94.0
-attack_range = 50.0
+attack_range = 130.0
 armor = 22.0
 
 [resource]
@@ -18,9 +18,10 @@ script = ExtResource("2_xx62v")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.86, 0.18, 0.16, 1)
 portrait = ExtResource("3_portrait")
+role_title = "MELEE BERSERKER  -  BRUISER"
 available_in_new_game = true
 selection_order = 2
 id = &"hero.ashen_duelist"
 display_name = "Wrath"
-description = "A relentless melee skirmisher who trades protection for speed and sustained pressure."
+description = "Leaps into the thickest fight, piles fury on a single victim and only grows deadlier as the blood starts to flow."
 tags = Array[StringName]([&"hero", &"carry", &"melee", &"skirmisher"])

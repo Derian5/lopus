@@ -19,12 +19,15 @@ func _initialize() -> void:
 func _run() -> void:
 	registry = root.get_node("ContentRegistry")
 	route = registry.get_definition(RunState.ROUTE_DEFINITION_ID) as RouteDefinition
-	await _test_boss_framework()
-	await _test_boss_battle()
+	var execution_only := OS.get_cmdline_user_args().has("--execution-only")
+	if not execution_only:
+		await _test_boss_framework()
+		await _test_boss_battle()
 	var checkpoint := _create_execution_checkpoint(14002)
 	_test_execution_transaction(checkpoint)
 	await _test_execution_ui(checkpoint)
-	await _test_checkpoint_and_autosave(checkpoint)
+	if not execution_only:
+		await _test_checkpoint_and_autosave(checkpoint)
 	if failures == 0:
 		print("Stage 14 Boss and Execution tests passed.")
 		quit()
@@ -118,6 +121,10 @@ func _test_execution_transaction(run: RunState) -> void:
 	var short_roster := RunState.from_dictionary(run.to_dictionary())
 	short_roster.soldiers.remove_at(0)
 	_check(not ExecutionService.execute(short_roster, short_roster.heroes[0].unique_id, registry).ok, "Execution rejects a checkpoint that cannot produce ten Act II soldiers.")
+	var favorite_id := ExecutionService.strongest_hero_id(run, registry)
+	_check(favorite_id == dead_hero.unique_id, "Execution identifies the strongest build as the clear favorite.")
+	var conspiracy_target := ExecutionService.execute(run, run.heroes[0].unique_id, registry)
+	_check(not conspiracy_target.ok and conspiracy_target.error.contains("clear favorite"), "Execution rejects either conspirator even when called outside the UI.")
 	var result := ExecutionService.execute(run, dead_hero.unique_id, registry)
 	_check(result.ok and run.to_dictionary() == original, "Execution is staged atomically without mutating its source checkpoint.")
 	if not result.ok:
@@ -155,6 +162,10 @@ func _test_execution_transaction(run: RunState) -> void:
 
 
 func _test_execution_ui(run: RunState) -> void:
+	run = RunState.from_dictionary(run.to_dictionary())
+	run.heroes[0].unlock_ability(&"ability.greed_bounty_hunter")
+	run.heroes[0].equip_ability(&"ability.greed_bounty_hunter")
+	run.heroes[0].upgrade_ability(&"ability.greed_bounty_hunter")
 	var screen = EXECUTION_SCENE.instantiate()
 	root.add_child(screen)
 	screen.setup(run)
@@ -163,11 +174,47 @@ func _test_execution_ui(run: RunState) -> void:
 	await process_frame
 	await process_frame
 	_check(screen.get_node("%HeroCards").get_child_count() == 3, "Execution screen compares all three Alive or Dead Heroes.")
-	screen._select_hero(run.heroes[1].unique_id)
+	var first_card := screen.get_node("%HeroCards").get_child(0) as Control
+	_check(first_card.tooltip_text.is_empty(), "Hero cards do not expose the whole build as an unformatted native tooltip.")
+	var ability_icon := first_card.find_child("BuildIcons", true, false).get_child(0) as ContentIconButton
+	_check(ability_icon != null and ability_icon.badge_text == "LV %d" % run.heroes[0].ability_level(ability_icon.content_id), "Execution ability icons show the Hero's current ability level.")
+	ability_icon._show_custom_tooltip()
+	var tooltip_label := ContentButton.active_tooltip.get_node("%Text") as RichTextLabel
+	_check(tooltip_label.bbcode_enabled and not tooltip_label.get_parsed_text().contains("[font_size=") and not tooltip_label.get_parsed_text().contains("[img="), "Ability hover renders BBCode and icons instead of displaying raw tags.")
+	_check(ability_icon.tooltip_override == ContentButton.describe_ability_definition(registry.get_definition(ability_icon.content_id) as AbilityDefinition, run.heroes[0].ability_level(ability_icon.content_id)), "Execution tooltips resolve numbers at the equipped ability level.")
+	screen._select_hero(run.heroes[0].unique_id)
+	_check(screen.selected_hero_id.is_empty() and screen.get_node("%FeedbackLabel").text.contains("plotted against"), "Clicking a conspirator explains their plot against the favorite.")
+	var favorite_card := screen.get_node("%HeroCards").get_child(1)
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	favorite_card.gui_input.emit(click)
+	_check(screen.selected_hero_id == run.heroes[1].unique_id and favorite_card.is_queued_for_deletion(), "Selecting the favorite through gui_input defers deletion of the emitting card.")
+	_check(screen.get_node("%HeroCards").get_child_count() == 3, "Rebuilding the cards immediately removes old controls from the layout.")
+	_check(ContentButton.active_tooltip == null, "Selecting a Hero dismisses the old card's build tooltip.")
+	await process_frame
+	await process_frame
+	_check(not is_instance_valid(favorite_card), "The old card is safely freed after input dispatch completes.")
 	screen._on_execute_pressed()
-	_check(screen.get_node("%ConfirmationDialog").dialog_text.contains("permanently") and screen.get_node("%ConfirmationDialog").dialog_text.contains("cannot be recovered"), "Execution uses a separate irreversible confirmation with explicit losses.")
-	screen._on_execution_confirmed()
-	_check(completed.size() == 1 and completed[0].heroes[1].life_state == HeroState.EXECUTED, "Confirmed placeholder Execution emits the completed transaction.")
+	_check(screen.get_node("%ConfirmationOverlay").visible and screen.get_node("%ConfirmationBody").text.contains("permanently") and screen.get_node("%ConfirmationBody").text.contains("cannot be recovered"), "Execution uses a themed confirmation with explicit losses.")
+	var accept_button := screen.get_node("%AcceptPriceButton") as Button
+	_check(accept_button.text == "SUCH IS THE PRICE" and accept_button.has_focus(), "The centered price acknowledgement is the focused confirmation action.")
+	_check(screen.get_node("%ConfirmationOverlay").find_children("*", "Button", true, false).size() == 1, "Execution acknowledgement has a single button and no Go Back action.")
+	screen.cutscene_delay_scale = 0.01
+	accept_button.pressed.emit()
+	_check(screen.execution_in_progress and screen.get_node("%CutsceneOverlay").visible and completed.is_empty(), "The betrayal blocks input and defers Act II until the scene ends.")
+	await screen._on_execution_confirmed()
+	_check(completed.is_empty(), "A second confirmation cannot duplicate an in-progress execution.")
+	var start := Time.get_ticks_msec()
+	while completed.is_empty() and Time.get_ticks_msec() - start < 5000:
+		await process_frame
+	_check(screen.cutscene_actors.size() == 3, "Execution stages both conspirators around the clear favorite.")
+	var favorite_actor: Combatant = screen.cutscene_actors[run.heroes[1].unique_id]
+	_check(favorite_actor.state == Combatant.State.DEAD and favorite_actor.unit_sprite.animation == &"death", "The favorite plays their authored death scene before Act II.")
+	_check(not favorite_actor.unit_sprite.is_playing() and screen.get_node("%CutsceneTitle").text == "ACT II", "The death animation and aftermath finish before Act II is announced.")
+	_check(not favorite_actor.visible and favorite_actor.unit_sprite.visible and favorite_actor.unit_sprite.get_parent() == favorite_actor.get_parent(), "Cutscene sprites are presented independently of combat HUD and AI.")
+	_check(not screen.cutscene_actors[run.heroes[0].unique_id].unit_sprite.flip_h and screen.cutscene_actors[run.heroes[2].unique_id].unit_sprite.flip_h, "The surviving rivals face each other after the betrayal.")
+	_check(completed.size() == 1 and completed[0].heroes[1].life_state == HeroState.EXECUTED, "The cutscene emits the completed transaction after the favorite dies.")
 	screen.free()
 
 
@@ -186,8 +233,10 @@ func _test_checkpoint_and_autosave(run: RunState) -> void:
 	var checkpoint_before: Dictionary = main.active_run.to_dictionary()
 	main._request_combat()
 	_check(main.current_screen.name == "Execution" and main.active_run.to_dictionary() == checkpoint_before, "Combat entry cannot bypass the mandatory Execution phase.")
-	main.current_screen._select_hero(run.heroes[0].unique_id)
-	main.current_screen._on_execution_confirmed()
+	var execution_screen = main.current_screen
+	execution_screen._select_hero(ExecutionService.strongest_hero_id(main.active_run, registry))
+	execution_screen.cutscene_delay_scale = 0.01
+	await execution_screen._on_execution_confirmed()
 	await process_frame
 	await process_frame
 	_check(main.current_screen.name == "EncounterChoice" and main.active_run.current_act == 2, "Successful Execution opens the first Act II Encounter choice before the deferred Boss ability reward.")
@@ -208,8 +257,8 @@ func _test_checkpoint_and_autosave(run: RunState) -> void:
 
 func _create_execution_checkpoint(seed: int) -> RunState:
 	var run := DemoRunFactory.create_starting_run(seed)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
-	run.inventory.create_item(&"item.hero.titan_seal")
+	run.inventory.create_item(&"item.gravedigger_fang")
+	run.inventory.create_item(&"item.bone_bell")
 	run.current_act = 1
 	run.encounter_index = route.act_one_boss_index()
 	EncounterService.begin_choice(run, registry)

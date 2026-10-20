@@ -1,0 +1,74 @@
+{
+	"res://graphics/units/player/hero/Despair": {
+		"attack": 457.0,
+		"death": 452.0,
+		"move": 454.0
+	},
+	"res://graphics/units/player/hero/Envy": {
+		"attack": 499.0,
+		"death": 490.0,
+		"move": 507.0
+	},
+	"res://graphics/units/player/hero/Pride": {
+		"attack": 337.0,
+		"death": 342.0,
+		"move": 346.0
+	},
+	"res://graphics/units/player/hero/Wrath": {
+		"attack": 602.0,
+		"death": 602.0,
+		"move": 627.0
+	},
+	"res://graphics/units/player/hero/gluttony": {
+		"attack": 230.0,
+		"death": 504.0,
+		"move": 506.0
+	},
+	"res://graphics/units/player/hero/greed": {
+		"attack": 798.0,
+		"death": 800.0,
+		"move": 800.0
+	},
+	"res://graphics/units/player/hero/lust": {
+		"attack": 262.0,
+		"death": 1000.0,
+		"move": 980.0
+	},
+	"res://graphics/units/player/units/archer": {
+		"attack": 335.0,
+		"death": 336.0,
+		"move": 354.0
+	},
+	"res://graphics/units/player/units/creature": {
+		"attack": 286.0,
+		"death": 210.0,
+		"move": 217.0
+	},
+	"res://graphics/units/player/units/militia": {
+		"attack": 378.0,
+		"death": 364.0,
+		"move": 388.0
+	},
+	"res://graphics/units/player/units/priest": {
+		"attack": 293.0,
+		"death": 267.0,
+		"move": 277.0,
+		"skill": 429.0
+	},
+	"res://graphics/units/player/units/shieldbearer": {
+		"attack": 266.0,
+		"death": 262.0,
+		"move": 270.0
+	},
+	"res://graphics/units/player/units/summoner": {
+		"attack": 277.0,
+		"death": 268.0,
+		"move": 313.0,
+		"skill": 268.0
+	},
+	"res://graphics/units/player/units/warrior": {
+		"attack": 274.0,
+		"death": 243.0,
+		"move": 258.0
+	}
+}

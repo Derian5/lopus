@@ -11,6 +11,7 @@ lifesteal_percent = 50.0
 
 [resource]
 script = ExtResource("1")
+price = 150
 presentation_icon = ExtResource("icon")
 id = &"ability.warrior_professionalism_bloodthirst_tier_1"
 display_name = "Bloodthirst I"

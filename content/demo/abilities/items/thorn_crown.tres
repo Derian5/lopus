@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/thorn_crown.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/damage_threshold_nova_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+
+[sub_resource type="Resource" id="Status_fear"]
+script = ExtResource("4")
+id = &"status.item_fear"
+display_name = "Feared"
+description = "Flees in terror and cannot act."
+default_duration = 2.0
+max_stacks = 1
+stack_policy = 0
+causes_fear = true
+polarity = 2
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_thorn_crown_0"
+damage_threshold = 300.0
+damage = 250.0
+radius = 200.0
+status = SubResource("Status_fear")
+heal_percent = 15.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_thorn_crown"
+display_name = "Crown of Thorns"
+description = "Every {e0.damage_threshold} damage taken bursts outward: [dmg]{e0.damage} damage[/dmg] to enemies within {e0.radius}, [cc]fear for {e0.status.default_duration}s[/cc] and [heal]heals {e0.heal_percent}% Max HP[/heal]."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Crown of Thorns"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

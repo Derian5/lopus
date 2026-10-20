@@ -8,5 +8,7 @@ extends AbilityEffect
 
 func apply(_source, target, _ability: AbilityDefinition) -> void:
 	if is_instance_valid(target):
+		if target.session != null:
+			target.session.any_attack_speed_aura = true
 		target.enemy_attack_speed_aura_radius = maxf(target.enemy_attack_speed_aura_radius, radius)
 		target.enemy_attack_speed_aura_multiplier = minf(target.enemy_attack_speed_aura_multiplier, multiplier)

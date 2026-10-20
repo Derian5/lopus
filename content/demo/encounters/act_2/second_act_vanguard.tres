@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.summoner", &"enemy.summoner", &"enemy.troll_priest"])
+enemy_power = 1.22
+gold_reward = 210
+act = 2
+min_encounter_index = 0
+max_encounter_index = 11
+difficulty_hint = "Moderate"
+key_properties = Array[String](["Nine-unit formation", "Frontline pressure"])
+id = &"encounter.act2_pressure"
+display_name = "Second Act Vanguard"
+description = "A reinforced formation tests the army that survived the Warden."
+tags = Array[StringName]([&"encounter", &"act2", &"mixed"])

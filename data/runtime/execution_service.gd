@@ -2,6 +2,21 @@ class_name ExecutionService
 extends RefCounted
 
 
+static func strongest_hero_id(run_state: RunState, registry: Node) -> String:
+	if run_state == null:
+		return ""
+	var strongest_id := ""
+	var strongest_score := -INF
+	for hero in run_state.heroes:
+		if hero.life_state not in [HeroState.ALIVE, HeroState.DEAD]:
+			continue
+		var score := MarketGenerator.hero_main_score(run_state, hero, registry)
+		if strongest_id.is_empty() or score > strongest_score:
+			strongest_id = hero.unique_id
+			strongest_score = score
+	return strongest_id
+
+
 static func execute(run_state: RunState, hero_id: String, registry: Node) -> Dictionary:
 	if run_state == null or run_state.run_status != RunState.STATUS_ACTIVE or run_state.run_phase != &"execution":
 		return {"ok": false, "error": "Execution is only available after defeating the Act I Boss."}
@@ -27,6 +42,12 @@ static func execute(run_state: RunState, hero_id: String, registry: Node) -> Dic
 	var source_hero := _find_hero(run_state, hero_id)
 	if source_hero == null or source_hero.life_state not in [HeroState.ALIVE, HeroState.DEAD]:
 		return {"ok": false, "error": "Choose an Alive or Dead Hero who has not been executed."}
+	var favorite_id := strongest_hero_id(run_state, registry)
+	if hero_id != favorite_id:
+		var favorite := _find_hero(run_state, favorite_id)
+		var favorite_definition := registry.get_definition(favorite.definition_id, false) as HeroDefinition if favorite != null else null
+		var favorite_name := favorite_definition.display_name if favorite_definition != null else "the clear favorite"
+		return {"ok": false, "error": "%s is the clear favorite. Only the strongest Hero can be executed." % favorite_name}
 	for existing in run_state.execution_snapshots:
 		if existing.hero_unique_id == hero_id:
 			return {"ok": false, "error": "That Hero has already been executed."}

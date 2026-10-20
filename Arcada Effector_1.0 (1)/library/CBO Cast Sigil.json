@@ -1,0 +1,651 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_cast_sigil",
+  "name": "CBO Cast Sigil",
+  "comp": {
+   "w": 256,
+   "h": 256,
+   "dur": 0.75,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 37
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 192,
+   "t0": 0.0,
+   "t1": 0.72,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_sigil_rays",
+    "name": "Rising Rays",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 40,
+     "shape": "ring",
+     "sx": 62,
+     "sy": 4,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 2,
+     "speed": 260,
+     "rate": 40,
+     "seed": 3,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.42,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 44,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.4
+       },
+       {
+        "t": 0.3,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.3
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.12,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.75
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.6,
+     "drag": 1.2,
+     "glow": 0.4,
+     "squash": 1
+    },
+    "end": 0.42
+   },
+   {
+    "id": "lr_sigil_motes",
+    "name": "Motes",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 40,
+     "shape": "circle",
+     "sx": 60,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 20,
+     "speed": 110,
+     "rate": 30,
+     "seed": 4,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.5,
+     "sprite": {
+      "kind": "shape",
+      "id": "spark",
+      "p": {}
+     },
+     "size": 16,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.4
+       },
+       {
+        "t": 0.3,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.2
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.12,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.75
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       }
+      ]
+     },
+     "drag": 1,
+     "glow": 0.5
+    },
+    "end": 0.4
+   },
+   {
+    "id": "lr_sigil_inner",
+    "name": "Inner Circle",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.5,
+       "v": 0.6,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.72,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.04
+      }
+     },
+     "size": 120,
+     "x": 0,
+     "y": 40,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1.3,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.15,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.72,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.73
+   },
+   {
+    "id": "lr_sigil_star",
+    "name": "Rune Star",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.12,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.5,
+       "v": 0.15,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.72,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "star",
+      "p": {
+       "n": 6,
+       "inr": 0.8
+      }
+     },
+     "size": 150,
+     "x": 0,
+     "y": 40,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.6,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.72,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       },
+       {
+        "t": 0.72,
+        "v": 60,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       }
+      ]
+     },
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.73
+   },
+   {
+    "id": "lr_sigil_ring",
+    "name": "Rune Circle",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.08,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.5,
+       "v": 0.75,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.72,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.05
+      }
+     },
+     "size": 168,
+     "x": 0,
+     "y": 40,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.6,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.12,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.72,
+        "v": 1.06,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.6,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.73
+   },
+   {
+    "id": "lr_sigil_floor",
+    "name": "Floor Glow",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.6,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 190,
+     "x": 0,
+     "y": 40,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.7,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.6,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.62
+   }
+  ]
+ },
+ "tex": {}
+}

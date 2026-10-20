@@ -85,7 +85,7 @@ func _test_act_structure_and_unknown_limit() -> void:
 	var invalid_reinforcement := EncounterDefinition.new()
 	invalid_reinforcement.id = &"encounter.invalid_reinforcement"
 	invalid_reinforcement.enemy_ids = [&"enemy.raider", &"enemy.raider", &"enemy.raider"]
-	invalid_reinforcement.reinforcement_enemy_ids = [&"enemy.crossbowman"]
+	invalid_reinforcement.reinforcement_enemy_ids = [&"enemy.raider"]
 	invalid_reinforcement.reinforcement_alive_threshold = 3
 	_check(not registry._validate_encounter(invalid_reinforcement, false), "Content validation rejects a reinforcement threshold outside 0..2.")
 	var reinforced_boss := EncounterDefinition.new()

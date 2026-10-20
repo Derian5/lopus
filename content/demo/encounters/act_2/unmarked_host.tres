@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.summoner", &"enemy.summoner", &"enemy.summoner", &"enemy.ogre_bonebreaker", &"enemy.ogre_bonebreaker"])
+enemy_power = 1.2
+gold_reward = 330
+act = 2
+min_encounter_index = 0
+max_encounter_index = 11
+difficulty_hint = "High"
+key_properties = Array[String](["Composition concealed"])
+is_unknown = true
+id = &"encounter.act2_unknown"
+display_name = "Unmarked Host"
+description = "No banners, no reliable scout count, and a dangerously high bounty."
+tags = Array[StringName]([&"encounter", &"act2", &"unknown"])

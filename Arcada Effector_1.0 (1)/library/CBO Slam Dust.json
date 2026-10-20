@@ -1,0 +1,214 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_slam_dust",
+  "name": "CBO Slam Dust",
+  "comp": {
+   "w": 512,
+   "h": 320,
+   "dur": 0.9,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 37
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 288,
+   "cellH": 180,
+   "t0": 0.0,
+   "t1": 0.85,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_slamd_rocks",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 0,
+     "shape": "point",
+     "sx": 60,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 70,
+     "speed": 420,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 14
+      }
+     ],
+     "seed": 4
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {}
+     },
+     "size": 18,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         170,
+         150,
+         120
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         80,
+         66,
+         52
+        ]
+       }
+      ]
+     },
+     "alignVel": false,
+     "stretch": 0,
+     "gravY": 1100,
+     "drag": 0.5,
+     "glow": 0,
+     "spin": 180
+    },
+    "end": 0.05
+   },
+   {
+    "id": "lr_slamd_dust",
+    "name": "Dust Wave",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "shape": "ring",
+     "sx": 40,
+     "sy": 10,
+     "dir": "out",
+     "speed": 400,
+     "speedRnd": 0.4,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 40
+      }
+     ],
+     "seed": 2
+    },
+    "pt": {
+     "life": 0.8,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "smoke",
+      "p": {}
+     },
+     "size": 80,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 1.5
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.85
+       },
+       {
+        "t": 0.4,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         176,
+         150,
+         116
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         118,
+         98,
+         78
+        ]
+       }
+      ]
+     },
+     "drag": 3.4,
+     "gravY": -40,
+     "spin": 40,
+     "squash": 1
+    },
+    "end": 0.05
+   }
+  ]
+ },
+ "tex": {}
+}

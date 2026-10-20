@@ -55,15 +55,15 @@ func _test_generation_and_bias() -> void:
 		has_innate_summon_offer = has_innate_summon_offer or candidate.content_id in [&"ability.summoner_job_summon", &"ability.enemy_summon"]
 	for offer_type in [&"hero_item", &"job_unlock", &"job_capacity"]:
 		_check(eligible_types.has(offer_type), "Offer type %s has eligible data-driven content." % offer_type)
-	_check(not eligible_types.has(&"job_ability"), "No Job Ability is offered while only Jobs without purchasable abilities are unlocked.")
+	_check(eligible_types.has(&"job_ability"), "Unlocking Warrior offers its first purchasable skill level.")
 	first.unlocked_job_ids.append(&"job.archer")
 	first.job_capacities["job.archer"] = 1
 	var unlocked_types: Dictionary = {}
 	for candidate in MarketGenerator._collect_candidates(first, registry):
 		unlocked_types[candidate.offer_type] = true
-	_check(not unlocked_types.has(&"job_ability"), "Unlocking Archer does not create a Job Ability offer when none is authored.")
+	_check(unlocked_types.has(&"job_ability"), "Unlocking Archer adds its first skill level to the Market pool.")
 	_check(not has_innate_summon_offer, "Innate Job and enemy summon abilities stay hidden from the Market.")
-	var malformed := _offer("malformed", &"unsupported_item", &"item.hero.vanguard_blade", 1, &"soldier", "")
+	var malformed := _offer("malformed", &"unsupported_item", &"item.gravedigger_fang", 1, &"soldier", "")
 	_check(not MarketService.validate_offer_schema(first, malformed, registry).ok, "Offer restrictions must match their referenced content.")
 	malformed.target_type = &"hero"
 	_check(not malformed.is_valid(), "Offer types reject contradictory target types.")
@@ -87,7 +87,7 @@ func _test_generation_and_bias() -> void:
 	var main := first.heroes[0]
 	var neglected := first.heroes[2]
 	main.level = 5
-	var expensive_item := first.inventory.create_item(&"item.hero.titan_seal")
+	var expensive_item := first.inventory.create_item(&"item.bone_bell")
 	main.item_ids.append(expensive_item)
 	var main_score := MarketGenerator.hero_main_score(first, main, registry)
 	var neglected_score := MarketGenerator.hero_main_score(first, neglected, registry)
@@ -109,7 +109,7 @@ func _test_buy_transactions() -> void:
 	run.job_capacities["job.warrior"] = 1
 	run.gold = 1000
 	var purchase_cases: Array[Dictionary] = [
-		{"offer": _offer("buy-hi", &"hero_item", &"item.hero.vanguard_blade", 45, &"hero", ""), "kind": "hero_item"},
+		{"offer": _offer("buy-hi", &"hero_item", &"item.gravedigger_fang", 45, &"hero", ""), "kind": "hero_item"},
 		{"offer": _offer("buy-ju", &"job_unlock", &"job.archer", 50, &"job", "job.archer"), "kind": "job_unlock"},
 		{"offer": _offer("buy-jc", &"job_capacity", &"job.warrior", 55, &"job", "job.warrior"), "kind": "job_capacity"},
 		{"offer": _offer("buy-ja", &"job_ability", &"ability.test_job_active", 60, &"job", "job.archer"), "kind": "job_ability"},
@@ -203,8 +203,8 @@ func _test_pin_refresh_transactions() -> void:
 
 func _test_sell_transactions() -> void:
 	var run := DemoRunFactory.create_starting_run(4444)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
-	run.inventory.create_item(&"item.hero.titan_seal")
+	run.inventory.create_item(&"item.gravedigger_fang")
+	run.inventory.create_item(&"item.bone_bell")
 	var equipped_id := StringName(run.inventory.items[0].instance_id)
 	EquipmentService.equip_or_swap(run, &"hero", 0, 0, equipped_id, registry)
 	var equipped_before := run.to_dictionary()

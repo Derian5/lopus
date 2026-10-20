@@ -11,6 +11,8 @@ reflect_percent = 60.0
 
 [resource]
 script = ExtResource("1")
+price = 250
+upgrades_ability_id = &"ability.shieldbearer_professionalism_reflect_tier_1"
 presentation_icon = ExtResource("generated_icon")
 id = &"ability.shieldbearer_professionalism_reflect_tier_2"
 display_name = "Spiked Shields II"

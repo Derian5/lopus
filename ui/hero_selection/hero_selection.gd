@@ -54,7 +54,7 @@ func _load_heroes() -> void:
 			heroes.append(definition)
 	heroes.sort_custom(func(a: HeroDefinition, b: HeroDefinition) -> bool:
 		if a.selection_order == b.selection_order:
-			return a.id < b.id
+			return String(a.id) < String(b.id)
 		return a.selection_order < b.selection_order
 	)
 

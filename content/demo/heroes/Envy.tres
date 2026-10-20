@@ -6,8 +6,8 @@
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_v43km")
-max_hp = 335.0
-damage = 9.0
+max_hp = 570.0
+damage = 15.0
 attack_speed = 0.9
 movement_speed = 102.0
 attack_range = 280.0
@@ -18,9 +18,10 @@ script = ExtResource("2_fsxpw")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.24, 0.72, 0.3, 1)
 portrait = ExtResource("3_portrait")
+role_title = "RANGED THIEF  -  DISRUPTOR"
 available_in_new_game = true
 selection_order = 3
 id = &"hero.army_support"
 display_name = "Envy"
-description = "Army support hero that sustains and reinforces nearby allies."
+description = "Poisons, steals and imitates. Envy hands the enemy's strength to her own army and finishes anyone who falls behind."
 tags = Array[StringName]([&"hero", &"support", &"ranged"])

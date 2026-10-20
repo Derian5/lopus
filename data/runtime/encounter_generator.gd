@@ -27,8 +27,8 @@ static func generate(run_state: RunState, registry: Node, stream: RngStreamState
 			unknown.append(encounter)
 		else:
 			known.append(encounter)
-	known.sort_custom(func(a: EncounterDefinition, b: EncounterDefinition) -> bool: return a.id < b.id)
-	unknown.sort_custom(func(a: EncounterDefinition, b: EncounterDefinition) -> bool: return a.id < b.id)
+	known.sort_custom(func(a: EncounterDefinition, b: EncounterDefinition) -> bool: return String(a.id) < String(b.id))
+	unknown.sort_custom(func(a: EncounterDefinition, b: EncounterDefinition) -> bool: return String(a.id) < String(b.id))
 	if known.size() < MIN_CARDS:
 		return {"ok": false, "error": "Not enough encounters for Act %d battle %d." % [run_state.current_act, run_state.encounter_index]}
 

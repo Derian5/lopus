@@ -1,0 +1,355 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_arrow",
+  "name": "CBO Arrow",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_arrow_glint",
+    "name": "Head Glint",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.5,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.5,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "spark",
+      "p": {}
+     },
+     "size": 22,
+     "x": 66,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      250,
+      235
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arrow_head",
+    "name": "Arrow Head",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "poly",
+      "p": {
+       "n": 3
+      }
+     },
+     "size": 22,
+     "x": 58,
+     "y": 0,
+     "scale": 1,
+     "aspect": 0.62,
+     "rot": 90,
+     "color": [
+      178,
+      184,
+      190
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arrow_shaft",
+    "name": "Shaft",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "square",
+      "p": {}
+     },
+     "size": 6,
+     "x": 2,
+     "y": 0,
+     "scale": 1,
+     "aspect": 27,
+     "rot": 0,
+     "color": [
+      118,
+      84,
+      52
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arrow_shine",
+    "name": "Shaft Shine",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 0.8,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "square",
+      "p": {}
+     },
+     "size": 3,
+     "x": 2,
+     "y": -1,
+     "scale": 1,
+     "aspect": 50,
+     "rot": 0,
+     "color": [
+      214,
+      180,
+      130
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arrow_fletch_a",
+    "name": "Fletching A",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {
+       "var": 2
+      }
+     },
+     "size": 20,
+     "x": -52,
+     "y": -4,
+     "scale": 1,
+     "aspect": 1.5,
+     "rot": -70,
+     "color": [
+      190,
+      50,
+      40
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arrow_fletch_b",
+    "name": "Fletching B",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {
+       "var": 3
+      }
+     },
+     "size": 20,
+     "x": -52,
+     "y": 4,
+     "scale": 1,
+     "aspect": 1.5,
+     "rot": -110,
+     "color": [
+      150,
+      36,
+      30
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arrow_blur",
+    "name": "Motion Blur",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.15,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 150,
+     "x": -16,
+     "y": 0,
+     "scale": 1,
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      236,
+      200
+     ],
+     "glow": 0.1,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

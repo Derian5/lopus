@@ -14,7 +14,7 @@ func _initialize() -> void:
 func _run() -> void:
 	registry = root.get_node("ContentRegistry")
 	_test_content_and_stats()
-	_test_professionalism_thresholds()
+	_test_no_assignment_unlocks()
 	_test_attack_reflection()
 	if failures == 0:
 		print("Shieldbearer Job tests passed.")
@@ -29,25 +29,20 @@ func _test_content_and_stats() -> void:
 	var tier_1 := registry.get_definition(&"ability.shieldbearer_professionalism_reflect_tier_1", false) as AbilityDefinition
 	var tier_2 := registry.get_definition(&"ability.shieldbearer_professionalism_reflect_tier_2", false) as AbilityDefinition
 	_check(job != null and tier_1 != null and tier_2 != null, "Shieldbearer Job and both professionalism tiers are registered.")
-	_check(job.professionalism_thresholds == [3, 6], "Shieldbearer professionalism unlocks at three and six assignments.")
+	_check(job.available_ability_ids == [tier_1.id, tier_2.id] and tier_2.upgrades_ability_id == tier_1.id, "Shieldbearer skill levels are sequential Market purchases.")
 	_check((tier_1.effects[0] as AttackReflectEffect).reflect_percent == 30.0 and (tier_2.effects[0] as AttackReflectEffect).reflect_percent == 60.0, "Shieldbearer professionalism reflects exactly 30% and 60% attack damage.")
 	var snapshots := CombatSnapshotBuilder.build_player_army(_shieldbearer_run(6), registry)
 	_check(snapshots[0].stats.max_hp == 600.0 and snapshots[0].stats.armor == 80.0 and snapshots[0].stats.attack_speed == 0.5, "Shieldbearer has 600 HP, 80 armor, and 0.5 attacks per second before other modifiers.")
 	var tooltip := ContentButton.describe_content(&"job.shieldbearer")
-	_check(tooltip.contains("3 Shieldbearers:[/b] Spiked Shields I") and tooltip.contains("6 Shieldbearers:[/b] Spiked Shields II"), "Shieldbearer tooltip lists both professionalism thresholds.")
+	_check(tooltip.contains("Level 1: Spiked Shields I") and tooltip.contains("Level 2: Spiked Shields II"), "Shieldbearer tooltip lists both purchasable skill levels.")
 
 
-func _test_professionalism_thresholds() -> void:
+func _test_no_assignment_unlocks() -> void:
 	for count in [2, 3, 5, 6]:
 		var snapshots := CombatSnapshotBuilder.build_player_army(_shieldbearer_run(count), registry)
-		var expected_id: StringName
-		if count >= 6:
-			expected_id = &"ability.shieldbearer_professionalism_reflect_tier_2"
-		elif count >= 3:
-			expected_id = &"ability.shieldbearer_professionalism_reflect_tier_1"
 		for snapshot in snapshots:
 			var professionalism := snapshot.abilities.filter(func(ability: AbilityDefinition) -> bool: return String(ability.id).begins_with("ability.shieldbearer_professionalism_"))
-			_check(professionalism.size() == (0 if expected_id.is_empty() else 1) and (expected_id.is_empty() or professionalism[0].id == expected_id), "%d Shieldbearers receive only the highest unlocked professionalism tier." % count)
+			_check(professionalism.is_empty(), "%d Shieldbearers do not unlock unpurchased shield skills." % count)
 
 
 func _test_attack_reflection() -> void:

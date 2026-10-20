@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/bell_of_last_night.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/last_rites_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+
+[sub_resource type="Resource" id="Status_last_night"]
+script = ExtResource("4")
+id = &"status.item_last_night"
+display_name = "Last Night"
+description = "Cannot take damage."
+default_duration = 4.0
+max_stacks = 1
+stack_policy = 0
+grants_invulnerability = true
+polarity = 1
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_bell_of_last_night_0"
+army_alive_ratio = 0.5
+status = SubResource("Status_last_night")
+heal_percent = 40.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_bell_of_last_night"
+display_name = "Last Night"
+description = "Once per battle, when less than {e0.army_alive_ratio:pct}% of the army is alive, all allies become [shield]invulnerable for {e0.status.default_duration}s[/shield] and [heal]heal {e0.heal_percent}% HP[/heal]."
+kind = 0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Last Night"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"active"])

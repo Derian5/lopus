@@ -25,7 +25,7 @@ func _run() -> void:
 
 
 func _test_definitions_and_validation(registry: Node) -> void:
-	var hero_item := registry.get_definition(&"item.hero.vanguard_blade") as ItemDefinition
+	var hero_item := registry.get_definition(&"item.gravedigger_fang") as ItemDefinition
 	_check(not hero_item.passive_effects.is_empty(), "Hero item uses the generic ItemDefinition and passive modifiers.")
 	_check(hero_item.price > 0 and hero_item.sell_price > 0, "Item economy fields are populated without a rarity classification.")
 	_check(hero_item.hero_eligibility == ItemDefinition.HeroEligibility.ANY, "Items default to compatibility with every Hero.")
@@ -33,23 +33,23 @@ func _test_definitions_and_validation(registry: Node) -> void:
 	for definition in registry.definitions.values():
 		if definition is ItemDefinition:
 			item_count += 1
-	_check(item_count == 2, "The prototype exposes exactly two Hero item definitions.")
+	_check(item_count == 42, "The game exposes the 42 designed Hero item definitions.")
 
 func _test_inventory_identity() -> void:
 	_check(DemoRunFactory.create_starting_run(9008).inventory.items.is_empty(), "A new run starts with an empty Inventory.")
 	var inventory := InventoryState.new()
-	var first := inventory.create_item(&"item.hero.vanguard_blade")
-	var second := inventory.create_item(&"item.hero.vanguard_blade")
+	var first := inventory.create_item(&"item.gravedigger_fang")
+	var second := inventory.create_item(&"item.gravedigger_fang")
 	_check(first != second and inventory.get_definition_id(first) == inventory.get_definition_id(second), "Identical definitions create distinct stable item instances.")
 	var restored := InventoryState.from_dictionary(inventory.to_dictionary())
-	_check(restored.get_definition_id(first) == &"item.hero.vanguard_blade", "Item identity and definition mapping survive serialization.")
-	var third := restored.create_item(&"item.hero.vanguard_blade")
+	_check(restored.get_definition_id(first) == &"item.gravedigger_fang", "Item identity and definition mapping survive serialization.")
+	var third := restored.create_item(&"item.gravedigger_fang")
 	_check(third != first and third != second, "Inventory serial survives load and never reuses an item ID.")
 	var sanitized := InventoryState.from_dictionary({
 		"items": [
-			{"instance_id": "item-custom", "definition_id": "item.hero.vanguard_blade"},
-			{"instance_id": "item-custom", "definition_id": "item.hero.titan_seal"},
-			{"instance_id": "", "definition_id": "item.hero.titan_seal"},
+			{"instance_id": "item-custom", "definition_id": "item.gravedigger_fang"},
+			{"instance_id": "item-custom", "definition_id": "item.bone_bell"},
+			{"instance_id": "", "definition_id": "item.bone_bell"},
 		],
 	})
 	_check(sanitized.items.size() == 1, "Malformed and duplicate inventory records are safely rejected.")
@@ -57,16 +57,16 @@ func _test_inventory_identity() -> void:
 
 func _test_equipment_transactions_and_snapshots(registry: Node) -> void:
 	var run := DemoRunFactory.create_starting_run(9009)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
-	run.inventory.create_item(&"item.hero.titan_seal")
-	var blade := _instance_for(run, &"item.hero.vanguard_blade")
-	var seal := _instance_for(run, &"item.hero.titan_seal")
+	run.inventory.create_item(&"item.gravedigger_fang")
+	run.inventory.create_item(&"item.bone_bell")
+	var blade := _instance_for(run, &"item.gravedigger_fang")
+	var seal := _instance_for(run, &"item.bone_bell")
 	var base_hero := CombatSnapshotBuilder.build_hero(run.heroes[0], run.inventory, registry)
 	var equip := EquipmentService.equip_or_swap(run, &"hero", 0, 0, blade, registry)
 	_check(equip.ok, "A Hero item equips through the shared transaction service.")
 	var equipped_hero := CombatSnapshotBuilder.build_hero(run.heroes[0], run.inventory, registry)
-	_check(is_equal_approx(equipped_hero.stats.damage, base_hero.stats.damage + 6.0), "Equipping immediately updates preview and combat snapshot stats.")
-	_check(equipped_hero.equipped_item_instance_ids == [blade] and equipped_hero.equipped_item_definition_ids == [&"item.hero.vanguard_blade"], "Combat snapshots retain exact equipment for selected-unit details.")
+	_check(is_equal_approx(equipped_hero.stats.damage, base_hero.stats.damage + 60.0), "Equipping immediately updates preview and combat snapshot stats.")
+	_check(equipped_hero.equipped_item_instance_ids == [blade] and equipped_hero.equipped_item_definition_ids == [&"item.gravedigger_fang"], "Combat snapshots retain exact equipment for selected-unit details.")
 	var duplicated_hero := equipped_hero.duplicate_snapshot()
 	equipped_hero.equipped_item_instance_ids.clear()
 	_check(duplicated_hero.equipped_item_instance_ids == [blade], "Duplicated combat snapshots own independent equipment arrays.")
@@ -128,7 +128,7 @@ func _test_equipment_transactions_and_snapshots(registry: Node) -> void:
 
 func _test_management_actions(registry: Node) -> void:
 	var run := DemoRunFactory.create_starting_run(9010)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
+	run.inventory.create_item(&"item.gravedigger_fang")
 	var screen = MANAGEMENT_SCENE.instantiate()
 	root.add_child(screen)
 	screen.setup(run)
@@ -137,7 +137,7 @@ func _test_management_actions(registry: Node) -> void:
 	await process_frame
 	await process_frame
 	EncounterService.select_encounter(run, run.available_encounter_ids[0])
-	var blade := _instance_for(run, &"item.hero.vanguard_blade")
+	var blade := _instance_for(run, &"item.gravedigger_fang")
 	screen._select_unit("hero", 0)
 	var empty_slot: Button = screen.get_node("%EquipmentRows").get_child(0)
 	empty_slot.pressed.emit()
@@ -158,8 +158,8 @@ func _test_management_actions(registry: Node) -> void:
 	_emit_double_click(_inventory_button(screen, blade))
 	await process_frame
 	_check(screen.get_node("%FeedbackLabel").text.contains("Select the Hero"), "Management UI explains that items require a selected Hero.")
-	var tooltip := ContentButton.describe_content(&"item.hero.vanguard_blade")
-	_check(not tooltip.contains("COMMON") and not tooltip.contains("RARE") and not tooltip.contains("Any Hero") and tooltip.contains("Damage +6.0") and tooltip.contains("Sell: 50"), "Item tooltips omit rarity and redundant universal Hero compatibility while retaining modifiers and prices.")
+	var tooltip := ContentButton.describe_content(&"item.gravedigger_fang")
+	_check(not tooltip.contains("COMMON") and not tooltip.contains("RARE") and not tooltip.contains("Any Hero") and tooltip.contains("[b]+60[/b] Damage") and tooltip.contains("sells for 125"), "Item tooltips omit rarity and redundant universal Hero compatibility while retaining modifiers and prices.")
 	_check(screen.get_node("%InventoryRows").get_child_count() > 0, "Management Inventory lists available physical item instances.")
 	screen.free()
 

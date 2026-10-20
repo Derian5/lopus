@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://cy01at7j7mp7b"]
+
+[ext_resource type="Script" uid="uid://bnpvyf4non5kx" path="res://content/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/canon_shackles.png" id="2"]
+[ext_resource type="Script" uid="uid://cvpxbdvecnh7k" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+
+[sub_resource type="Resource" id="Stat0"]
+script = ExtResource("3")
+value = 35.0
+
+[sub_resource type="Resource" id="Stat1"]
+script = ExtResource("3")
+stat = "cooldown_reduction"
+value = 25.0
+
+[resource]
+script = ExtResource("1")
+category = 2
+passive_effects = Array[ExtResource("3")]([SubResource("Stat0"), SubResource("Stat1")])
+ability_ids = Array[StringName]([&"ability.item_canon_shackles"])
+price = 350
+sell_price = 175
+id = &"item.canon_shackles"
+display_name = "Canon's Shackles"
+description = "A relic of the cathedral's healers."
+icon = ExtResource("2")
+tags = Array[StringName]([&"item", &"hero", &"support"])

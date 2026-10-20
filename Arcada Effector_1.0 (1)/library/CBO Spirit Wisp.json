@@ -1,0 +1,545 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_wisp",
+  "name": "CBO Spirit Wisp",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_wisp_core",
+    "name": "Core",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 20,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      235,
+      255,
+      255
+     ],
+     "glow": 0.9,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_wisp_flame",
+    "name": "Spirit Flame",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.85,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {
+       "taper": 0.5,
+       "var": 2
+      }
+     },
+     "size": 120,
+     "x": 38,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.08,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.08,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.8,
+     "rot": 180,
+     "color": [
+      80,
+      220,
+      215
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_wisp_flame2",
+    "name": "Inner Flame",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.45,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {
+       "taper": 0.4,
+       "var": 1
+      }
+     },
+     "size": 80,
+     "x": 48,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.7,
+     "rot": 180,
+     "color": [
+      200,
+      255,
+      250
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_wisp_aura",
+    "name": "Aura",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.35,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 160,
+     "x": 34,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 2.0,
+     "rot": 0,
+     "color": [
+      140,
+      80,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_wisp_motes",
+    "name": "Spirit Motes",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 40,
+     "speed": 170,
+     "speedRnd": 0.3,
+     "rate": 70,
+     "seed": 7,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.6,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 11,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.9
+       },
+       {
+        "t": 0.4,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         200,
+         255,
+         250
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         150,
+         90,
+         255
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.0,
+     "glow": 0.5,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 1100,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_wisp_ghost",
+    "name": "Ghost Trail",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 10,
+     "speed": 180,
+     "speedRnd": 0.3,
+     "rate": 50,
+     "seed": 8,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.45,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 50,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 0.5,
+        "v": 0.3
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         120,
+         230,
+         230
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         60,
+         200
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.1,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

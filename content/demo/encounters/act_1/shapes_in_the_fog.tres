@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3 uid="uid://bfhly6vbti7gb"]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.troll_berserker", &"enemy.summoner", &"enemy.summoner"])
+gold_reward = 200
+enemy_power = 1.6
+min_encounter_index = 1
+max_encounter_index = 3
+difficulty_hint = "Moderate"
+key_properties = Array[String](["Composition concealed"])
+is_unknown = true
+is_boss = false
+id = &"encounter.unknown_fog"
+display_name = "Shapes in the Fog"
+description = "Something moves in the fog. You cannot tell what."
+tags = Array[StringName]([&"encounter", &"act1"])

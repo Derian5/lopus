@@ -320,20 +320,19 @@ func _validate_job(job: JobDefinition, report_error: bool) -> bool:
 		elif not definitions.get(ability_id) is AbilityDefinition:
 			valid = _record_error("Job %s references unknown ability %s." % [job.id, ability_id], report_error) and valid
 		seen[ability_id] = true
-	if job.professionalism_thresholds.size() != job.professionalism_ability_ids.size():
-		valid = _record_error("Job %s professionalism thresholds and abilities must have equal lengths." % job.id, report_error) and valid
-	var previous_threshold := 0
-	for threshold in job.professionalism_thresholds:
-		if threshold <= previous_threshold:
-			valid = _record_error("Job %s professionalism thresholds must be positive and increasing." % job.id, report_error) and valid
-		previous_threshold = threshold
-	var professionalism_ids: Dictionary = {}
-	for ability_id in job.professionalism_ability_ids:
-		if String(ability_id).is_empty() or professionalism_ids.has(ability_id):
-			valid = _record_error("Job %s has an empty or duplicate professionalism ability ID." % job.id, report_error) and valid
-		elif not definitions.get(ability_id) is AbilityDefinition:
-			valid = _record_error("Job %s references unknown professionalism ability %s." % [job.id, ability_id], report_error) and valid
-		professionalism_ids[ability_id] = true
+	for ability_id in job.available_ability_ids:
+		var current := definitions.get(ability_id) as AbilityDefinition
+		var visited := {}
+		while current != null and not current.upgrades_ability_id.is_empty():
+			if visited.has(current.id):
+				valid = _record_error("Job %s has a cyclic skill upgrade chain." % job.id, report_error) and valid
+				break
+			visited[current.id] = true
+			var previous := definitions.get(current.upgrades_ability_id) as AbilityDefinition
+			if previous == null or not job.available_ability_ids.has(current.upgrades_ability_id) or previous.kind != current.kind:
+				valid = _record_error("Job %s has a missing or incompatible preceding skill level for %s." % [job.id, current.id], report_error) and valid
+				break
+			current = previous
 	return valid
 
 
@@ -560,8 +559,14 @@ func _validate_item(item: ItemDefinition, report_error: bool) -> bool:
 	if item.hero_eligibility not in ItemDefinition.HeroEligibility.values():
 		valid = _record_error("Item %s has invalid Hero eligibility." % item.id, report_error) and valid
 	for modifier in item.passive_effects:
-		if modifier == null or not MODIFIABLE_STATS.has(modifier.stat):
+		if modifier == null or not CombatStats.STAT_NAMES.has(StringName(modifier.stat)):
 			valid = _record_error("Item %s has an invalid passive stat modifier." % item.id, report_error) and valid
+	for ability_id in item.ability_ids:
+		if not definitions.get(ability_id) is AbilityDefinition:
+			valid = _record_error("Item %s references unknown ability %s." % [item.id, ability_id], report_error) and valid
+	for hero_id in item.allowed_hero_ids:
+		if not definitions.get(hero_id) is HeroDefinition:
+			valid = _record_error("Item %s references unknown Hero %s." % [item.id, hero_id], report_error) and valid
 	return valid
 
 

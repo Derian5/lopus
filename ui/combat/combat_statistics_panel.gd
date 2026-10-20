@@ -10,6 +10,8 @@ const METRIC_LABELS := ["DAMAGE", "TANK", "HEAL"]
 var team := CombatUnitSnapshot.Team.PLAYER
 var selected_metric_index := 0
 var statistics: CombatStatistics
+var collapsed := false
+var _expanded_layout := {}
 var _accent := Color(0.48, 0.76, 1.0)
 var _title := ""
 
@@ -18,6 +20,8 @@ func _ready() -> void:
 	%DamageTab.pressed.connect(_select_metric.bind(0))
 	%TankTab.pressed.connect(_select_metric.bind(1))
 	%HealTab.pressed.connect(_select_metric.bind(2))
+	%CollapseButton.toggled.connect(set_collapsed)
+	%CollapseButton.set_meta("disable_auto_motion", true)
 	_update_tabs()
 
 
@@ -36,6 +40,41 @@ func setup(title: String, team_id: int) -> void:
 func set_statistics(value: CombatStatistics) -> void:
 	statistics = value
 	refresh()
+
+
+func set_collapsed(value: bool) -> void:
+	if value == collapsed:
+		return
+	if value:
+		_expanded_layout = {
+			"anchor_bottom": anchor_bottom,
+			"offset_bottom": offset_bottom,
+			"grow_vertical": grow_vertical,
+			"minimum_width": custom_minimum_size.x,
+		}
+		custom_minimum_size.x = size.x
+	collapsed = value
+	%Tabs.visible = not collapsed
+	%Scroll.visible = not collapsed
+	%CollapseButton.set_pressed_no_signal(collapsed)
+	%CollapseButton.text = "+" if collapsed else "−"
+	%CollapseButton.tooltip_text = "Expand statistics" if collapsed else "Collapse statistics"
+	if collapsed:
+		# Shrink the actual mouse-catching rect, not just its visible children.
+		grow_vertical = Control.GROW_DIRECTION_END
+		anchor_bottom = anchor_top
+		_fit_collapsed_height()
+		call_deferred("_fit_collapsed_height")
+	else:
+		anchor_bottom = float(_expanded_layout.anchor_bottom)
+		offset_bottom = float(_expanded_layout.offset_bottom)
+		grow_vertical = int(_expanded_layout.grow_vertical)
+		custom_minimum_size.x = float(_expanded_layout.minimum_width)
+
+
+func _fit_collapsed_height() -> void:
+	if collapsed:
+		size.y = get_combined_minimum_size().y
 
 
 func refresh() -> void:

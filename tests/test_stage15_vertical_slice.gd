@@ -41,8 +41,8 @@ func _run_complete_slice(strategy: int) -> Dictionary:
 	var manager := SaveManager.new("%s-%d" % [SAVE_ROOT, strategy])
 	manager.delete_save()
 	var run := DemoRunFactory.create_starting_run(seed)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
-	run.inventory.create_item(&"item.hero.titan_seal")
+	run.inventory.create_item(&"item.gravedigger_fang")
+	run.inventory.create_item(&"item.bone_bell")
 	_apply_strategy(run, strategy)
 	var report := {
 		"strategy": ["hero_investment", "frontline", "mixed_equipment"][strategy],

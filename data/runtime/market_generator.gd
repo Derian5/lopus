@@ -101,8 +101,6 @@ static func _collect_candidates(run_state: RunState, registry: Node) -> Array[Di
 
 	for job_definition in jobs:
 		var job := job_definition as JobDefinition
-		if job.id == &"job.militia":
-			continue
 		if not run_state.unlocked_job_ids.has(job.id):
 			candidates.append(_candidate(
 				&"job_unlock", job.id, job.unlock_price,
@@ -110,17 +108,17 @@ static func _collect_candidates(run_state: RunState, registry: Node) -> Array[Di
 			))
 			continue
 		var capacity := int(run_state.job_capacities.get(String(job.id), 0))
-		if capacity < run_state.soldiers.size():
+		if job.id != &"job.militia" and capacity < run_state.soldiers.size():
 			candidates.append(_candidate(
 				&"job_capacity", job.id, job.capacity_price,
 				&"job", String(job.id), [job.id], 85.0, false
 			))
 		var build := _find_job_build(run_state, job.id)
+		if build == null:
+			build = JobBuildState.new()
 		for ability_id in job.available_ability_ids:
-			if build != null and build.owned_ability_ids.has(ability_id):
-				continue
 			var ability := registry.get_definition(ability_id, false) as AbilityDefinition
-			if ability == null:
+			if ability == null or not build.can_purchase(ability, registry):
 				continue
 			candidates.append(_candidate(
 				&"job_ability", ability.id, ability.price,
@@ -200,7 +198,7 @@ static func _definitions(registry: Node, script_type: Variant) -> Array[ContentD
 	for definition in registry.definitions.values():
 		if is_instance_of(definition, script_type):
 			result.append(definition)
-	result.sort_custom(func(a: ContentDefinition, b: ContentDefinition) -> bool: return a.id < b.id)
+	result.sort_custom(func(a: ContentDefinition, b: ContentDefinition) -> bool: return String(a.id) < String(b.id))
 	return result
 
 

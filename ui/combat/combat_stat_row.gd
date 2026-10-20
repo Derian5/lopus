@@ -49,7 +49,7 @@ func _draw() -> void:
 	var rect := Rect2(Vector2.ZERO, size)
 	var hovered := is_hovered()
 	var alpha := 0.5 if dead else 1.0
-	draw_rect(rect, Color(0.04, 0.028, 0.02, 0.78 if not hovered else 0.95))
+	draw_rect(rect, Color(0.04, 0.028, 0.02, 0.3 if not hovered else 0.55))
 	if fraction > 0.0:
 		var bar := accent
 		bar.a = (0.32 if rank == 0 else 0.22) * alpha

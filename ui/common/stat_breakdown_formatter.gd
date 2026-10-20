@@ -28,7 +28,7 @@ static func format(stat: StringName, final_value: float, entries: Array, current
 	if entries.is_empty():
 		lines.append("Snapshot base: %s" % _number(final_value))
 	else:
-		for entry in entries:
+		for entry in _group_additions(entries):
 			var operation := StringName(entry.operation)
 			match operation:
 				&"base":
@@ -40,7 +40,54 @@ static func format(stat: StringName, final_value: float, entries: Array, current
 				_:
 					lines.append("%s: %s" % [entry.source, _number(float(entry.after))])
 	lines.append("FINAL: %s" % _number(final_value))
+	if stat == &"armor":
+		lines.append_array(armor_explanation(final_value))
 	return "\n".join(lines)
+
+
+## Simplified armor formula shown under the armor breakdown.
+static func armor_explanation(armor: float) -> PackedStringArray:
+	var safe_armor := maxf(armor, 0.0)
+	var taken := CombatRules.calculate_damage(100.0, safe_armor)
+	return PackedStringArray([
+		"",
+		"DAMAGE REDUCTION: %s%%" % _number(snappedf(100.0 - taken, 0.1)),
+		"Damage taken = Damage x 100 / (100 + Armor)",
+		"Now: 100 damage -> %s" % _number(snappedf(taken, 0.1)),
+		"100 Armor halves damage, 300 Armor cuts it to a quarter.",
+		"Each extra point of Armor matters a little less.",
+	])
+
+
+## Collapse repeated sources within each additive stage; never move bonuses across
+## multipliers or other operations, where doing so would change their meaning.
+static func _group_additions(entries: Array) -> Array:
+	var grouped: Array = []
+	var source_indices: Dictionary = {}
+	for entry in entries:
+		if StringName(entry.operation) != &"add":
+			source_indices.clear()
+			grouped.append(entry.duplicate())
+			continue
+		var source := String(entry.source)
+		if not source_indices.has(source):
+			source_indices[source] = grouped.size()
+			grouped.append(entry.duplicate())
+		else:
+			var existing: Dictionary = grouped[int(source_indices[source])]
+			existing.operand = float(existing.operand) + float(entry.operand)
+			grouped[int(source_indices[source])] = existing
+		var delta := float(entry.after) - float(entry.before)
+		var grouped_entry: Dictionary = grouped[int(source_indices[source])]
+		grouped_entry["grouped_delta"] = float(grouped_entry.get("grouped_delta", 0.0)) + delta
+	# Rebuild intermediate totals after grouping, preserving actual applied deltas.
+	var value := float(entries[0].before) if not entries.is_empty() else 0.0
+	for step in grouped:
+		if StringName(step.operation) == &"add":
+			step.before = value
+			step.after = value + float(step.grouped_delta)
+		value = float(step.after)
+	return grouped
 
 
 static func _number(value: float) -> String:

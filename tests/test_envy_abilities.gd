@@ -157,7 +157,7 @@ func _test_dart_volley() -> void:
 			var panel: SelectedUnitPanel = SELECTED_PANEL_SCENE.instantiate()
 			root.add_child(panel)
 			panel.show_combatant(enemy)
-			_check(panel.status_summary_text().contains("Jealous Poison") and panel.status_summary_text().contains("Movement Speed -30%") and panel.status_summary_text().contains("permanent"), "The selected-unit status indicators expose authored debuffs with values and duration.")
+			_check(panel.status_summary_text().contains("Jealous Poison") and panel.status_summary_text().contains("-30% Move Speed") and panel.status_summary_text().contains("permanent"), "The selected-unit status indicators expose authored debuffs with values and duration.")
 			panel.free()
 	_check(hit_count == 3, "No enemy receives more than one dart in a volley.")
 	session.free()

@@ -1,0 +1,2166 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_hit_heavy",
+  "name": "CBO Hit Heavy",
+  "comp": {
+   "w": 256,
+   "h": 256,
+   "dur": 0.5,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 192,
+   "t0": 0.0,
+   "t1": 0.34,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_heavy_sparks",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 0,
+     "shape": "point",
+     "sx": 60,
+     "dir": "dir",
+     "angle": 0,
+     "spread": 90,
+     "speed": 700,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 30
+      }
+     ],
+     "seed": 5
+    },
+    "pt": {
+     "life": 0.32,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 36,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 0.3,
+        "c": [
+         255,
+         236,
+         150
+        ]
+       },
+       {
+        "t": 0.7,
+        "c": [
+         255,
+         150,
+         60
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         170,
+         50,
+         20
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.5,
+     "gravY": 520,
+     "drag": 2.2,
+     "glow": 0.4,
+     "spin": 0
+    },
+    "end": 0.05
+   },
+   {
+    "id": "lr_heavy_debris",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 0,
+     "shape": "point",
+     "sx": 60,
+     "dir": "dir",
+     "angle": 0,
+     "spread": 120,
+     "speed": 360,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 9
+      }
+     ],
+     "seed": 6
+    },
+    "pt": {
+     "life": 0.42,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {}
+     },
+     "size": 14,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         210,
+         190,
+         160
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         70,
+         50
+        ]
+       }
+      ]
+     },
+     "alignVel": false,
+     "stretch": 0,
+     "gravY": 900,
+     "drag": 1.0,
+     "glow": 0,
+     "spin": 180
+    },
+    "end": 0.05
+   },
+   {
+    "id": "lr_heavy_star",
+    "name": "Impact Star",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.03,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.14,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "star",
+      "p": {
+       "n": 8,
+       "inr": 0.22
+      }
+     },
+     "size": 150,
+     "x": 0,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.45,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.12,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 12,
+     "color": [
+      255,
+      250,
+      235
+     ],
+     "glow": 0.4,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.16
+   },
+   {
+    "id": "lr_heavy_ring",
+    "name": "Ring",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.85,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.12,
+       "v": 0.595,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.3,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.07
+      }
+     },
+     "size": 170,
+     "x": 0,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.25,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.3,
+        "v": 1.25,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      232,
+      190
+     ],
+     "glow": 0.4,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.32
+   },
+   {
+    "id": "lr_heavy_arc_0",
+    "name": "Arc 0",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": -29.6,
+     "y": -73.7,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 4.0,
+     "rot": 5.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.22
+   },
+   {
+    "id": "lr_heavy_edge_0",
+    "name": "Edge 0",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": -28.7,
+     "y": -71.5,
+     "scale": 1,
+     "aspect": 6.666666666666667,
+     "rot": 5.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.22
+   },
+   {
+    "id": "lr_heavy_arc_1",
+    "name": "Arc 1",
+    "type": "sprite",
+    "start": 0.01,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": -8.3,
+     "y": -68.6,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 3.209641663401507,
+     "rot": 22.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.23
+   },
+   {
+    "id": "lr_heavy_edge_1",
+    "name": "Edge 1",
+    "type": "sprite",
+    "start": 0.01,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": -8.0,
+     "y": -66.6,
+     "scale": 1,
+     "aspect": 6.666666666666667,
+     "rot": 22.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.23
+   },
+   {
+    "id": "lr_heavy_arc_2",
+    "name": "Arc 2",
+    "type": "sprite",
+    "start": 0.02,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": 10.6,
+     "y": -57.5,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 2.0360563158223135,
+     "rot": 39.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.24
+   },
+   {
+    "id": "lr_heavy_edge_2",
+    "name": "Edge 2",
+    "type": "sprite",
+    "start": 0.02,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": 10.3,
+     "y": -55.8,
+     "scale": 1,
+     "aspect": 5.090140789555783,
+     "rot": 39.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.24
+   },
+   {
+    "id": "lr_heavy_arc_3",
+    "name": "Arc 3",
+    "type": "sprite",
+    "start": 0.03,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": 25.3,
+     "y": -41.4,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.584936385165708,
+     "rot": 56.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.25
+   },
+   {
+    "id": "lr_heavy_edge_3",
+    "name": "Edge 3",
+    "type": "sprite",
+    "start": 0.03,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": 24.6,
+     "y": -40.1,
+     "scale": 1,
+     "aspect": 3.9623409629142694,
+     "rot": 56.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.25
+   },
+   {
+    "id": "lr_heavy_arc_4",
+    "name": "Arc 4",
+    "type": "sprite",
+    "start": 0.04,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": 34.8,
+     "y": -21.6,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.3896228216352073,
+     "rot": 73.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.26
+   },
+   {
+    "id": "lr_heavy_edge_4",
+    "name": "Edge 4",
+    "type": "sprite",
+    "start": 0.04,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": 33.7,
+     "y": -21.0,
+     "scale": 1,
+     "aspect": 3.4740570540880187,
+     "rot": 73.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.26
+   },
+   {
+    "id": "lr_heavy_arc_5",
+    "name": "Arc 5",
+    "type": "sprite",
+    "start": 0.05,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": 38.0,
+     "y": 0.0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.3333333333333333,
+     "rot": 90.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.27
+   },
+   {
+    "id": "lr_heavy_edge_5",
+    "name": "Edge 5",
+    "type": "sprite",
+    "start": 0.05,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": 36.9,
+     "y": 0.0,
+     "scale": 1,
+     "aspect": 3.333333333333333,
+     "rot": 90.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.27
+   },
+   {
+    "id": "lr_heavy_arc_6",
+    "name": "Arc 6",
+    "type": "sprite",
+    "start": 0.06,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": 34.8,
+     "y": 21.6,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.3896228216352073,
+     "rot": 107.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.28
+   },
+   {
+    "id": "lr_heavy_edge_6",
+    "name": "Edge 6",
+    "type": "sprite",
+    "start": 0.06,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": 33.7,
+     "y": 21.0,
+     "scale": 1,
+     "aspect": 3.4740570540880187,
+     "rot": 107.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.28
+   },
+   {
+    "id": "lr_heavy_arc_7",
+    "name": "Arc 7",
+    "type": "sprite",
+    "start": 0.07,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": 25.3,
+     "y": 41.4,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.5849363851657072,
+     "rot": 124.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.29
+   },
+   {
+    "id": "lr_heavy_edge_7",
+    "name": "Edge 7",
+    "type": "sprite",
+    "start": 0.07,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": 24.6,
+     "y": 40.1,
+     "scale": 1,
+     "aspect": 3.9623409629142676,
+     "rot": 124.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.29
+   },
+   {
+    "id": "lr_heavy_arc_8",
+    "name": "Arc 8",
+    "type": "sprite",
+    "start": 0.08,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": 10.6,
+     "y": 57.5,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 2.036056315822313,
+     "rot": 141.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.3
+   },
+   {
+    "id": "lr_heavy_edge_8",
+    "name": "Edge 8",
+    "type": "sprite",
+    "start": 0.08,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": 10.3,
+     "y": 55.8,
+     "scale": 1,
+     "aspect": 5.090140789555782,
+     "rot": 141.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.3
+   },
+   {
+    "id": "lr_heavy_arc_9",
+    "name": "Arc 9",
+    "type": "sprite",
+    "start": 0.09,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": -8.3,
+     "y": 68.6,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 3.209641663401505,
+     "rot": 158.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.31
+   },
+   {
+    "id": "lr_heavy_edge_9",
+    "name": "Edge 9",
+    "type": "sprite",
+    "start": 0.09,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": -8.0,
+     "y": 66.6,
+     "scale": 1,
+     "aspect": 6.666666666666667,
+     "rot": 158.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.31
+   },
+   {
+    "id": "lr_heavy_arc_10",
+    "name": "Arc 10",
+    "type": "sprite",
+    "start": 0.1,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 48.30373237819507,
+     "x": -29.6,
+     "y": 73.7,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.85,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 4.0,
+     "rot": 175.0,
+     "color": [
+      255,
+      238,
+      210
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.32
+   },
+   {
+    "id": "lr_heavy_edge_10",
+    "name": "Edge 10",
+    "type": "sprite",
+    "start": 0.1,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.015,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.13999999999999999,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 43.473359140375564,
+     "x": -28.7,
+     "y": 71.5,
+     "scale": 1,
+     "aspect": 6.666666666666667,
+     "rot": 175.0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.32
+   },
+   {
+    "id": "lr_heavy_flash",
+    "name": "Flash",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.75,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.04,
+       "v": 0.75,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.22,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 170,
+     "x": 0,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.3,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.154,
+        "v": 1.4,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      200,
+      120
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.24
+   }
+  ]
+ },
+ "tex": {}
+}

@@ -6,11 +6,11 @@
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_fw2l3")
-max_hp = 365.0
-damage = 7.0
-attack_speed = 0.9
+max_hp = 480.0
+damage = 11.0
+attack_speed = 1.1
 movement_speed = 110.0
-attack_range = 300.0
+attack_range = 160.0
 armor = 17.0
 
 [resource]
@@ -18,9 +18,10 @@ script = ExtResource("2_t8hq4")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.92, 0.36, 0.66, 1)
 portrait = ExtResource("3_portrait")
+role_title = "MELEE DUELIST  -  TEMPTRESS"
 available_in_new_game = true
 selection_order = 4
 id = &"hero.glass_arcanist"
 display_name = "Lust"
-description = "A fragile melee damage specialist who wagers survival on overwhelming force. :)"
+description = "Binds her fate to the strongest ally, makes every attacker falter and turns broken foes to her side."
 tags = Array[StringName]([&"hero", &"carry", &"melee", &"fragile"])

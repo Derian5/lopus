@@ -15,40 +15,49 @@ const DEPLOY_ZONE := Rect2(0.02, 0.05, 0.40, 0.90)
 const REFERENCE_ARENA := Vector2(1748.0, 798.0)
 const GRID_STEP := Vector2(1.0 / 48.0, 1.0 / 22.0)
 const MIN_SPACING := 0.028
+const AUTOMATIC_SPACING := 96.0
 
 
-## Automatic layout in arena pixels: melee in front, ranged behind, up to six per column.
+## Automatic layout in arena pixels, front to back: melee units (Soldiers, summons,
+## enemies), then melee Heroes, then every ranged unit. Up to six per column.
 static func automatic_positions(snapshots: Array[CombatUnitSnapshot], bounds: Rect2, player_team: bool) -> Array[Vector2]:
 	var result: Array[Vector2] = []
-	var row_spacing := minf(72.0, bounds.size.y / 7.0)
-	var column_spacing := 72.0
+	var row_spacing := minf(AUTOMATIC_SPACING, bounds.size.y / 7.0)
 	var rows := 6
-	var melee_count := snapshots.filter(func(snapshot: CombatUnitSnapshot) -> bool: return snapshot.attack_type != &"ranged").size()
-	var ranged_count := snapshots.size() - melee_count
-	var melee_columns := ceili(float(melee_count) / rows)
-	var ranged_columns := ceili(float(ranged_count) / rows)
-	var total_columns := maxi(melee_columns + ranged_columns, 1)
-	var front_x := bounds.position.x + 125.0 + (total_columns - 1) * column_spacing
-	if not player_team:
-		front_x = bounds.end.x - 125.0 - (total_columns - 1) * column_spacing
-	var melee_index := 0
-	var ranged_index := 0
+	var group_counts := [0, 0, 0]
 	for snapshot in snapshots:
-		var is_ranged := snapshot.attack_type == &"ranged"
-		var formation_index := ranged_index if is_ranged else melee_index
-		var group_count := ranged_count if is_ranged else melee_count
-		var column := formation_index / rows
-		var formation_column := melee_columns + column if is_ranged else column
+		group_counts[formation_group(snapshot)] += 1
+	var group_first_column := [0, 0, 0]
+	var total_columns := 0
+	for group in 3:
+		group_first_column[group] = total_columns
+		total_columns += ceili(float(group_counts[group]) / rows)
+	total_columns = maxi(total_columns, 1)
+	var back_inset := minf(125.0, bounds.size.x * 0.1)
+	var available_depth := maxf(0.0, bounds.size.x * DEPLOY_ZONE.end.x - back_inset)
+	var column_spacing := minf(AUTOMATIC_SPACING, available_depth / maxi(total_columns - 1, 1))
+	var front_x := bounds.position.x + back_inset + (total_columns - 1) * column_spacing
+	if not player_team:
+		front_x = bounds.end.x - back_inset - (total_columns - 1) * column_spacing
+	var group_index := [0, 0, 0]
+	for snapshot in snapshots:
+		var group := formation_group(snapshot)
+		var formation_index: int = group_index[group]
+		var formation_column: int = group_first_column[group] + formation_index / rows
 		var x := front_x - formation_column * column_spacing if player_team else front_x + formation_column * column_spacing
 		var row := formation_index % rows
-		var used_rows := mini(rows, group_count)
+		var used_rows := mini(rows, group_counts[group] - (formation_index / rows) * rows)
 		var y_offset := (row - (used_rows - 1) * 0.5) * row_spacing
 		result.append(Vector2(x, bounds.get_center().y + y_offset))
-		if is_ranged:
-			ranged_index += 1
-		else:
-			melee_index += 1
+		group_index[group] += 1
 	return result
+
+
+## 0 = melee non-Hero (front line), 1 = melee Hero, 2 = ranged (back line).
+static func formation_group(snapshot: CombatUnitSnapshot) -> int:
+	if snapshot.attack_type == &"ranged":
+		return 2
+	return 1 if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO else 0
 
 
 ## Spawn positions in arena pixels (aligned with snapshots): custom where set, automatic otherwise.

@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/wrath_axe.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/rage_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="5"]
+
+[sub_resource type="Resource" id="Mod_fury_0"]
+script = ExtResource("5")
+stat = "attack_speed"
+operation = 2
+value = 120.0
+
+[sub_resource type="Resource" id="Mod_fury_1"]
+script = ExtResource("5")
+stat = "armor_penetration"
+operation = 0
+value = 80.0
+
+[sub_resource type="Resource" id="Status_fury"]
+script = ExtResource("4")
+id = &"status.item_fury"
+display_name = "Fury"
+description = "Attacks much faster and ignores most armor."
+default_duration = 6.0
+max_stacks = 1
+stack_policy = 0
+stat_modifiers = Array[ExtResource("5")]([SubResource("Mod_fury_0"), SubResource("Mod_fury_1")])
+polarity = 1
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_wrath_axe_0"
+damage_per_point = 15.0
+points_required = 40.0
+status = SubResource("Status_fury")
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_wrath_axe"
+display_name = "Fury"
+description = "Damage taken builds Rage (1 per {e0.damage_per_point} damage). At {e0.points_required} Rage, for {e0.status.default_duration}s [buff]attacks {e0.status.stat_modifiers.0.value}% faster[/buff] and [dmg]ignores {e0.status.stat_modifiers.1.value}% of the target's armor[/dmg]."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Fury"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

@@ -28,19 +28,14 @@ func _test_content_and_thresholds() -> void:
 	var job := registry.get_definition(&"job.summoner") as JobDefinition
 	var tier_1 := registry.get_definition(&"ability.summoner_professionalism_merge_tier_1") as AbilityDefinition
 	var tier_2 := registry.get_definition(&"ability.summoner_professionalism_merge_tier_2") as AbilityDefinition
-	_check(job.professionalism_thresholds == [3, 6], "Summoner professionalism unlocks at three and six assignments.")
+	_check(job.available_ability_ids == [tier_1.id, tier_2.id] and tier_2.upgrades_ability_id == tier_1.id, "Summoner Convergence levels are sequential Market purchases.")
 	_check(tier_1.cooldown_seconds == 20.0 and tier_1.initial_cooldown_seconds == 20.0 and tier_2.cooldown_seconds == 20.0 and tier_2.initial_cooldown_seconds == 20.0, "Both Convergence tiers start on and use a 20-second cooldown.")
 	_check((tier_1.effects[0] as SummonMergeEffect).stat_multiplier == 1.0 and (tier_2.effects[0] as SummonMergeEffect).stat_multiplier == 2.0, "Convergence tiers use 100% and 200% aggregate stat multipliers.")
 	for count in [2, 3, 5, 6]:
 		var snapshots := CombatSnapshotBuilder.build_player_army(_summoner_run(count), registry)
-		var expected: StringName
-		if count >= 6:
-			expected = tier_2.id
-		elif count >= 3:
-			expected = tier_1.id
 		for snapshot in snapshots:
 			var tiers := snapshot.abilities.filter(func(ability: AbilityDefinition) -> bool: return String(ability.id).begins_with("ability.summoner_professionalism_"))
-			_check(tiers.size() == (0 if expected.is_empty() else 1) and (expected.is_empty() or tiers[0].id == expected), "%d Summoners receive only the highest Convergence tier." % count)
+			_check(tiers.is_empty(), "%d Summoners do not unlock unpurchased Convergence levels." % count)
 
 
 func _test_merge_and_split() -> void:

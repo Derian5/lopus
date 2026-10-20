@@ -1,0 +1,616 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_magic_orb",
+  "name": "CBO Magic Orb",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_orb_core",
+    "name": "Core",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 20,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.18,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.18,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.7,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_orb_star",
+    "name": "Star",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.8,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "star",
+      "p": {
+       "n": 4,
+       "inr": 0.25
+      }
+     },
+     "size": 56,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 90,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       }
+      ]
+     },
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_orb_ring",
+    "name": "Ring",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.8,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.16
+      }
+     },
+     "size": 50,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.12,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.12,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_orb_aura",
+    "name": "Aura",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.38,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.28,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0.38,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.28,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0.38,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 110,
+     "x": 54,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.5,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_orb_motes",
+    "name": "Motes",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 24,
+     "speed": 200,
+     "speedRnd": 0.3,
+     "rate": 70,
+     "seed": 18,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 12,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.9
+       },
+       {
+        "t": 0.4,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.4,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 500,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_orb_tail",
+    "name": "Tail",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 6,
+     "speed": 200,
+     "speedRnd": 0.3,
+     "rate": 60,
+     "seed": 19,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.32,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 34,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.1,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

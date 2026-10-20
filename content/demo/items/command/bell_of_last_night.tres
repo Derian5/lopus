@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/bell_of_last_night.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+
+[sub_resource type="Resource" id="Stat0"]
+script = ExtResource("3")
+stat = "max_hp"
+operation = 0
+value = 900.0
+
+[sub_resource type="Resource" id="Stat1"]
+script = ExtResource("3")
+stat = "armor"
+operation = 0
+value = 30.0
+
+[sub_resource type="Resource" id="Stat2"]
+script = ExtResource("3")
+stat = "damage"
+operation = 0
+value = 50.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+category = 3
+passive_effects = Array[ExtResource("3")]([SubResource("Stat0"), SubResource("Stat1"), SubResource("Stat2")])
+ability_ids = Array[StringName]([&"ability.item_bell_of_last_night"])
+price = 750
+sell_price = 375
+id = &"item.bell_of_last_night"
+display_name = "Bell of the Last Night"
+description = "A token that makes the whole army fight harder."
+tags = Array[StringName]([&"item", &"hero", &"command"])

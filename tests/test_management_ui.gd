@@ -19,7 +19,7 @@ func _run() -> void:
 	registry.register_definition(test_job_ability, false)
 	(registry.get_definition(&"job.archer") as JobDefinition).available_ability_ids.append(test_job_ability.id)
 	var run := DemoRunFactory.create_starting_run(7070)
-	run.inventory.create_item(&"item.hero.titan_seal")
+	run.inventory.create_item(&"item.bone_bell")
 	var screen = MANAGEMENT_SCENE.instantiate()
 	root.add_child(screen)
 	screen.setup(run)
@@ -47,13 +47,13 @@ func _run() -> void:
 	first_market_row = screen.get_node("%MarketRows").get_child(2) as HBoxContainer
 	_check((first_market_row.get_child(2) as Button).text == "LOCKED", "A locked Market position is visibly marked.")
 	_check(screen.find_child("MarketFilters", true, false) == null, "Market shows all offer types in one list without category filters.")
-	var item_offer := _offer("test-item-tooltip", &"hero_item", &"item.hero.vanguard_blade", 1, &"hero", "")
+	var item_offer := _offer("test-item-tooltip", &"hero_item", &"item.gravedigger_fang", 1, &"hero", "")
 	run.market.offers.append(item_offer)
 	screen._refresh_market()
 	var item_row: HBoxContainer = screen.get_node("%MarketRows").get_child(screen.get_node("%MarketRows").get_child_count() - 1)
 	var item_content := item_row.get_child(1) as ContentButton
 	var item_tooltip := item_content._create_content_tooltip(item_content._content_tooltip_text()) if item_content != null else null
-	_check(item_content != null and item_content.content_id == &"item.hero.vanguard_blade" and item_tooltip is ContentTooltip and item_content.has_meta("disable_auto_motion") and item_content.tooltip_text.is_empty(), "Market item names expose only the owner-managed hover tooltip without transform animation.")
+	_check(item_content != null and item_content.content_id == &"item.gravedigger_fang" and item_tooltip is ContentTooltip and item_content.has_meta("disable_auto_motion") and item_content.tooltip_text.is_empty(), "Market item names expose only the owner-managed hover tooltip without transform animation.")
 	if item_tooltip != null:
 		root.add_child(item_tooltip)
 		await process_frame
@@ -139,7 +139,7 @@ func _run() -> void:
 	_check((screen.get_node("%StatsGrid").get_node("DamageStat").get_meta("stat_tooltip_binding") as StatTooltipBinding).text.contains("Item:"), "Management stat hover attributes equipped item modifiers.")
 	screen._select_equipment_slot(5)
 	await process_frame
-	var seal_instance := _inventory_instance(run, &"item.hero.titan_seal")
+	var seal_instance := _inventory_instance(run, &"item.bone_bell")
 	var seal_button := _inventory_item_button(screen, seal_instance)
 	_emit_double_click(seal_button)
 	await process_frame
@@ -150,7 +150,7 @@ func _run() -> void:
 	var inventory_drop := screen.get_node("%InventoryDropSlot") as ManagementDropSlot
 	inventory_drop._drop_data(Vector2.ZERO, equipped_slot.drag_payload)
 	_check(not run.heroes[0].item_ids.has(returned_instance) and not EquipmentService.is_instance_equipped(run, returned_instance), "Dragging equipped gear onto shared Inventory returns it without an Unequip button.")
-	var blocked_item := _offer("test-blocked-direct-item", &"hero_item", &"item.hero.titan_seal", 1, &"hero", "")
+	var blocked_item := _offer("test-blocked-direct-item", &"hero_item", &"item.bone_bell", 1, &"hero", "")
 	run.market.offers.append(blocked_item)
 	var gold_before_blocked_item := run.gold
 	screen._on_management_drop(
@@ -214,12 +214,59 @@ func _run() -> void:
 	_check(screen.get_node("Page/Layout/Footer").get_global_rect().end.y <= screen_bottom, "Management battle action remains visible in a narrow viewport.")
 
 	screen.free()
+	_test_roster_market_icons()
 	if failures == 0:
 		print("Management UI tests passed.")
 		quit()
 	else:
 		push_error("Management UI tests failed: %d" % failures)
 		quit(1)
+
+
+func _test_roster_market_icons() -> void:
+	var registry := root.get_node("ContentRegistry")
+	var run := DemoRunFactory.create_starting_run(7071)
+	var jobs: Array[StringName] = [&"job.militia", &"job.archer", &"job.priest", &"job.summoner", &"job.warrior", &"job.shieldbearer"]
+	run.market.offers.clear()
+	for index in jobs.size():
+		var job_id := jobs[index]
+		run.soldiers[index].current_job_id = job_id
+		if not run.unlocked_job_ids.has(job_id):
+			run.unlocked_job_ids.append(job_id)
+			run.job_capacities[String(job_id)] = 9
+		if job_id != &"job.militia":
+			run.market.offers.append(_offer("roster-icon-%s" % job_id, &"job_capacity", job_id, 100, &"job", String(job_id)))
+	# Check both authored textures and the same fallback used by capacity offers.
+	var warrior := registry.get_definition(&"job.warrior") as JobDefinition
+	var previous_icon: Texture2D = warrior.icon
+	warrior.icon = (registry.get_definition(&"item.gravedigger_fang") as ItemDefinition).icon
+	var screen = MANAGEMENT_SCENE.instantiate()
+	root.add_child(screen)
+	screen.setup(run)
+	for row in screen.get_node("%Roster").get_children():
+		if not row is HBoxContainer or row.get_child_count() < 2 or not row.get_child(1) is ManagementDragButton:
+			continue
+		var drag := row.get_child(1) as ManagementDragButton
+		var soldier_index := int(drag.drag_payload.get("soldier_index", -1))
+		var job_id := run.soldiers[soldier_index].current_job_id
+		var icon := row.get_child(0) as TextureRect
+		_check(icon != null and icon.texture != null and icon.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Soldier roster rows use image icons without blocking selection or dragging.")
+		if job_id == &"job.militia" or icon == null:
+			continue
+		var market_button := _market_offer_button(screen, "roster-icon-%s" % job_id)
+		var market_icon := market_button.get_parent().get_child(0) as TextureRect
+		_check(_same_texture(icon.texture, market_icon.texture), "%s uses the same icon in the roster and Market." % job_id)
+		for heading in screen.get_node("%Roster").get_children():
+			if heading is ManagementDropSlot and heading.target_payload.get("job_id", &"") == job_id:
+				_check(_same_texture(heading.icon, market_icon.texture), "The Job heading also uses the Market's icon.")
+	warrior.icon = previous_icon
+	screen.free()
+
+
+func _same_texture(first: Texture2D, second: Texture2D) -> bool:
+	if first == second:
+		return true
+	return first is AtlasTexture and second is AtlasTexture and first.atlas == second.atlas and first.region == second.region
 
 
 func _check(condition: bool, message: String) -> void:

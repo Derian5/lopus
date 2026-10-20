@@ -12,6 +12,28 @@
 [ext_resource type="Script" path="res://ui/common/screen_backdrop.gd" id="11_backdrop"]
 
 [ext_resource type="Script" path="res://ui/management/battlefield_preview.gd" id="12_battlefield"]
+[ext_resource type="Shader" path="res://ui/management/management_portrait.gdshader" id="13_portrait"]
+
+[sub_resource type="StyleBoxFlat" id="PortraitFrameStyle"]
+bg_color = Color(0.045, 0.033, 0.025, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.36, 0.27, 0.16, 0.7)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+corner_detail = 1
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+
+[sub_resource type="ShaderMaterial" id="PortraitMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("13_portrait")
 
 [sub_resource type="AtlasTexture" id="HpIcon"]
 atlas = ExtResource("6_atlas")
@@ -230,20 +252,26 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 9
 
 [node name="SelectedSummary" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox"]
-custom_minimum_size = Vector2(0, 245)
+custom_minimum_size = Vector2(0, 216)
 layout_mode = 2
 theme_override_constants/separation = 18
 
 [node name="PortraitFrame" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary"]
-custom_minimum_size = Vector2(225, 235)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 204)
 layout_mode = 2
-theme_type_variation = &"CardPanel"
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("PortraitFrameStyle")
 
 [node name="PortraitLayer" type="Control" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary/PortraitFrame"]
+unique_name_in_owner = true
 layout_mode = 2
+clip_contents = true
+mouse_filter = 2
 
 [node name="SelectedPortrait" type="TextureRect" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary/PortraitFrame/PortraitLayer"]
 unique_name_in_owner = true
+material = SubResource("PortraitMaterial")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -251,7 +279,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
+mouse_filter = 2
 
 [node name="PortraitFallback" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary/PortraitFrame/PortraitLayer"]
 unique_name_in_owner = true
@@ -278,9 +307,23 @@ theme_override_colors/font_color = Color(0.68, 0.57, 0.45, 1)
 text = "BUILD INSPECTOR"
 visible = false
 
-[node name="SelectedTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary/SummaryText" unique_id=1301418187]
+[node name="TitleRow" type="HBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary/SummaryText"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SelectedHeroCrest" type="TextureRect" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary/SummaryText/TitleRow"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(24, 30)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SelectedTitle" type="Label" parent="Page/Layout/ColumnsScroll/Columns/InspectorCard/Margin/InspectorScroll/VBox/SelectedSummary/SummaryText/TitleRow" unique_id=1301418187]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.96, 0.82, 0.58, 1)
 theme_override_font_sizes/font_size = 29
 text = "SELECT A UNIT OR JOB"

@@ -1,0 +1,425 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_hex",
+  "name": "CBO Hex Orb",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_hex_core",
+    "name": "Core",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 18,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      230,
+      255,
+      200
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_hex_rune",
+    "name": "Rune",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 0.95,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "star",
+      "p": {
+       "n": 5,
+       "inr": 0.45
+      }
+     },
+     "size": 60,
+     "x": 64,
+     "y": 0,
+     "scale": 1,
+     "aspect": 1.0,
+     "rot": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": -90,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       }
+      ]
+     },
+     "color": [
+      150,
+      240,
+      80
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_hex_glow",
+    "name": "Glow",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.55,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 90,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      140,
+      255,
+      70
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_hex_smoke",
+    "name": "Curse Smoke",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "x": 48,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 16,
+     "speed": 170,
+     "speedRnd": 0.3,
+     "rate": 65,
+     "seed": 14,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.55,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "smoke",
+      "p": {}
+     },
+     "size": 44,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 1.4
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         140,
+         60,
+         170
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         50,
+         20,
+         60
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 2,
+     "glow": 0.4,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_hex_sparks",
+    "name": "Hex Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 30,
+     "speed": 190,
+     "speedRnd": 0.3,
+     "rate": 50,
+     "seed": 15,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.45,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "spark",
+      "p": {}
+     },
+     "size": 10,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.9
+       },
+       {
+        "t": 0.4,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         210,
+         255,
+         140
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         200,
+         60
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.4,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

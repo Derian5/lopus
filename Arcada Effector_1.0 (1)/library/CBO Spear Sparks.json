@@ -1,0 +1,524 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_spear_sparks",
+  "name": "CBO Spear Sparks",
+  "comp": {
+   "w": 256,
+   "h": 256,
+   "dur": 0.5,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 192,
+   "t0": 0.0,
+   "t1": 0.42,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_spear_flurry",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 0,
+     "shape": "point",
+     "sx": 60,
+     "dir": "dir",
+     "angle": 0,
+     "spread": 55,
+     "speed": 760,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 44
+      }
+     ],
+     "seed": 21
+    },
+    "pt": {
+     "life": 0.32,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 30,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 0.3,
+        "c": [
+         255,
+         236,
+         150
+        ]
+       },
+       {
+        "t": 0.7,
+        "c": [
+         255,
+         150,
+         60
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         170,
+         50,
+         20
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.8,
+     "gravY": 700,
+     "drag": 1.6,
+     "glow": 0.5,
+     "spin": 0
+    },
+    "end": 0.05
+   },
+   {
+    "id": "lr_spear_scatter",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 0,
+     "shape": "point",
+     "sx": 60,
+     "dir": "dir",
+     "angle": 0,
+     "spread": 150,
+     "speed": 420,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 20
+      }
+     ],
+     "seed": 22
+    },
+    "pt": {
+     "life": 0.42,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 18,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 0.3,
+        "c": [
+         255,
+         236,
+         150
+        ]
+       },
+       {
+        "t": 0.7,
+        "c": [
+         255,
+         150,
+         60
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         170,
+         50,
+         20
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.3,
+     "gravY": 900,
+     "drag": 1.2,
+     "glow": 0.4,
+     "spin": 0
+    },
+    "end": 0.05
+   },
+   {
+    "id": "lr_spear_embers",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 0,
+     "shape": "point",
+     "sx": 60,
+     "dir": "omni",
+     "angle": 0,
+     "spread": 180,
+     "speed": 260,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 10
+      }
+     ],
+     "seed": 23
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "ember",
+      "p": {}
+     },
+     "size": 10,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         240,
+         190
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         255,
+         120,
+         40
+        ]
+       }
+      ]
+     },
+     "alignVel": false,
+     "stretch": 0,
+     "gravY": 600,
+     "drag": 1.0,
+     "glow": 0.4,
+     "spin": 180
+    },
+    "end": 0.05
+   },
+   {
+    "id": "lr_spear_glint",
+    "name": "Point Glint",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.03,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.12,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "spark",
+      "p": {}
+     },
+     "size": 90,
+     "x": 0,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.5,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      250,
+      235
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.14
+   },
+   {
+    "id": "lr_spear_flash",
+    "name": "Flash",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.8,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.04,
+       "v": 0.8,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.14,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 90,
+     "x": 0,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.3,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.098,
+        "v": 1.4,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      214,
+      140
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.16
+   }
+  ]
+ },
+ "tex": {}
+}

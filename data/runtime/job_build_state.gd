@@ -29,6 +29,42 @@ func unlock_ability(ability_id: StringName) -> bool:
 	return true
 
 
+func has_owned_upgrade(ability_id: StringName, registry: Node) -> bool:
+	for owned_id in owned_ability_ids:
+		var current := registry.get_definition(owned_id, false) as AbilityDefinition
+		var visited := {}
+		while current != null and not current.upgrades_ability_id.is_empty() and not visited.has(current.id):
+			visited[current.id] = true
+			if current.upgrades_ability_id == ability_id:
+				return true
+			current = registry.get_definition(current.upgrades_ability_id, false) as AbilityDefinition
+	return false
+
+
+func can_purchase(ability: AbilityDefinition, registry: Node) -> bool:
+	return (
+		not owned_ability_ids.has(ability.id)
+		and not has_owned_upgrade(ability.id, registry)
+		and (ability.upgrades_ability_id.is_empty() or owned_ability_ids.has(ability.upgrades_ability_id))
+	)
+
+
+func equip_purchased_ability(ability: AbilityDefinition) -> void:
+	if not ability.upgrades_ability_id.is_empty():
+		if active_ability_id == ability.upgrades_ability_id:
+			active_ability_id = ability.id
+			return
+		var previous_slot := passive_ability_ids.find(ability.upgrades_ability_id)
+		if previous_slot >= 0:
+			passive_ability_ids[previous_slot] = ability.id
+			return
+	if ability.kind == AbilityDefinition.AbilityKind.ACTIVE:
+		if active_ability_id.is_empty():
+			set_active_ability(ability.id)
+	elif not passive_ability_ids.has(ability.id):
+		add_passive_ability(ability.id)
+
+
 func is_valid() -> bool:
 	return passive_ability_ids.size() <= 3 and not passive_ability_ids.has(active_ability_id)
 

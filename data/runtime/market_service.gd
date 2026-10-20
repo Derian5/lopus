@@ -22,7 +22,7 @@ static func begin_visit(run_state: RunState, registry: Node) -> Dictionary:
 	return {"ok": true, "error": ""}
 
 
-static func buy_offer(run_state: RunState, offer_id: String, registry: Node) -> Dictionary:
+static func buy_offer(run_state: RunState, offer_id: String, registry: Node, auto_equip := true) -> Dictionary:
 	var offer_index := -1
 	for index in run_state.market.offers.size():
 		if run_state.market.offers[index].offer_id == offer_id:
@@ -52,10 +52,18 @@ static func buy_offer(run_state: RunState, offer_id: String, registry: Node) -> 
 			var key := String(offer.content_id)
 			run_state.job_capacities[key] = int(run_state.job_capacities.get(key, 0)) + 1
 		&"job_ability":
-			_ensure_job_build(run_state, StringName(offer.target_id)).unlock_ability(offer.content_id)
+			var build := _ensure_job_build(run_state, StringName(offer.target_id))
+			build.unlock_ability(offer.content_id)
+			if auto_equip:
+				build.equip_purchased_ability(registry.get_definition(offer.content_id) as AbilityDefinition)
 
 	run_state.gold -= offer.price
 	run_state.market.offers.remove_at(offer_index)
+	# Older pinned/duplicate offers must not sell an already-owned or obsolete level.
+	for index in range(run_state.market.offers.size() - 1, -1, -1):
+		var remaining := run_state.market.offers[index]
+		if remaining.offer_type == &"job_ability" and not _validate_purchase(run_state, remaining, registry).ok:
+			run_state.market.offers.remove_at(index)
 	return {"ok": true, "error": "", "offer": offer}
 
 
@@ -124,8 +132,10 @@ static func _validate_purchase(run_state: RunState, offer: MarketOffer, registry
 			var build := _find_job_build(run_state, job_id)
 			if job == null or not run_state.unlocked_job_ids.has(job_id) or not job.available_ability_ids.has(offer.content_id):
 				return _failure("This ability is not available to that Job.")
-			if build != null and build.owned_ability_ids.has(offer.content_id):
-				return _failure("That Job already owns this ability.")
+			if build == null:
+				build = JobBuildState.new()
+			if not build.can_purchase(definition as AbilityDefinition, registry):
+				return _failure("Buy the preceding skill level first; owned or superseded levels cannot be bought again.")
 	return {"ok": true, "error": ""}
 
 
@@ -198,7 +208,7 @@ static func _same_job_ids(first: Array[StringName], second: Array) -> bool:
 static func _generate_refresh(run_state: RunState, registry: Node, stream: RngStreamState) -> Dictionary:
 	var minimum_count := MarketGenerator.MIN_OFFERS
 	for index in run_state.market.offers.size():
-		if run_state.market.offers[index].is_pinned:
+		if _keep_pinned_offer(run_state, run_state.market.offers[index], registry):
 			minimum_count = maxi(minimum_count, index + 1)
 	var generated := MarketGenerator.generate_offers(
 		run_state, registry, stream, run_state.market.next_offer_serial, minimum_count
@@ -210,10 +220,14 @@ static func _generate_refresh(run_state: RunState, registry: Node, stream: RngSt
 		refreshed.append(offer)
 	for index in run_state.market.offers.size():
 		var pinned_offer := run_state.market.offers[index]
-		if pinned_offer.is_pinned:
+		if _keep_pinned_offer(run_state, pinned_offer, registry):
 			refreshed[index] = pinned_offer
 	generated["offers"] = refreshed
 	return generated
+
+
+static func _keep_pinned_offer(run_state: RunState, offer: MarketOffer, registry: Node) -> bool:
+	return offer.is_pinned and (offer.offer_type != &"job_ability" or _validate_purchase(run_state, offer, registry).ok)
 
 
 static func _failure(message: String) -> Dictionary:

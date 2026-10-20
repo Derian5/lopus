@@ -37,7 +37,6 @@ func _test_registry() -> void:
 		&"job.priest",
 		&"job.summoner",
 		&"enemy.raider",
-		&"enemy.crossbowman",
 		&"enemy.summoner",
 		&"enemy.summoned_brawler",
 		&"enemy.summoned_shooter",
@@ -50,8 +49,8 @@ func _test_registry() -> void:
 		&"enemy.summoned_amalgam",
 		&"ability.enemy_summon",
 		&"status.burn",
-		&"item.hero.vanguard_blade",
-		&"item.hero.titan_seal",
+		&"item.gravedigger_fang",
+		&"item.bone_bell",
 		&"route.demo",
 	]:
 		_check(registry.get_definition(content_id, false) != null, "Definition resolves by ID: %s" % content_id)
@@ -126,8 +125,8 @@ func _test_state_round_trips() -> void:
 	_assert_round_trip(job_build.to_dictionary(), JobBuildState.from_dictionary(job_build.to_dictionary()).to_dictionary(), "JobBuildState")
 
 	var inventory := InventoryState.new()
-	inventory.add_item(&"item-00000001", &"item.hero.vanguard_blade")
-	inventory.add_item(&"item-00000002", &"item.hero.titan_seal")
+	inventory.add_item(&"item-00000001", &"item.gravedigger_fang")
+	inventory.add_item(&"item-00000002", &"item.bone_bell")
 	inventory.next_instance_serial = 3
 	_assert_round_trip(inventory.to_dictionary(), InventoryState.from_dictionary(inventory.to_dictionary()).to_dictionary(), "InventoryState")
 
@@ -135,7 +134,7 @@ func _test_state_round_trips() -> void:
 	var offer := MarketOffer.new()
 	offer.offer_id = "offer-1"
 	offer.offer_type = &"hero_item"
-	offer.content_id = &"item.hero.vanguard_blade"
+	offer.content_id = &"item.gravedigger_fang"
 	offer.price = 50
 	offer.target_type = &"hero"
 	offer.target_id = ""

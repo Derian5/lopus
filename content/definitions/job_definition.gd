@@ -8,8 +8,6 @@ extends ContentDefinition
 @export var ai_behavior: StringName = &"frontline"
 @export var innate_ability_ids: Array[StringName] = []
 @export var available_ability_ids: Array[StringName] = []
-@export var professionalism_thresholds: Array[int] = []
-@export var professionalism_ability_ids: Array[StringName] = []
 @export var restriction_tags: Array[StringName] = []
 @export_range(0, 1000000, 1, "or_greater") var capacity_price := 100
 @export_range(0, 1000000, 1, "or_greater") var unlock_price := 0

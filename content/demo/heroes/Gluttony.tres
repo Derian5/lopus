@@ -6,10 +6,11 @@
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_j5gaw")
-max_hp = 575.0
+max_hp = 870.0
 damage = 13.0
 attack_speed = 0.6
 movement_speed = 90.0
+attack_range = 120.0
 armor = 35.0
 
 [resource]
@@ -17,9 +18,10 @@ script = ExtResource("2_hp7re")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.95, 0.48, 0.14, 1)
 portrait = ExtResource("3_portrait")
+role_title = "MELEE TANK  -  DEVOURER"
 available_in_new_game = true
 selection_order = 5
 id = &"hero.thorn_warden"
 display_name = "Gluttony"
-description = "A heavily armored frontline anchor who survives pressure and protects space for mortal soldiers."
+description = "An armored glutton who heals from every blow, drains the crowd around him and feeds nearby allies."
 tags = Array[StringName]([&"hero", &"tank", &"melee", &"frontline"])

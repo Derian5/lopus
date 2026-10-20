@@ -6,11 +6,10 @@
 
 [sub_resource type="Resource" id="StatBlock_hero"]
 script = ExtResource("1_oo51b")
-max_hp = 410.0
-damage = 9.5
+max_hp = 660.0
 attack_speed = 0.85
 movement_speed = 105.0
-attack_range = 52.0
+attack_range = 100.0
 armor = 28.0
 
 [resource]
@@ -18,9 +17,10 @@ script = ExtResource("2_k7d5m")
 base_stats = SubResource("StatBlock_hero")
 placeholder_color = Color(0.95, 0.78, 0.2, 1)
 portrait = ExtResource("3_portrait")
+role_title = "MELEE ASSASSIN  -  GOLD HOARDER"
 available_in_new_game = true
 selection_order = 1
 id = &"hero.test_vanguard"
 display_name = "Greed"
-description = "Carry hero focused on direct damage and finishing clustered enemies."
+description = "Every coin is a weapon. Greed dives the back line, vanishes in smoke and turns kills and hoarded Gold into raw power."
 tags = Array[StringName]([&"hero", &"carry", &"test"])

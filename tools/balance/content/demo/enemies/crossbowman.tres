@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://dvsi4kg5p18m3"]
 
-[ext_resource type="Script" path="res://content/definitions/enemy_definition.gd" id="1"]
-[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("2")
@@ -10,7 +10,6 @@ damage = 15.0
 attack_speed = 2.4
 movement_speed = 85.0
 attack_range = 250.0
-armor = 0.0
 
 [resource]
 script = ExtResource("1")

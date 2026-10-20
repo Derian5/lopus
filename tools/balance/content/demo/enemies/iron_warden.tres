@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="BossDefinition" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="BossDefinition" format=3 uid="uid://cr3ld7vubigfm"]
 
-[ext_resource type="Script" path="res://content/definitions/boss_definition.gd" id="1"]
-[ext_resource type="Script" path="res://content/definitions/stat_block.gd" id="2"]
+[ext_resource type="Script" uid="uid://b3txg8qse5ksx" path="res://content/definitions/boss_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("2")
@@ -21,7 +21,6 @@ phase_attack_speed_multiplier = 1.2
 telegraph_color = Color(1, 0.22, 0.08, 1)
 phase_telegraph_text = "ENRAGED: FASTER AREA ATTACKS"
 base_stats = SubResource("Stats")
-attack_type = &"melee"
 ability_ids = Array[StringName]([&"ability.warden_iron_resolve"])
 placeholder_color = Color(0.55, 0.12, 0.1, 1)
 id = &"enemy.iron_warden"

@@ -1,0 +1,549 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_ember",
+  "name": "CBO Ember Bolt",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_ember_core",
+    "name": "Core",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 26,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      252,
+      225
+     ],
+     "glow": 0.9,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_ember_flame",
+    "name": "Flame",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.9,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {
+       "taper": 0.45,
+       "var": 1
+      }
+     },
+     "size": 130,
+     "x": 34,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.08,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.08,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.7,
+     "rot": 180,
+     "color": [
+      255,
+      130,
+      40
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_ember_flame2",
+    "name": "Inner Flame",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.5,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {
+       "taper": 0.4,
+       "var": 3
+      }
+     },
+     "size": 84,
+     "x": 46,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1.05,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.6,
+     "rot": 180,
+     "color": [
+      255,
+      220,
+      120
+     ],
+     "glow": 0.3,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_ember_glow",
+    "name": "Glow",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.35,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 140,
+     "x": 44,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.7,
+     "rot": 0,
+     "color": [
+      255,
+      80,
+      20
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_ember_smoke",
+    "name": "Smoke",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "x": 14,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 14,
+     "speed": 150,
+     "speedRnd": 0.3,
+     "rate": 50,
+     "seed": 16,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "smoke",
+      "p": {}
+     },
+     "size": 40,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 1.4
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         90,
+         70,
+         60
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         40,
+         32,
+         28
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 2,
+     "glow": 0.4,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_ember_sparks",
+    "name": "Embers",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 32,
+     "speed": 210,
+     "speedRnd": 0.3,
+     "rate": 80,
+     "seed": 17,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.45,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "ember",
+      "p": {}
+     },
+     "size": 12,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.9
+       },
+       {
+        "t": 0.4,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         240,
+         180
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         255,
+         140,
+         40
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         160,
+         40,
+         10
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.4,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": -60
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

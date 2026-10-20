@@ -2,6 +2,7 @@ extends SceneTree
 
 
 const MANAGEMENT_SCENE := preload("res://ui/management/management.tscn")
+const SESSION_SCENE := preload("res://combat/combat_session.tscn")
 
 var failures := 0
 var registry: Node
@@ -14,6 +15,7 @@ func _initialize() -> void:
 func _run() -> void:
 	registry = root.get_node("ContentRegistry")
 	_test_service_and_serialization()
+	_test_first_battle_spawns()
 	await _test_battlefield_preview()
 	if failures == 0:
 		print("Formation tests passed.")
@@ -66,6 +68,35 @@ func _test_service_and_serialization() -> void:
 	_check(not run.formation_positions.has("missing-unit"), "Positions of units that left the army are pruned.")
 	FormationService.reset(run)
 	_check(run.formation_positions.is_empty(), "Reset restores the automatic formation.")
+
+
+func _test_first_battle_spawns() -> void:
+	var trios: Array[Array] = [[], [&"hero.ashen_duelist", &"hero.test_vanguard", &"hero.thorn_warden"]]
+	for trio in trios:
+		var hero_ids: Array[StringName] = []
+		hero_ids.assign(trio)
+		var run := DemoRunFactory.create_starting_run(31003, hero_ids)
+		var army := CombatSnapshotBuilder.build_player_army(run, registry)
+		var enemy := CombatUnitSnapshot.new()
+		enemy.runtime_id = "formation-enemy"
+		enemy.team = CombatUnitSnapshot.Team.ENEMY
+		var session: CombatSession = SESSION_SCENE.instantiate()
+		root.add_child(session)
+		session.setup(army, [enemy], 31003)
+		var expected := FormationService.spawn_positions(army, session.get_arena_bounds(), true)
+		var rearmost_militia_x := INF
+		for soldier in run.soldiers:
+			rearmost_militia_x = minf(rearmost_militia_x, session.get_combatant_by_runtime_id(soldier.unique_id).position.x)
+		for hero in run.heroes:
+			_check(session.get_combatant_by_runtime_id(hero.unique_id).position.x < rearmost_militia_x, "Every starting Hero, including melee Heroes, spawns behind all nine Militia.")
+		for index in army.size():
+			_check(session.get_combatant_by_runtime_id(army[index].runtime_id).position.is_equal_approx(expected[index]), "Actual battle deployment matches the formation service used by the preview.")
+		var custom_position := Vector2(0.4, 0.25)
+		run.formation_positions[run.heroes[0].unique_id] = custom_position
+		session.setup(CombatSnapshotBuilder.build_player_army(run, registry), [enemy], 31003)
+		var bounds := session.get_arena_bounds()
+		_check(session.get_combatant_by_runtime_id(run.heroes[0].unique_id).position.is_equal_approx(bounds.position + custom_position * bounds.size), "Manual placement still overrides automatic formation at battle start.")
+		session.free()
 
 
 func _test_battlefield_preview() -> void:

@@ -74,6 +74,9 @@ func refresh() -> void:
 		Combatant.State.keys()[combatant.state],
 		target_name,
 	]
+	var extra := secondary_stats_text(func(stat: StringName) -> float: return combatant.get_effective_stat(stat))
+	if not extra.is_empty():
+		%Runtime.text += "\n" + extra
 	_refresh_content_slots()
 	_refresh_status_icons()
 
@@ -81,7 +84,7 @@ func refresh() -> void:
 func refresh_cooldowns() -> void:
 	if not is_instance_valid(combatant):
 		return
-	var abilities := combatant.snapshot.abilities
+	var abilities := _displayed_abilities()
 	for index in mini(abilities.size(), %AbilityIcons.get_child_count()):
 		var ability := abilities[index] as AbilityDefinition
 		var slot := %AbilityIcons.get_child(index) as AbilityCooldownIcon
@@ -90,8 +93,17 @@ func refresh_cooldowns() -> void:
 		slot.set_cooldown(remaining if ability.kind == AbilityDefinition.AbilityKind.ACTIVE else 0.0, total)
 
 
+## Item abilities are shown on their item slots, not in the ability row.
+func _displayed_abilities() -> Array[AbilityDefinition]:
+	var result: Array[AbilityDefinition] = []
+	for ability in combatant.snapshot.abilities:
+		if ability != null and not ability.tags.has(&"item"):
+			result.append(ability)
+	return result
+
+
 func _refresh_content_slots() -> void:
-	var abilities := combatant.snapshot.abilities
+	var abilities := _displayed_abilities()
 	var ability_slot_count := maxi(HeroState.MAX_ABILITY_SLOTS, abilities.size())
 	_ensure_icon_slots(%AbilityIcons, ability_slot_count, true)
 	for index in ability_slot_count:
@@ -127,6 +139,23 @@ func _refresh_content_slots() -> void:
 		if slot.content_id != item_id or slot.custom_minimum_size == Vector2.ZERO:
 			slot.configure(definition, &"item", str(index + 1))
 		slot.custom_minimum_size = ContentIconButton.SLOT_SIZE
+
+
+## One line with every non-zero secondary stat: "Crit 25% (x2.5)  Lifesteal 25%  ...".
+static func secondary_stats_text(value_of: Callable) -> String:
+	var parts: Array[String] = []
+	var crit: float = value_of.call(&"crit_chance")
+	if crit > 0.0:
+		var multiplier: float = value_of.call(&"crit_multiplier")
+		parts.append("CRIT %s%% (x%s)" % [StatModifier.format_number(crit), StatModifier.format_number(multiplier if multiplier > 1.0 else CombatStats.DEFAULT_CRIT_MULTIPLIER)])
+	for entry in [[&"lifesteal", "LIFESTEAL %s%%"], [&"dodge", "DODGE %s%%"], [&"hp_regen", "REGEN %s/s"], [&"cooldown_reduction", "CDR %s%%"], [&"armor_penetration", "ARMOR PEN %s%%"]]:
+		var amount: float = value_of.call(entry[0])
+		if amount > 0.0:
+			parts.append(String(entry[1]) % StatModifier.format_number(snappedf(amount, 0.1)))
+	var taken: float = value_of.call(&"damage_taken")
+	if not is_zero_approx(taken):
+		parts.append("DAMAGE TAKEN %s%s%%" % ["+" if taken > 0.0 else "", StatModifier.format_number(snappedf(taken, 0.1))])
+	return "    ".join(parts)
 
 
 func _ensure_icon_slots(container: Container, count: int, cooldown_slots := false) -> void:
@@ -383,15 +412,13 @@ func _entry_name(entry: Dictionary, fallback: String) -> String:
 
 
 func _modifier_text(modifier: StatModifier, stacks := 1) -> String:
-	var stat_name := modifier.stat.replace("_", " ").capitalize()
-	if modifier.operation == StatModifier.Operation.MULTIPLY:
-		var percent := (pow(modifier.value, stacks) - 1.0) * 100.0
-		return "%s %+.0f%%" % [stat_name, percent]
-	return "%s %+.1f" % [stat_name, modifier.value * stacks]
+	return modifier.display_text(stacks)
 
 
 func _modifier_polarity(modifier: StatModifier) -> String:
 	var beneficial := modifier.value >= 1.0 if modifier.operation == StatModifier.Operation.MULTIPLY else modifier.value >= 0.0
+	if modifier.stat == "damage_taken":
+		beneficial = not beneficial
 	return "BUFF" if beneficial else "DEBUFF"
 
 

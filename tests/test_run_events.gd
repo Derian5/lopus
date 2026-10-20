@@ -219,7 +219,7 @@ func _test_effect_catalog() -> void:
 	archer_build.job_id = &"job.archer"
 	run.job_builds.append(archer_build)
 	var effects: Array[RunEventEffect] = []
-	effects.append(_effect(RunEventEffect.EffectType.GRANT_ITEM, &"item.hero.titan_seal"))
+	effects.append(_effect(RunEventEffect.EffectType.GRANT_ITEM, &"item.bone_bell"))
 	var hero_ability := _effect(RunEventEffect.EffectType.GRANT_HERO_ABILITY, &"ability.greed_dagger_nova")
 	hero_ability.hero_definition_id = &"hero.test_vanguard"
 	effects.append(hero_ability)

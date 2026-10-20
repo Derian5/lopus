@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://bmhlki8fqjclh"]
+
+[ext_resource type="Script" uid="uid://6oiunviq3gr0" path="res://content/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bnuunit56pw5x" path="res://content/definitions/stat_block.gd" id="2"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("2")
+max_hp = 520.0
+damage = 9.0
+attack_speed = 0.8
+movement_speed = 80.0
+attack_range = 190.0
+armor = 4.0
+
+[resource]
+script = ExtResource("1")
+base_stats = SubResource("Stats")
+attack_type = &"ranged"
+ability_ids = Array[StringName]([&"ability.enemy_summon", &"ability.troll_hex_of_rot"])
+placeholder_color = Color(0.48, 0.3, 0.6, 1)
+id = &"enemy.summoner"
+display_name = "Troll Hexer"
+description = "A bog troll shaman that calls bloated Bog Spawn from the mire and curses nearby foes."
+tags = Array[StringName]([&"enemy", &"ranged", &"troll", &"summoner"])

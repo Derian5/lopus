@@ -1,0 +1,573 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_arcane",
+  "name": "CBO Arcane Lance",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_arcane_head",
+    "name": "Crystal Head",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "poly",
+      "p": {
+       "n": 4
+      }
+     },
+     "size": 34,
+     "x": 64,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.5,
+     "rot": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 120,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       }
+      ]
+     },
+     "color": [
+      235,
+      190,
+      255
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arcane_core",
+    "name": "White Core",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 170,
+     "x": -6,
+     "y": 0,
+     "scale": 1,
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      238,
+      255
+     ],
+     "glow": 0.45,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arcane_disc",
+    "name": "Rune Disc",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.85,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.12
+      }
+     },
+     "size": 66,
+     "x": 58,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 0.4,
+     "rot": 0,
+     "color": [
+      210,
+      140,
+      255
+     ],
+     "glow": 0.4,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arcane_disc2",
+    "name": "Rune Disc 2",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.55,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "star",
+      "p": {
+       "n": 6,
+       "inr": 0.7
+      }
+     },
+     "size": 60,
+     "x": 58,
+     "y": 0,
+     "scale": 1,
+     "aspect": 0.4,
+     "rot": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 180,
+        "i": {
+         "m": "lin"
+        },
+        "o": {
+         "m": "lin"
+        }
+       }
+      ]
+     },
+     "color": [
+      200,
+      120,
+      255
+     ],
+     "glow": 0.2,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arcane_aura",
+    "name": "Violet Aura",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.6,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.45,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0.6,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.45,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0.6,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 150,
+     "x": 34,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.06,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.06,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 2.4,
+     "rot": 0,
+     "color": [
+      150,
+      60,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arcane_bloom",
+    "name": "Bloom",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.18,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 210,
+     "x": 4,
+     "y": 0,
+     "scale": 1,
+     "aspect": 2.6,
+     "rot": 0,
+     "color": [
+      110,
+      40,
+      220
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_arcane_stars",
+    "name": "Star Trail",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 22,
+     "speed": 230,
+     "speedRnd": 0.3,
+     "rate": 90,
+     "seed": 11,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "star",
+      "p": {}
+     },
+     "size": 16,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.9
+       },
+       {
+        "t": 0.4,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         225,
+         255
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         200,
+         110,
+         255
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         110,
+         40,
+         200
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.5,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

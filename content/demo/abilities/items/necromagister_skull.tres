@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/necromagister_skull.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/death_summon_effect.gd" id="3"]
+[ext_resource type="Resource" path="res://content/demo/summons/summoned_skeleton.tres" id="4"]
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_necromagister_skull_0"
+summoned_unit = ExtResource("4")
+radius = 400.0
+chance_percent = 50.0
+lifetime = 20.0
+max_active_summons = 6
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_necromagister_skull"
+display_name = "Raise the Fallen"
+description = "When an enemy dies within {e0.radius}, {e0.chance_percent}% chance to raise a [summon]Skeleton ({e0.summoned_unit.base_stats.max_hp} HP, {e0.summoned_unit.base_stats.damage} damage)[/summon] for {e0.lifetime}s, up to {e0.max_active_summons} at once."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Raise the Fallen"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

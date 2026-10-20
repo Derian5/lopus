@@ -6,9 +6,9 @@
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_pxuva")
-max_hp = 288.0
-damage = 10.5
-attack_speed = 0.8
+max_hp = 510.0
+damage = 16.0
+attack_speed = 0.6
 movement_speed = 112.0
 attack_range = 330.0
 armor = 8.0
@@ -18,8 +18,9 @@ script = ExtResource("2_5pqei")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.58, 0.32, 0.86, 1)
 portrait = ExtResource("3_portrait")
+role_title = "RANGED SNIPER  -  SOVEREIGN"
 available_in_new_game = true
 id = &"hero.control_savant"
 display_name = "Pride"
-description = "Control hero that disrupts random targets and creates openings."
+description = "Picks off the farthest foe from above the fray, refuses to let the army fall and takes tribute from those who serve."
 tags = Array[StringName]([&"hero", &"control", &"economy", &"ranged"])

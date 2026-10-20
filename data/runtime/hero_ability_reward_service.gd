@@ -84,7 +84,7 @@ static func _candidates(hero: HeroState, registry: Node, route: RouteDefinition)
 	for definition in registry.definitions.values():
 		if definition is AbilityDefinition and definition.available_to_heroes:
 			abilities.append(definition)
-	abilities.sort_custom(func(a: AbilityDefinition, b: AbilityDefinition) -> bool: return a.id < b.id)
+	abilities.sort_custom(func(a: AbilityDefinition, b: AbilityDefinition) -> bool: return String(a.id) < String(b.id))
 	var result: Array[Dictionary] = []
 	for ability in abilities:
 		if not ability.is_allowed_for_hero(hero.definition_id):

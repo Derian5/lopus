@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
 [ext_resource type="Script" path="res://content/definitions/effects/summon_merge_effect.gd" id="2"]
-[ext_resource type="Resource" path="res://content/demo/enemies/summoned_amalgam.tres" id="3"]
+[ext_resource type="Resource" path="res://content/demo/summons/summoned_amalgam.tres" id="3"]
 [ext_resource type="Texture2D" path="res://graphics/generated/runware/final/ability_summoner_professionalism_merge_tier_2.png" id="generated_icon"]
 
 [sub_resource type="Resource" id="Merge"]
@@ -17,6 +17,8 @@ summoner_contribution_percent = 25.0
 
 [resource]
 script = ExtResource("1")
+price = 250
+upgrades_ability_id = &"ability.summoner_professionalism_merge_tier_1"
 presentation_icon = ExtResource("generated_icon")
 id = &"ability.summoner_professionalism_merge_tier_2"
 display_name = "Convergence II"

@@ -35,6 +35,7 @@ status = SubResource("BurnStatus")
 
 [resource]
 script = ExtResource("1")
+price = 150
 presentation_icon = ExtResource("generated_icon")
 id = &"ability.archer_professionalism_fire_arrow_tier_1"
 display_name = "Fire Arrow I"

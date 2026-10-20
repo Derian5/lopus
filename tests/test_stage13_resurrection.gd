@@ -27,7 +27,7 @@ func _run() -> void:
 
 func _test_death_and_transaction() -> void:
 	var run := DemoRunFactory.create_starting_run(13001)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
+	run.inventory.create_item(&"item.gravedigger_fang")
 	EncounterService.select_encounter(run, &"encounter.tutorial_volley")
 	run.run_phase = &"combat"
 	var hero := run.heroes[0]
@@ -49,7 +49,7 @@ func _test_death_and_transaction() -> void:
 	var restored := RunState.from_dictionary(run.to_dictionary())
 	_check(restored.heroes[0].life_state == HeroState.DEAD and restored.heroes[0].item_ids == retained_items, "Dead Hero state and build survive serialization.")
 	var progression := registry.get_definition(&"progression.demo") as ProgressionDefinition
-	_check(progression.resurrection_cost == 150, "The fixed Resurrection price comes from balance data.")
+	_check(progression.resurrection_cost == 50, "The fixed Resurrection price comes from balance data.")
 	restored.run_phase = &"management"
 	restored.gold = progression.resurrection_cost - 1
 	var before := restored.to_dictionary()
@@ -84,7 +84,7 @@ func _test_management_ui() -> void:
 	await process_frame
 	await process_frame
 	var resurrect_button := screen.get_node("%ResurrectionButton") as Button
-	_check(screen.find_child("ResurrectionRows", true, false) == null and resurrect_button.visible and resurrect_button.text.contains("150"), "A selected Dead Hero shows the Resurrection action below their stats without a sidebar list.")
+	_check(screen.find_child("ResurrectionRows", true, false) == null and resurrect_button.visible and resurrect_button.text.contains("50"), "A selected Dead Hero shows the Resurrection action below their stats without a sidebar list.")
 	resurrect_button.pressed.emit()
 	_check(actions.has(&"hero_resurrected") and run.heroes[0].life_state == HeroState.ALIVE, "Management Resurrection requests autosave after success.")
 	_check(not resurrect_button.visible, "The Resurrection action immediately disappears after the selected Hero returns to life.")

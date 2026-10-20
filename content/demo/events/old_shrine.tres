@@ -26,7 +26,7 @@ next_node_id = &"after_training"
 [sub_resource type="Resource" id="ItemReward"]
 script = ExtResource("5")
 effect_id = &"event_effect.old_shrine_relic"
-content_id = &"item.hero.titan_seal"
+content_id = &"item.bone_bell"
 
 [sub_resource type="Resource" id="RelicChoice"]
 script = ExtResource("3")

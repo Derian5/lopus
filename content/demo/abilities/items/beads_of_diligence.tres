@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/beads_of_diligence.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/ally_radius_status_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="5"]
+
+[sub_resource type="Resource" id="Mod_diligence_0"]
+script = ExtResource("5")
+stat = "hp_regen"
+operation = 0
+value = 25.0
+
+[sub_resource type="Resource" id="Status_diligence"]
+script = ExtResource("4")
+id = &"status.item_diligence"
+display_name = "Diligence"
+description = "Regenerating HP."
+default_duration = 6.0
+max_stacks = 1
+stack_policy = 0
+stat_modifiers = Array[ExtResource("5")]([SubResource("Mod_diligence_0")])
+polarity = 1
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_beads_of_diligence_0"
+status = SubResource("Status_diligence")
+radius = 500.0
+require_wounded_ally = true
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_beads_of_diligence"
+display_name = "Diligent Prayer"
+description = "All allies within {e0.radius} gain [heal]+{e0.status.stat_modifiers.0.value} HP regeneration per second[/heal] for {e0.status.default_duration}s."
+kind = 0
+cooldown_seconds = 20.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Diligent Prayer"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"active"])

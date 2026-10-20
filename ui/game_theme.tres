@@ -1,83 +1,30 @@
 [gd_resource type="Theme" format=3 uid="uid://c303bxfi6xn7f"]
 
-[ext_resource type="FontFile" path="res://graphics/fonts/Lora-Variable.ttf" id="1_font"]
+[ext_resource type="FontFile" uid="uid://drwbkm8h1l1xw" path="res://graphics/fonts/Lora-Variable.ttf" id="1_font"]
 [ext_resource type="Texture2D" uid="uid://pwexek87pdn1" path="res://graphics/ui/ui_atlas_v2_dop.png" id="2_atlas"]
-[ext_resource type="FontFile" path="res://graphics/fonts/IMFellEnglish-Regular.ttf" id="3_heading"]
-[ext_resource type="Texture2D" path="res://graphics/ui/gothic_button_dark.png" id="4_darkbtn"]
+[ext_resource type="FontFile" uid="uid://dn4164kbi8qqe" path="res://graphics/fonts/IMFellEnglish-Regular.ttf" id="3_heading"]
+[ext_resource type="Texture2D" uid="uid://c6qc275ttt4fh" path="res://graphics/ui/gothic_button_dark.png" id="4_darkbtn"]
+
 [sub_resource type="AtlasTexture" id="PanelTex"]
 atlas = ExtResource("2_atlas")
 region = Rect2(982, 247, 374, 133)
 filter_clip = true
 
+[sub_resource type="StyleBoxTexture" id="Popup"]
+content_margin_left = 18.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+texture = SubResource("PanelTex")
+texture_margin_left = 44.0
+texture_margin_top = 38.0
+texture_margin_right = 44.0
+texture_margin_bottom = 38.0
+
 [sub_resource type="AtlasTexture" id="DarkPlaqueTex"]
 atlas = ExtResource("2_atlas")
 region = Rect2(1150, 111, 164, 60)
 filter_clip = true
-
-[sub_resource type="AtlasTexture" id="RedPlaqueTex"]
-atlas = ExtResource("2_atlas")
-region = Rect2(984, 111, 166, 60)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="RedOrnateTex"]
-atlas = ExtResource("2_atlas")
-region = Rect2(480, 604, 288, 57)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="DarkOrnateTex"]
-atlas = ExtResource("2_atlas")
-region = Rect2(18, 672, 219, 49)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="DarkRedShapeTex"]
-atlas = ExtResource("4_darkbtn")
-region = Rect2(0, 0, 288, 57)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="SlotTex"]
-atlas = ExtResource("2_atlas")
-region = Rect2(61, 725, 89, 74)
-filter_clip = true
-
-[sub_resource type="AtlasTexture" id="LineTex"]
-atlas = ExtResource("2_atlas")
-region = Rect2(921, 881, 243, 28)
-filter_clip = true
-
-[sub_resource type="StyleBoxTexture" id="BtnNormal"]
-content_margin_left = 16.0
-content_margin_top = 9.0
-content_margin_right = 16.0
-content_margin_bottom = 9.0
-texture = SubResource("DarkPlaqueTex")
-texture_margin_left = 16.0
-texture_margin_top = 15.0
-texture_margin_right = 16.0
-texture_margin_bottom = 15.0
-
-[sub_resource type="StyleBoxTexture" id="BtnHover"]
-content_margin_left = 16.0
-content_margin_top = 9.0
-content_margin_right = 16.0
-content_margin_bottom = 9.0
-texture = SubResource("DarkPlaqueTex")
-texture_margin_left = 16.0
-texture_margin_top = 15.0
-texture_margin_right = 16.0
-texture_margin_bottom = 15.0
-modulate_color = Color(1.22, 1.08, 0.82, 1)
-
-[sub_resource type="StyleBoxTexture" id="BtnPressed"]
-content_margin_left = 16.0
-content_margin_top = 9.0
-content_margin_right = 16.0
-content_margin_bottom = 9.0
-texture = SubResource("RedPlaqueTex")
-texture_margin_left = 16.0
-texture_margin_top = 15.0
-texture_margin_right = 16.0
-texture_margin_bottom = 15.0
-modulate_color = Color(0.9, 0.8, 0.75, 1)
 
 [sub_resource type="StyleBoxTexture" id="BtnDisabled"]
 content_margin_left = 16.0
@@ -93,101 +40,24 @@ modulate_color = Color(0.45, 0.42, 0.38, 0.75)
 
 [sub_resource type="StyleBoxEmpty" id="Focus"]
 
-[sub_resource type="StyleBoxTexture" id="PrimNormal"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("RedOrnateTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
+[sub_resource type="StyleBoxTexture" id="BtnHover"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+texture = SubResource("DarkPlaqueTex")
+texture_margin_left = 16.0
+texture_margin_top = 15.0
+texture_margin_right = 16.0
+texture_margin_bottom = 15.0
+modulate_color = Color(1.22, 1.08, 0.82, 1)
 
-[sub_resource type="StyleBoxTexture" id="PrimHover"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("RedOrnateTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
-modulate_color = Color(1.25, 1.1, 0.95, 1)
+[sub_resource type="AtlasTexture" id="RedPlaqueTex"]
+atlas = ExtResource("2_atlas")
+region = Rect2(984, 111, 166, 60)
+filter_clip = true
 
-[sub_resource type="StyleBoxTexture" id="PrimPressed"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("RedOrnateTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
-modulate_color = Color(0.78, 0.7, 0.66, 1)
-
-[sub_resource type="StyleBoxTexture" id="PrimDisabled"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("DarkRedShapeTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
-modulate_color = Color(0.5, 0.46, 0.42, 0.8)
-
-[sub_resource type="StyleBoxTexture" id="GoldNormal"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("DarkRedShapeTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
-
-[sub_resource type="StyleBoxTexture" id="GoldHover"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("DarkRedShapeTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
-modulate_color = Color(1.3, 1.15, 0.9, 1)
-
-[sub_resource type="StyleBoxTexture" id="GoldPressed"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("DarkRedShapeTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
-modulate_color = Color(0.8, 0.72, 0.62, 1)
-
-[sub_resource type="StyleBoxTexture" id="GoldDisabled"]
-content_margin_left = 30.0
-content_margin_top = 10.0
-content_margin_right = 30.0
-content_margin_bottom = 10.0
-texture = SubResource("DarkRedShapeTex")
-texture_margin_left = 34.0
-texture_margin_top = 18.0
-texture_margin_right = 34.0
-texture_margin_bottom = 18.0
-modulate_color = Color(0.5, 0.46, 0.42, 0.8)
-
-[sub_resource type="StyleBoxTexture" id="DangerNormal"]
+[sub_resource type="StyleBoxTexture" id="BtnPressed"]
 content_margin_left = 16.0
 content_margin_top = 9.0
 content_margin_right = 16.0
@@ -197,6 +67,53 @@ texture_margin_left = 16.0
 texture_margin_top = 15.0
 texture_margin_right = 16.0
 texture_margin_bottom = 15.0
+modulate_color = Color(0.9, 0.8, 0.75, 1)
+
+[sub_resource type="StyleBoxTexture" id="BtnNormal"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+texture = SubResource("DarkPlaqueTex")
+texture_margin_left = 16.0
+texture_margin_top = 15.0
+texture_margin_right = 16.0
+texture_margin_bottom = 15.0
+
+[sub_resource type="AtlasTexture" id="SlotTex"]
+atlas = ExtResource("2_atlas")
+region = Rect2(61, 725, 89, 74)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="Inset"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+texture = SubResource("SlotTex")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="FontVariation" id="HeadingFont"]
+base_font = ExtResource("3_heading")
+opentype_features = {
+"lnum": 1
+}
+spacing_glyph = 1
+
+[sub_resource type="StyleBoxTexture" id="DangerDisabled"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+texture = SubResource("DarkPlaqueTex")
+texture_margin_left = 16.0
+texture_margin_top = 15.0
+texture_margin_right = 16.0
+texture_margin_bottom = 15.0
+modulate_color = Color(0.45, 0.42, 0.38, 0.75)
 
 [sub_resource type="StyleBoxTexture" id="DangerHover"]
 content_margin_left = 16.0
@@ -222,19 +139,7 @@ texture_margin_right = 16.0
 texture_margin_bottom = 15.0
 modulate_color = Color(0.75, 0.65, 0.62, 1)
 
-[sub_resource type="StyleBoxTexture" id="DangerDisabled"]
-content_margin_left = 16.0
-content_margin_top = 9.0
-content_margin_right = 16.0
-content_margin_bottom = 9.0
-texture = SubResource("DarkPlaqueTex")
-texture_margin_left = 16.0
-texture_margin_top = 15.0
-texture_margin_right = 16.0
-texture_margin_bottom = 15.0
-modulate_color = Color(0.45, 0.42, 0.38, 0.75)
-
-[sub_resource type="StyleBoxTexture" id="TabActive"]
+[sub_resource type="StyleBoxTexture" id="DangerNormal"]
 content_margin_left = 16.0
 content_margin_top = 9.0
 content_margin_right = 16.0
@@ -245,17 +150,235 @@ texture_margin_top = 15.0
 texture_margin_right = 16.0
 texture_margin_bottom = 15.0
 
-[sub_resource type="StyleBoxFlat" id="RowNormal"]
-content_margin_left = 10.0
+[sub_resource type="AtlasTexture" id="DarkRedShapeTex"]
+atlas = ExtResource("4_darkbtn")
+region = Rect2(0, 0, 288, 57)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="GoldDisabled"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("DarkRedShapeTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+modulate_color = Color(0.5, 0.46, 0.42, 0.8)
+
+[sub_resource type="StyleBoxTexture" id="GoldHover"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("DarkRedShapeTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+modulate_color = Color(1.3, 1.15, 0.9, 1)
+
+[sub_resource type="StyleBoxTexture" id="GoldPressed"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("DarkRedShapeTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+modulate_color = Color(0.8, 0.72, 0.62, 1)
+
+[sub_resource type="StyleBoxTexture" id="GoldNormal"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("DarkRedShapeTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="Grab"]
+content_margin_left = 4.0
 content_margin_top = 4.0
-content_margin_right = 10.0
+content_margin_right = 4.0
 content_margin_bottom = 4.0
-bg_color = Color(0.07, 0.05, 0.035, 0.7)
+bg_color = Color(0.62, 0.45, 0.26, 0.85)
+border_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="GrabHi"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.96, 0.77, 0.4, 0.95)
+border_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="ScrollBg"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.03, 0.022, 0.015, 0.7)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.62, 0.45, 0.26, 0.35)
+border_color = Color(0.62, 0.45, 0.26, 0.3)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 1
+
+[sub_resource type="AtlasTexture" id="LineTex"]
+atlas = ExtResource("2_atlas")
+region = Rect2(921, 881, 243, 28)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="HSep"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = SubResource("LineTex")
+texture_margin_left = 26.0
+texture_margin_top = 12.0
+texture_margin_right = 26.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="Edit"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+texture = SubResource("DarkPlaqueTex")
+texture_margin_left = 16.0
+texture_margin_top = 15.0
+texture_margin_right = 16.0
+texture_margin_bottom = 15.0
+
+[sub_resource type="FontVariation" id="NumberFont"]
+base_font = ExtResource("1_font")
+variation_opentype = {
+2003265652: 620
+}
+opentype_features = {
+"lnum": 1
+}
+
+[sub_resource type="StyleBoxTexture" id="Panel"]
+content_margin_left = 22.0
+content_margin_top = 20.0
+content_margin_right = 22.0
+content_margin_bottom = 20.0
+texture = SubResource("PanelTex")
+texture_margin_left = 44.0
+texture_margin_top = 38.0
+texture_margin_right = 44.0
+texture_margin_bottom = 38.0
+
+[sub_resource type="StyleBoxFlat" id="PopupHover"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.3, 0.07, 0.05, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7, 0.53, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+corner_detail = 1
+
+[sub_resource type="StyleBoxTexture" id="PrimDisabled"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("DarkRedShapeTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+modulate_color = Color(0.5, 0.46, 0.42, 0.8)
+
+[sub_resource type="AtlasTexture" id="RedOrnateTex"]
+atlas = ExtResource("2_atlas")
+region = Rect2(480, 604, 288, 57)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="PrimHover"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("RedOrnateTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+modulate_color = Color(1.25, 1.1, 0.95, 1)
+
+[sub_resource type="StyleBoxTexture" id="PrimPressed"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("RedOrnateTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+modulate_color = Color(0.78, 0.7, 0.66, 1)
+
+[sub_resource type="StyleBoxTexture" id="PrimNormal"]
+content_margin_left = 30.0
+content_margin_top = 10.0
+content_margin_right = 30.0
+content_margin_bottom = 10.0
+texture = SubResource("RedOrnateTex")
+texture_margin_left = 34.0
+texture_margin_top = 18.0
+texture_margin_right = 34.0
+texture_margin_bottom = 18.0
+
+[sub_resource type="FontVariation" id="InterfaceFont"]
+base_font = ExtResource("1_font")
+opentype_features = {
+"lnum": 1,
+"onum": 0
+}
+
+[sub_resource type="StyleBoxFlat" id="RowDisabled"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.05, 0.04, 0.03, 0.5)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.26, 0.2, 0.4)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
@@ -296,72 +419,33 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 corner_detail = 1
 
-[sub_resource type="StyleBoxFlat" id="RowDisabled"]
+[sub_resource type="StyleBoxFlat" id="RowNormal"]
 content_margin_left = 10.0
 content_margin_top = 4.0
 content_margin_right = 10.0
 content_margin_bottom = 4.0
-bg_color = Color(0.05, 0.04, 0.03, 0.5)
+bg_color = Color(0.07, 0.05, 0.035, 0.7)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.3, 0.26, 0.2, 0.4)
+border_color = Color(0.62, 0.45, 0.26, 0.35)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 corner_detail = 1
 
-[sub_resource type="StyleBoxTexture" id="Panel"]
-content_margin_left = 22.0
-content_margin_top = 20.0
-content_margin_right = 22.0
-content_margin_bottom = 20.0
-texture = SubResource("PanelTex")
-texture_margin_left = 44.0
-texture_margin_top = 38.0
-texture_margin_right = 44.0
-texture_margin_bottom = 38.0
-
-[sub_resource type="StyleBoxTexture" id="Inset"]
-content_margin_left = 12.0
-content_margin_top = 10.0
-content_margin_right = 12.0
-content_margin_bottom = 10.0
-texture = SubResource("SlotTex")
+[sub_resource type="StyleBoxTexture" id="TabActive"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+texture = SubResource("RedPlaqueTex")
 texture_margin_left = 16.0
-texture_margin_top = 16.0
+texture_margin_top = 15.0
 texture_margin_right = 16.0
-texture_margin_bottom = 16.0
-
-[sub_resource type="StyleBoxTexture" id="Popup"]
-content_margin_left = 18.0
-content_margin_top = 16.0
-content_margin_right = 18.0
-content_margin_bottom = 16.0
-texture = SubResource("PanelTex")
-texture_margin_left = 44.0
-texture_margin_top = 38.0
-texture_margin_right = 44.0
-texture_margin_bottom = 38.0
-
-[sub_resource type="StyleBoxFlat" id="PopupHover"]
-content_margin_left = 8.0
-content_margin_top = 4.0
-content_margin_right = 8.0
-content_margin_bottom = 4.0
-bg_color = Color(0.3, 0.07, 0.05, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.7, 0.53, 0.3, 1.0)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-corner_detail = 1
+texture_margin_bottom = 15.0
 
 [sub_resource type="StyleBoxFlat" id="Tooltip"]
 content_margin_left = 12.0
@@ -379,19 +463,7 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 1
-shadow_color = Color(0, 0, 0, 0.6)
 shadow_size = 8
-
-[sub_resource type="StyleBoxTexture" id="HSep"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-texture = SubResource("LineTex")
-texture_margin_left = 26.0
-texture_margin_top = 12.0
-texture_margin_right = 26.0
-texture_margin_bottom = 12.0
 
 [sub_resource type="StyleBoxFlat" id="VSep"]
 content_margin_left = 1.0
@@ -399,306 +471,213 @@ content_margin_top = 0.0
 content_margin_right = 1.0
 content_margin_bottom = 0.0
 bg_color = Color(0.62, 0.45, 0.26, 0.6)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
 border_color = Color(0, 0, 0, 0)
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
 corner_detail = 1
-
-[sub_resource type="StyleBoxFlat" id="ScrollBg"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.03, 0.022, 0.015, 0.7)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.62, 0.45, 0.26, 0.3)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-corner_detail = 1
-
-[sub_resource type="StyleBoxFlat" id="Grab"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.62, 0.45, 0.26, 0.85)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
-border_color = Color(0, 0, 0, 0)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-corner_detail = 1
-
-[sub_resource type="StyleBoxFlat" id="GrabHi"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.96, 0.77, 0.4, 0.95)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
-border_color = Color(0, 0, 0, 0)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-corner_detail = 1
-
-[sub_resource type="StyleBoxTexture" id="Edit"]
-content_margin_left = 16.0
-content_margin_top = 9.0
-content_margin_right = 16.0
-content_margin_bottom = 9.0
-texture = SubResource("DarkPlaqueTex")
-texture_margin_left = 16.0
-texture_margin_top = 15.0
-texture_margin_right = 16.0
-texture_margin_bottom = 15.0
-
-[sub_resource type="FontVariation" id="InterfaceFont"]
-base_font = ExtResource("1_font")
-opentype_features = {
-"lnum": 1,
-"onum": 0
-}
-
-[sub_resource type="FontVariation" id="NumberFont"]
-base_font = ExtResource("1_font")
-variation_opentype = {
-2003265652: 620
-}
-opentype_features = {
-"lnum": 1
-}
-
-[sub_resource type="FontVariation" id="HeadingFont"]
-base_font = ExtResource("3_heading")
-opentype_features = {
-"lnum": 1
-}
-spacing_glyph = 1
 
 [resource]
 default_font = SubResource("InterfaceFont")
 default_font_size = 17
+AcceptDialog/styles/panel = SubResource("Popup")
 Button/colors/font_color = Color(0.9, 0.84, 0.72, 1)
-Button/colors/font_hover_color = Color(1, 0.9, 0.62, 1)
-Button/colors/font_focus_color = Color(1, 0.9, 0.62, 1)
-Button/colors/font_pressed_color = Color(1, 0.9, 0.62, 1)
-Button/colors/font_hover_pressed_color = Color(1, 0.9, 0.62, 1)
 Button/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+Button/colors/font_focus_color = Color(1, 0.9, 0.62, 1)
+Button/colors/font_hover_color = Color(1, 0.9, 0.62, 1)
+Button/colors/font_hover_pressed_color = Color(1, 0.9, 0.62, 1)
 Button/colors/font_outline_color = Color(0, 0, 0, 0.9)
+Button/colors/font_pressed_color = Color(1, 0.9, 0.62, 1)
 Button/constants/outline_size = 3
-Button/styles/normal = SubResource("BtnNormal")
-Button/styles/hover = SubResource("BtnHover")
-Button/styles/hover_pressed = SubResource("BtnPressed")
-Button/styles/pressed = SubResource("BtnPressed")
 Button/styles/disabled = SubResource("BtnDisabled")
 Button/styles/focus = SubResource("Focus")
-PrimaryButton/base_type = &"Button"
-PrimaryButton/colors/font_color = Color(1, 0.9, 0.78, 1)
-PrimaryButton/colors/font_hover_color = Color(1, 0.97, 0.86, 1)
-PrimaryButton/colors/font_focus_color = Color(1, 0.97, 0.86, 1)
-PrimaryButton/colors/font_pressed_color = Color(1, 0.97, 0.86, 1)
-PrimaryButton/colors/font_hover_pressed_color = Color(1, 0.97, 0.86, 1)
-PrimaryButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
-PrimaryButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
-PrimaryButton/constants/outline_size = 3
-PrimaryButton/fonts/font = SubResource("HeadingFont")
-PrimaryButton/styles/normal = SubResource("PrimNormal")
-PrimaryButton/styles/hover = SubResource("PrimHover")
-PrimaryButton/styles/hover_pressed = SubResource("PrimPressed")
-PrimaryButton/styles/pressed = SubResource("PrimPressed")
-PrimaryButton/styles/disabled = SubResource("PrimDisabled")
-PrimaryButton/styles/focus = SubResource("Focus")
-GoldButton/base_type = &"Button"
-GoldButton/colors/font_color = Color(1, 0.86, 0.52, 1)
-GoldButton/colors/font_hover_color = Color(1, 0.95, 0.75, 1)
-GoldButton/colors/font_focus_color = Color(1, 0.95, 0.75, 1)
-GoldButton/colors/font_pressed_color = Color(1, 0.95, 0.75, 1)
-GoldButton/colors/font_hover_pressed_color = Color(1, 0.95, 0.75, 1)
-GoldButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
-GoldButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
-GoldButton/constants/outline_size = 3
-GoldButton/fonts/font = SubResource("HeadingFont")
-GoldButton/styles/normal = SubResource("GoldNormal")
-GoldButton/styles/hover = SubResource("GoldHover")
-GoldButton/styles/hover_pressed = SubResource("GoldPressed")
-GoldButton/styles/pressed = SubResource("GoldPressed")
-GoldButton/styles/disabled = SubResource("GoldDisabled")
-GoldButton/styles/focus = SubResource("Focus")
+Button/styles/hover = SubResource("BtnHover")
+Button/styles/hover_pressed = SubResource("BtnPressed")
+Button/styles/normal = SubResource("BtnNormal")
+Button/styles/pressed = SubResource("BtnPressed")
+CardPanel/base_type = &"PanelContainer"
+CardPanel/styles/panel = SubResource("Inset")
 DangerButton/base_type = &"Button"
 DangerButton/colors/font_color = Color(1, 0.86, 0.8, 1)
-DangerButton/colors/font_hover_color = Color(1, 0.95, 0.9, 1)
-DangerButton/colors/font_focus_color = Color(1, 0.95, 0.9, 1)
-DangerButton/colors/font_pressed_color = Color(1, 0.95, 0.9, 1)
-DangerButton/colors/font_hover_pressed_color = Color(1, 0.95, 0.9, 1)
 DangerButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+DangerButton/colors/font_focus_color = Color(1, 0.95, 0.9, 1)
+DangerButton/colors/font_hover_color = Color(1, 0.95, 0.9, 1)
+DangerButton/colors/font_hover_pressed_color = Color(1, 0.95, 0.9, 1)
 DangerButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
+DangerButton/colors/font_pressed_color = Color(1, 0.95, 0.9, 1)
 DangerButton/constants/outline_size = 3
 DangerButton/fonts/font = SubResource("HeadingFont")
-DangerButton/styles/normal = SubResource("DangerNormal")
-DangerButton/styles/hover = SubResource("DangerHover")
-DangerButton/styles/hover_pressed = SubResource("DangerPressed")
-DangerButton/styles/pressed = SubResource("DangerPressed")
 DangerButton/styles/disabled = SubResource("DangerDisabled")
 DangerButton/styles/focus = SubResource("Focus")
-TabButton/base_type = &"Button"
-TabButton/colors/font_color = Color(0.78, 0.72, 0.62, 1)
-TabButton/colors/font_hover_color = Color(1, 0.9, 0.7, 1)
-TabButton/colors/font_focus_color = Color(1, 0.9, 0.7, 1)
-TabButton/colors/font_pressed_color = Color(1, 0.9, 0.7, 1)
-TabButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.7, 1)
-TabButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
-TabButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
-TabButton/constants/outline_size = 3
-TabButton/fonts/font = SubResource("HeadingFont")
-TabButton/styles/normal = SubResource("BtnNormal")
-TabButton/styles/hover = SubResource("BtnHover")
-TabButton/styles/hover_pressed = SubResource("TabActive")
-TabButton/styles/pressed = SubResource("TabActive")
-TabButton/styles/disabled = SubResource("BtnDisabled")
-TabButton/styles/focus = SubResource("Focus")
-RowButton/base_type = &"Button"
-RowButton/colors/font_color = Color(0.86, 0.8, 0.7, 1)
-RowButton/colors/font_hover_color = Color(1, 0.9, 0.66, 1)
-RowButton/colors/font_focus_color = Color(1, 0.9, 0.66, 1)
-RowButton/colors/font_pressed_color = Color(1, 0.9, 0.66, 1)
-RowButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.66, 1)
-RowButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
-RowButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
-RowButton/constants/outline_size = 3
-RowButton/styles/normal = SubResource("RowNormal")
-RowButton/styles/hover = SubResource("RowHover")
-RowButton/styles/hover_pressed = SubResource("RowPressed")
-RowButton/styles/pressed = SubResource("RowPressed")
-RowButton/styles/disabled = SubResource("RowDisabled")
-RowButton/styles/focus = SubResource("Focus")
-LedgerButton/base_type = &"Button"
-LedgerButton/colors/font_color = Color(0.9, 0.84, 0.72, 1)
-LedgerButton/colors/font_hover_color = Color(1, 0.9, 0.62, 1)
-LedgerButton/colors/font_focus_color = Color(1, 0.9, 0.62, 1)
-LedgerButton/colors/font_pressed_color = Color(1, 0.9, 0.62, 1)
-LedgerButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.62, 1)
-LedgerButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
-LedgerButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
-LedgerButton/constants/outline_size = 3
-LedgerButton/fonts/font = SubResource("HeadingFont")
-LedgerButton/styles/normal = SubResource("BtnNormal")
-LedgerButton/styles/hover = SubResource("BtnHover")
-LedgerButton/styles/hover_pressed = SubResource("BtnPressed")
-LedgerButton/styles/pressed = SubResource("BtnPressed")
-LedgerButton/styles/disabled = SubResource("BtnDisabled")
-LedgerButton/styles/focus = SubResource("Focus")
-OptionButton/colors/font_color = Color(0.9, 0.84, 0.72, 1)
-OptionButton/colors/font_hover_color = Color(1, 0.9, 0.62, 1)
-OptionButton/colors/font_focus_color = Color(1, 0.9, 0.62, 1)
-OptionButton/colors/font_pressed_color = Color(1, 0.9, 0.62, 1)
-OptionButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.62, 1)
-OptionButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
-OptionButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
-OptionButton/constants/outline_size = 3
-OptionButton/styles/normal = SubResource("BtnNormal")
-OptionButton/styles/hover = SubResource("BtnHover")
-OptionButton/styles/hover_pressed = SubResource("BtnPressed")
-OptionButton/styles/pressed = SubResource("BtnPressed")
-OptionButton/styles/disabled = SubResource("BtnDisabled")
-OptionButton/styles/focus = SubResource("Focus")
-Label/colors/font_color = Color(0.9, 0.84, 0.72, 1.0)
-Label/colors/font_outline_color = Color(0, 0, 0, 0.8)
-TitleLabel/base_type = &"Label"
-TitleLabel/colors/font_color = Color(0.96, 0.77, 0.4, 1)
-TitleLabel/colors/font_outline_color = Color(0.03, 0.015, 0.0, 0.95)
-TitleLabel/colors/font_shadow_color = Color(0, 0, 0, 0.7)
-TitleLabel/constants/outline_size = 5
-TitleLabel/constants/shadow_offset_x = 0
-TitleLabel/constants/shadow_offset_y = 4
-TitleLabel/font_sizes/font_size = 50
-TitleLabel/fonts/font = SubResource("HeadingFont")
-HeaderLabel/base_type = &"Label"
-HeaderLabel/colors/font_color = Color(0.96, 0.77, 0.4, 1)
-HeaderLabel/colors/font_outline_color = Color(0.03, 0.015, 0.0, 0.95)
-HeaderLabel/colors/font_shadow_color = Color(0, 0, 0, 0.7)
-HeaderLabel/constants/outline_size = 3
-HeaderLabel/constants/shadow_offset_x = 0
-HeaderLabel/constants/shadow_offset_y = 4
-HeaderLabel/font_sizes/font_size = 28
-HeaderLabel/fonts/font = SubResource("HeadingFont")
+DangerButton/styles/hover = SubResource("DangerHover")
+DangerButton/styles/hover_pressed = SubResource("DangerPressed")
+DangerButton/styles/normal = SubResource("DangerNormal")
+DangerButton/styles/pressed = SubResource("DangerPressed")
 EyebrowLabel/base_type = &"Label"
 EyebrowLabel/colors/font_color = Color(0.78, 0.66, 0.48, 1)
-EyebrowLabel/colors/font_outline_color = Color(0.03, 0.015, 0.0, 0.95)
+EyebrowLabel/colors/font_outline_color = Color(0.03, 0.015, 0, 0.95)
 EyebrowLabel/colors/font_shadow_color = Color(0, 0, 0, 0)
 EyebrowLabel/constants/outline_size = 2
 EyebrowLabel/constants/shadow_offset_x = 0
 EyebrowLabel/constants/shadow_offset_y = 0
 EyebrowLabel/font_sizes/font_size = 18
 EyebrowLabel/fonts/font = SubResource("HeadingFont")
+GoldButton/base_type = &"Button"
+GoldButton/colors/font_color = Color(1, 0.86, 0.52, 1)
+GoldButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+GoldButton/colors/font_focus_color = Color(1, 0.95, 0.75, 1)
+GoldButton/colors/font_hover_color = Color(1, 0.95, 0.75, 1)
+GoldButton/colors/font_hover_pressed_color = Color(1, 0.95, 0.75, 1)
+GoldButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
+GoldButton/colors/font_pressed_color = Color(1, 0.95, 0.75, 1)
+GoldButton/constants/outline_size = 3
+GoldButton/fonts/font = SubResource("HeadingFont")
+GoldButton/styles/disabled = SubResource("GoldDisabled")
+GoldButton/styles/focus = SubResource("Focus")
+GoldButton/styles/hover = SubResource("GoldHover")
+GoldButton/styles/hover_pressed = SubResource("GoldPressed")
+GoldButton/styles/normal = SubResource("GoldNormal")
+GoldButton/styles/pressed = SubResource("GoldPressed")
+HScrollBar/styles/grabber = SubResource("Grab")
+HScrollBar/styles/grabber_highlight = SubResource("GrabHi")
+HScrollBar/styles/grabber_pressed = SubResource("GrabHi")
+HScrollBar/styles/scroll = SubResource("ScrollBg")
+HScrollBar/styles/scroll_focus = SubResource("ScrollBg")
+HSeparator/constants/separation = 24
+HSeparator/styles/separator = SubResource("HSep")
+HeaderLabel/base_type = &"Label"
+HeaderLabel/colors/font_color = Color(0.96, 0.77, 0.4, 1)
+HeaderLabel/colors/font_outline_color = Color(0.03, 0.015, 0, 0.95)
+HeaderLabel/colors/font_shadow_color = Color(0, 0, 0, 0.7)
+HeaderLabel/constants/outline_size = 3
+HeaderLabel/constants/shadow_offset_x = 0
+HeaderLabel/constants/shadow_offset_y = 4
+HeaderLabel/font_sizes/font_size = 28
+HeaderLabel/fonts/font = SubResource("HeadingFont")
+InsetPanel/base_type = &"PanelContainer"
+InsetPanel/styles/panel = SubResource("Inset")
+Label/colors/font_color = Color(0.9, 0.84, 0.72, 1)
+Label/colors/font_outline_color = Color(0, 0, 0, 0.8)
+LedgerButton/base_type = &"Button"
+LedgerButton/colors/font_color = Color(0.9, 0.84, 0.72, 1)
+LedgerButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+LedgerButton/colors/font_focus_color = Color(1, 0.9, 0.62, 1)
+LedgerButton/colors/font_hover_color = Color(1, 0.9, 0.62, 1)
+LedgerButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.62, 1)
+LedgerButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
+LedgerButton/colors/font_pressed_color = Color(1, 0.9, 0.62, 1)
+LedgerButton/constants/outline_size = 3
+LedgerButton/fonts/font = SubResource("HeadingFont")
+LedgerButton/styles/disabled = SubResource("BtnDisabled")
+LedgerButton/styles/focus = SubResource("Focus")
+LedgerButton/styles/hover = SubResource("BtnHover")
+LedgerButton/styles/hover_pressed = SubResource("BtnPressed")
+LedgerButton/styles/normal = SubResource("BtnNormal")
+LedgerButton/styles/pressed = SubResource("BtnPressed")
+LineEdit/colors/caret_color = Color(0.96, 0.77, 0.4, 1)
+LineEdit/colors/font_color = Color(0.9, 0.84, 0.72, 1)
+LineEdit/colors/font_placeholder_color = Color(0.64, 0.58, 0.49, 1)
+LineEdit/styles/focus = SubResource("Edit")
+LineEdit/styles/normal = SubResource("Edit")
 MutedLabel/base_type = &"Label"
 MutedLabel/colors/font_color = Color(0.64, 0.58, 0.49, 1)
-MutedLabel/colors/font_outline_color = Color(0.03, 0.015, 0.0, 0.95)
+MutedLabel/colors/font_outline_color = Color(0.03, 0.015, 0, 0.95)
 MutedLabel/colors/font_shadow_color = Color(0, 0, 0, 0)
 MutedLabel/constants/outline_size = 1
 MutedLabel/constants/shadow_offset_x = 0
 MutedLabel/constants/shadow_offset_y = 0
 MutedLabel/font_sizes/font_size = 15
-RichTextLabel/fonts/normal_font = SubResource("InterfaceFont")
-RichTextLabel/fonts/bold_font = SubResource("NumberFont")
 NumberLabel/base_type = &"Label"
 NumberLabel/colors/font_color = Color(0.96, 0.77, 0.4, 1)
-NumberLabel/colors/font_outline_color = Color(0.03, 0.015, 0.0, 0.95)
+NumberLabel/colors/font_outline_color = Color(0.03, 0.015, 0, 0.95)
 NumberLabel/constants/outline_size = 3
 NumberLabel/font_sizes/font_size = 22
 NumberLabel/fonts/font = SubResource("NumberFont")
+OptionButton/colors/font_color = Color(0.9, 0.84, 0.72, 1)
+OptionButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+OptionButton/colors/font_focus_color = Color(1, 0.9, 0.62, 1)
+OptionButton/colors/font_hover_color = Color(1, 0.9, 0.62, 1)
+OptionButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.62, 1)
+OptionButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
+OptionButton/colors/font_pressed_color = Color(1, 0.9, 0.62, 1)
+OptionButton/constants/outline_size = 3
+OptionButton/styles/disabled = SubResource("BtnDisabled")
+OptionButton/styles/focus = SubResource("Focus")
+OptionButton/styles/hover = SubResource("BtnHover")
+OptionButton/styles/hover_pressed = SubResource("BtnPressed")
+OptionButton/styles/normal = SubResource("BtnNormal")
+OptionButton/styles/pressed = SubResource("BtnPressed")
 Panel/styles/panel = SubResource("Panel")
 PanelContainer/styles/panel = SubResource("Panel")
-InsetPanel/base_type = &"PanelContainer"
-InsetPanel/styles/panel = SubResource("Inset")
-CardPanel/base_type = &"PanelContainer"
-CardPanel/styles/panel = SubResource("Inset")
-PopupPanel/styles/panel = SubResource("Popup")
-PopupMenu/styles/panel = SubResource("Popup")
-PopupMenu/styles/hover = SubResource("PopupHover")
-PopupMenu/colors/font_color = Color(0.9, 0.84, 0.72, 1.0)
-PopupMenu/colors/font_hover_color = Color(1, 0.92, 0.72, 1)
+PopupMenu/colors/font_color = Color(0.9, 0.84, 0.72, 1)
 PopupMenu/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
-PopupMenu/constants/item_start_padding = 14
+PopupMenu/colors/font_hover_color = Color(1, 0.92, 0.72, 1)
 PopupMenu/constants/item_end_padding = 14
+PopupMenu/constants/item_start_padding = 14
 PopupMenu/constants/v_separation = 7
+PopupMenu/styles/hover = SubResource("PopupHover")
+PopupMenu/styles/panel = SubResource("Popup")
+PopupPanel/styles/panel = SubResource("Popup")
+PrimaryButton/base_type = &"Button"
+PrimaryButton/colors/font_color = Color(1, 0.9, 0.78, 1)
+PrimaryButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+PrimaryButton/colors/font_focus_color = Color(1, 0.97, 0.86, 1)
+PrimaryButton/colors/font_hover_color = Color(1, 0.97, 0.86, 1)
+PrimaryButton/colors/font_hover_pressed_color = Color(1, 0.97, 0.86, 1)
+PrimaryButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
+PrimaryButton/colors/font_pressed_color = Color(1, 0.97, 0.86, 1)
+PrimaryButton/constants/outline_size = 3
+PrimaryButton/fonts/font = SubResource("HeadingFont")
+PrimaryButton/styles/disabled = SubResource("PrimDisabled")
+PrimaryButton/styles/focus = SubResource("Focus")
+PrimaryButton/styles/hover = SubResource("PrimHover")
+PrimaryButton/styles/hover_pressed = SubResource("PrimPressed")
+PrimaryButton/styles/normal = SubResource("PrimNormal")
+PrimaryButton/styles/pressed = SubResource("PrimPressed")
+RichTextLabel/fonts/bold_font = SubResource("NumberFont")
+RichTextLabel/fonts/normal_font = SubResource("InterfaceFont")
+RowButton/base_type = &"Button"
+RowButton/colors/font_color = Color(0.86, 0.8, 0.7, 1)
+RowButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+RowButton/colors/font_focus_color = Color(1, 0.9, 0.66, 1)
+RowButton/colors/font_hover_color = Color(1, 0.9, 0.66, 1)
+RowButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.66, 1)
+RowButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
+RowButton/colors/font_pressed_color = Color(1, 0.9, 0.66, 1)
+RowButton/constants/outline_size = 3
+RowButton/styles/disabled = SubResource("RowDisabled")
+RowButton/styles/focus = SubResource("Focus")
+RowButton/styles/hover = SubResource("RowHover")
+RowButton/styles/hover_pressed = SubResource("RowPressed")
+RowButton/styles/normal = SubResource("RowNormal")
+RowButton/styles/pressed = SubResource("RowPressed")
+TabButton/base_type = &"Button"
+TabButton/colors/font_color = Color(0.78, 0.72, 0.62, 1)
+TabButton/colors/font_disabled_color = Color(0.44, 0.4, 0.35, 1)
+TabButton/colors/font_focus_color = Color(1, 0.9, 0.7, 1)
+TabButton/colors/font_hover_color = Color(1, 0.9, 0.7, 1)
+TabButton/colors/font_hover_pressed_color = Color(1, 0.9, 0.7, 1)
+TabButton/colors/font_outline_color = Color(0, 0, 0, 0.9)
+TabButton/colors/font_pressed_color = Color(1, 0.9, 0.7, 1)
+TabButton/constants/outline_size = 3
+TabButton/fonts/font = SubResource("HeadingFont")
+TabButton/styles/disabled = SubResource("BtnDisabled")
+TabButton/styles/focus = SubResource("Focus")
+TabButton/styles/hover = SubResource("BtnHover")
+TabButton/styles/hover_pressed = SubResource("TabActive")
+TabButton/styles/normal = SubResource("BtnNormal")
+TabButton/styles/pressed = SubResource("TabActive")
+TitleLabel/base_type = &"Label"
+TitleLabel/colors/font_color = Color(0.96, 0.77, 0.4, 1)
+TitleLabel/colors/font_outline_color = Color(0.03, 0.015, 0, 0.95)
+TitleLabel/colors/font_shadow_color = Color(0, 0, 0, 0.7)
+TitleLabel/constants/outline_size = 5
+TitleLabel/constants/shadow_offset_x = 0
+TitleLabel/constants/shadow_offset_y = 4
+TitleLabel/font_sizes/font_size = 50
+TitleLabel/fonts/font = SubResource("HeadingFont")
+TooltipLabel/colors/font_color = Color(0.9, 0.84, 0.72, 1)
 TooltipPanel/styles/panel = SubResource("Tooltip")
-TooltipLabel/colors/font_color = Color(0.9, 0.84, 0.72, 1.0)
-AcceptDialog/styles/panel = SubResource("Popup")
-HSeparator/styles/separator = SubResource("HSep")
-HSeparator/constants/separation = 24
-VSeparator/styles/separator = SubResource("VSep")
-VScrollBar/styles/scroll = SubResource("ScrollBg")
-VScrollBar/styles/scroll_focus = SubResource("ScrollBg")
 VScrollBar/styles/grabber = SubResource("Grab")
 VScrollBar/styles/grabber_highlight = SubResource("GrabHi")
 VScrollBar/styles/grabber_pressed = SubResource("GrabHi")
-HScrollBar/styles/scroll = SubResource("ScrollBg")
-HScrollBar/styles/scroll_focus = SubResource("ScrollBg")
-HScrollBar/styles/grabber = SubResource("Grab")
-HScrollBar/styles/grabber_highlight = SubResource("GrabHi")
-HScrollBar/styles/grabber_pressed = SubResource("GrabHi")
-LineEdit/styles/normal = SubResource("Edit")
-LineEdit/styles/focus = SubResource("Edit")
-LineEdit/colors/font_color = Color(0.9, 0.84, 0.72, 1.0)
-LineEdit/colors/caret_color = Color(0.96, 0.77, 0.4, 1.0)
-LineEdit/colors/font_placeholder_color = Color(0.64, 0.58, 0.49, 1.0)
+VScrollBar/styles/scroll = SubResource("ScrollBg")
+VScrollBar/styles/scroll_focus = SubResource("ScrollBg")
+VSeparator/styles/separator = SubResource("VSep")

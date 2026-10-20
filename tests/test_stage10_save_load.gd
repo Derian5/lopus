@@ -34,7 +34,7 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 	_check(manager.load_run(registry).code == &"missing", "Missing save is a normal non-crashing state.")
 	var route := registry.get_definition(RunState.ROUTE_DEFINITION_ID) as RouteDefinition
 	var run := DemoRunFactory.create_starting_run(101010)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
+	run.inventory.create_item(&"item.gravedigger_fang")
 	run.current_act = 2
 	run.encounter_index = route.act_two_battle_count - 1
 	run.available_encounter_ids = [&"encounter.act2_pressure", &"encounter.act2_crossbows"]
@@ -86,7 +86,7 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 		_check(loaded.market.offers[0].is_pinned, "Locked Market positions survive Save and Load.")
 		_check(loaded.market_rng.next_u32() == expected_market_draw, "The next Market RNG draw is identical after Load.")
 		_check(loaded.heroes[2].life_state == HeroState.EXECUTED and loaded.execution_snapshots.size() == 1, "Executed Hero state and snapshot cannot be undone by Load.")
-		_check(loaded.inventory.get_definition_id(blade) == &"item.hero.vanguard_blade" and loaded.heroes[0].item_ids.has(blade), "Inventory ownership and equipped instance IDs are restored.")
+		_check(loaded.inventory.get_definition_id(blade) == &"item.gravedigger_fang" and loaded.heroes[0].item_ids.has(blade), "Inventory ownership and equipped instance IDs are restored.")
 	var run_state_before_combat := run.run_rng.to_dictionary()
 	var market_state_before_combat := run.market_rng.to_dictionary()
 	run.combat_rng.next_seed()
@@ -104,7 +104,7 @@ func _test_disk_round_trip_and_rng(manager: SaveManager) -> void:
 func _test_version_8_item_migration(manager: SaveManager) -> void:
 	manager.delete_save()
 	var run := DemoRunFactory.create_starting_run(101011)
-	run.inventory.create_item(&"item.hero.vanguard_blade")
+	run.inventory.create_item(&"item.gravedigger_fang")
 	var data := run.to_dictionary()
 	data["save_version"] = 8
 	data.inventory.items[0]["bound_target_id"] = String(data.heroes[0].unique_id)

@@ -27,7 +27,7 @@ static func prepare_event(run_state: RunState, registry: Node) -> Dictionary:
 		if _eligible_soldiers(run_state, event).size() < event.soldier_target_count:
 			continue
 		candidates.append(event)
-	candidates.sort_custom(func(a: RunEventDefinition, b: RunEventDefinition) -> bool: return a.id < b.id)
+	candidates.sort_custom(func(a: RunEventDefinition, b: RunEventDefinition) -> bool: return String(a.id) < String(b.id))
 	if candidates.is_empty():
 		return {"ok": true, "error": ""}
 	var absence_roll := (float(staged_stream.next_u32()) / UINT32_RANGE) * 100.0
@@ -267,7 +267,7 @@ static func _apply_effect(run_state: RunState, target_ids: Array[String], effect
 					if definition.is_compatible_with_hero(hero_definition):
 						items.append(definition)
 						break
-			items.sort_custom(func(a: ItemDefinition, b: ItemDefinition) -> bool: return a.id < b.id)
+			items.sort_custom(func(a: ItemDefinition, b: ItemDefinition) -> bool: return String(a.id) < String(b.id))
 			if heroes.is_empty() or items.is_empty():
 				return _failure("Random Hero item reward has no valid recipient or item.")
 			var item := items[int(run_state.event_rng.next_u32() % items.size())]

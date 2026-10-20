@@ -1,0 +1,117 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_death_smoke",
+  "name": "CBO Death Smoke",
+  "comp": {
+   "w": 256,
+   "h": 256,
+   "dur": 1.0,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 192,
+   "t0": 0.0,
+   "t1": 0.95,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_dsmoke_puff",
+    "name": "Smoke Puff",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "y": 50,
+     "shape": "circle",
+     "sx": 36,
+     "dir": "out",
+     "speed": 150,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 18
+      }
+     ],
+     "seed": 8
+    },
+    "pt": {
+     "life": 0.9,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "smoke",
+      "p": {}
+     },
+     "size": 84,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 1.35
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.85
+       },
+       {
+        "t": 0.5,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         96,
+         88,
+         100
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         44,
+         40,
+         48
+        ]
+       }
+      ]
+     },
+     "drag": 3,
+     "gravY": -70,
+     "spin": 50
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

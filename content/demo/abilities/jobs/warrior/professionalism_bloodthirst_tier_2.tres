@@ -36,6 +36,8 @@ status = SubResource("SunderStatus")
 
 [resource]
 script = ExtResource("1")
+price = 250
+upgrades_ability_id = &"ability.warrior_professionalism_bloodthirst_tier_1"
 presentation_icon = ExtResource("icon")
 id = &"ability.warrior_professionalism_bloodthirst_tier_2"
 display_name = "Bloodthirst II"

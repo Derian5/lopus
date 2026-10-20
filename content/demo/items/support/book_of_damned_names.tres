@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://jnwvy5wnttyu"]
+
+[ext_resource type="Script" uid="uid://bnpvyf4non5kx" path="res://content/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/book_of_damned_names.png" id="2"]
+[ext_resource type="Script" uid="uid://cvpxbdvecnh7k" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+
+[sub_resource type="Resource" id="Stat0"]
+script = ExtResource("3")
+stat = "max_hp"
+value = 600.0
+
+[sub_resource type="Resource" id="Stat1"]
+script = ExtResource("3")
+stat = "cooldown_reduction"
+value = 50.0
+
+[sub_resource type="Resource" id="Stat2"]
+script = ExtResource("3")
+value = 40.0
+
+[resource]
+script = ExtResource("1")
+category = 2
+passive_effects = Array[ExtResource("3")]([SubResource("Stat0"), SubResource("Stat1"), SubResource("Stat2")])
+price = 425
+sell_price = 212
+id = &"item.book_of_damned_names"
+display_name = "Book of Damned Names"
+description = "A relic of the cathedral's healers."
+icon = ExtResource("2")
+tags = Array[StringName]([&"item", &"hero", &"support"])

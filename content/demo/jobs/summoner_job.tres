@@ -9,7 +9,7 @@ max_hp = 120.0
 damage = -2.0
 attack_speed = 0.0
 movement_speed = 0.0
-attack_range = 170.0
+attack_range = 320.0
 
 [resource]
 script = ExtResource("1")
@@ -18,9 +18,7 @@ attack_type = &"ranged"
 attack_definition_id = &"attack.basic_ranged"
 ai_behavior = &"support"
 innate_ability_ids = Array[StringName]([&"ability.summoner_job_summon"])
-available_ability_ids = Array[StringName]([])
-professionalism_thresholds = Array[int]([3, 6])
-professionalism_ability_ids = Array[StringName]([&"ability.summoner_professionalism_merge_tier_1", &"ability.summoner_professionalism_merge_tier_2"])
+available_ability_ids = Array[StringName]([&"ability.summoner_professionalism_merge_tier_1", &"ability.summoner_professionalism_merge_tier_2"])
 restriction_tags = Array[StringName]([&"soldier"])
 capacity_price = 130
 unlock_price = 220

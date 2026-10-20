@@ -12,7 +12,6 @@ const MILITIA_BASE_ARMOR := 2.0
 
 static func build_player_army(run_state: RunState, registry: Node) -> Array[CombatUnitSnapshot]:
 	var result: Array[CombatUnitSnapshot] = []
-	var assignment_counts := job_assignment_counts(run_state)
 	for hero in run_state.heroes:
 		if hero.life_state == HeroState.ALIVE:
 			var snapshot := build_hero(hero, run_state.inventory, registry)
@@ -20,14 +19,25 @@ static func build_player_army(run_state: RunState, registry: Node) -> Array[Comb
 				snapshot.formation_position = FormationService.position_for(run_state, hero.unique_id)
 				result.append(snapshot)
 	for soldier in run_state.soldiers:
-		var job := registry.get_definition(soldier.current_job_id, false) as JobDefinition
-		var professionalism_ability_id := professionalism_ability_id(job, int(assignment_counts.get(soldier.current_job_id, 0)))
-		var snapshot := build_soldier(soldier, _find_job_build(run_state, soldier.current_job_id), registry, professionalism_ability_id)
+		var snapshot := build_soldier(soldier, _find_job_build(run_state, soldier.current_job_id), registry)
 		if snapshot != null:
 			snapshot.formation_position = FormationService.position_for(run_state, soldier.unique_id)
 			result.append(snapshot)
 	_apply_gold_army_scaling(result, run_state.gold)
+	_apply_item_gold_scaling(result, run_state.gold)
 	return result
+
+
+static func _apply_item_gold_scaling(snapshots: Array[CombatUnitSnapshot], gold: int) -> void:
+	for snapshot in snapshots:
+		for ability in snapshot.abilities:
+			for effect in ability.effects:
+				if effect is GoldStatScalingEffect:
+					var percent: float = effect.bonus_percent(gold)
+					if percent > 0.0:
+						var source := "%s (%d Gold)" % [ability.display_name, maxi(gold, 0)]
+						_multiply_stat(snapshot.stats, &"damage", 1.0 + percent / 100.0, source)
+						_multiply_stat(snapshot.stats, &"max_hp", 1.0 + percent / 100.0, source)
 
 
 static func build_hero(hero: HeroState, inventory: InventoryState, registry: Node) -> CombatUnitSnapshot:
@@ -61,14 +71,29 @@ static func build_hero(hero: HeroState, inventory: InventoryState, registry: Nod
 	var modifiers := _runtime_modifier_entries(hero.stat_modifiers, registry, "Permanent modifier")
 	modifiers.append_array(_collect_item_modifier_entries(snapshot, hero.item_ids, inventory, registry, item_modifier_multiplier))
 	_apply_modifier_entries(snapshot.stats, modifiers)
+	_add_item_abilities(snapshot, registry)
+	for modifier in hero.stat_modifiers:
+		if modifier != null and modifier.battles_remaining < 0 and not String(modifier.source_id).is_empty():
+			snapshot.permanent_gains[modifier.source_id] = float(snapshot.permanent_gains.get(modifier.source_id, 0.0)) + modifier.value
 	return snapshot
+
+
+## Abilities granted by equipped items run like Hero abilities (actives are cast by the AI).
+static func _add_item_abilities(snapshot: CombatUnitSnapshot, registry: Node) -> void:
+	for definition_id in snapshot.equipped_item_definition_ids:
+		var item := registry.get_definition(definition_id, false) as ItemDefinition
+		if item == null:
+			continue
+		for ability_id in item.ability_ids:
+			var ability := registry.get_definition(ability_id, false) as AbilityDefinition
+			if ability != null and not snapshot.abilities.any(func(existing: AbilityDefinition) -> bool: return existing.id == ability.id):
+				snapshot.abilities.append(ability)
 
 
 static func build_soldier(
 	soldier: SoldierState,
 	job_build: JobBuildState,
-	registry: Node,
-	professionalism_ability_id: StringName = &""
+	registry: Node
 ) -> CombatUnitSnapshot:
 	var job := registry.get_definition(soldier.current_job_id, false) as JobDefinition
 	if job == null:
@@ -102,14 +127,12 @@ static func build_soldier(
 	_add_abilities(snapshot, job.innate_ability_ids, registry)
 	if job_build != null:
 		var ability_ids: Array[StringName] = []
-		if job.available_ability_ids.has(job_build.active_ability_id):
+		if job.available_ability_ids.has(job_build.active_ability_id) and job_build.owned_ability_ids.has(job_build.active_ability_id) and not job_build.has_owned_upgrade(job_build.active_ability_id, registry):
 			ability_ids.append(job_build.active_ability_id)
 		for ability_id in job_build.passive_ability_ids:
-			if job.available_ability_ids.has(ability_id):
+			if job.available_ability_ids.has(ability_id) and job_build.owned_ability_ids.has(ability_id) and not job_build.has_owned_upgrade(ability_id, registry):
 				ability_ids.append(ability_id)
 		_add_abilities(snapshot, ability_ids, registry)
-	if not professionalism_ability_id.is_empty():
-		_add_abilities(snapshot, [professionalism_ability_id], registry)
 	_apply_priest_heal_veterancy(snapshot)
 	return snapshot
 
@@ -125,22 +148,6 @@ static func job_assignment_count(run_state: RunState, job_id: StringName) -> int
 	return int(job_assignment_counts(run_state).get(job_id, 0))
 
 
-static func professionalism_tier(job: JobDefinition, assignment_count: int) -> int:
-	if job == null:
-		return -1
-	var result := -1
-	for index in job.professionalism_thresholds.size():
-		if assignment_count < job.professionalism_thresholds[index]:
-			break
-		result = index
-	return result
-
-
-static func professionalism_ability_id(job: JobDefinition, assignment_count: int) -> StringName:
-	var tier := professionalism_tier(job, assignment_count)
-	return job.professionalism_ability_ids[tier] if tier >= 0 and tier < job.professionalism_ability_ids.size() else &""
-
-
 static func build_enemy(definition: EnemyDefinition, runtime_id: String, display_name: String, registry: Node) -> CombatUnitSnapshot:
 	if definition == null:
 		return null
@@ -151,6 +158,7 @@ static func build_enemy(definition: EnemyDefinition, runtime_id: String, display
 	snapshot.team = CombatUnitSnapshot.Team.ENEMY
 	snapshot.unit_kind = CombatUnitSnapshot.UnitKind.ENEMY
 	snapshot.attack_type = definition.attack_type
+	snapshot.targeting_mode = StringName(definition.targeting_mode)
 	snapshot.stats = CombatStats.from_stat_block(definition.base_stats)
 	snapshot.stats.begin_breakdowns("Base: %s" % definition.display_name)
 	snapshot.placeholder_color = definition.placeholder_color
@@ -316,7 +324,7 @@ static func _source_name(source_id: StringName, registry: Node, fallback: String
 static func _add_stat_block(stats: CombatStats, block: StatBlock, source: String) -> void:
 	if block == null:
 		return
-	for stat in CombatStats.STAT_NAMES:
+	for stat in CombatStats.PRIMARY_STAT_NAMES:
 		var amount := float(block.get(stat))
 		var before := float(stats.get(stat))
 		stats.set(stat, before + amount)
@@ -331,7 +339,10 @@ static func _multiply_stat(stats: CombatStats, stat: StringName, multiplier: flo
 
 
 static func _apply_modifier_entries(stats: CombatStats, entries: Array[Dictionary]) -> void:
-	for operation in [StatModifier.Operation.ADD, StatModifier.Operation.MULTIPLY]:
+	for operation in [StatModifier.Operation.ADD, StatModifier.Operation.ADD_PERCENT, StatModifier.Operation.MULTIPLY]:
+		if operation == StatModifier.Operation.ADD_PERCENT:
+			_apply_percent_entries(stats, entries)
+			continue
 		for entry in entries:
 			var modifier := entry.modifier as StatModifier
 			if modifier == null or modifier.operation != operation or StringName(modifier.stat) not in CombatStats.STAT_NAMES:
@@ -342,6 +353,22 @@ static func _apply_modifier_entries(stats: CombatStats, entries: Array[Dictionar
 			stats.set(stat, after)
 			stats.record_change(stat, String(entry.source), &"add" if operation == StatModifier.Operation.ADD else &"multiply", modifier.value, before, after)
 	_clamp_stats(stats)
+
+
+## "+X%" bonuses add up per stat, then multiply once; each source is still listed.
+static func _apply_percent_entries(stats: CombatStats, entries: Array[Dictionary]) -> void:
+	var totals := {}
+	for entry in entries:
+		var modifier := entry.modifier as StatModifier
+		if modifier == null or modifier.operation != StatModifier.Operation.ADD_PERCENT or StringName(modifier.stat) not in CombatStats.STAT_NAMES:
+			continue
+		var stat := StringName(modifier.stat)
+		totals[stat] = float(totals.get(stat, 0.0)) + modifier.value
+	for stat in totals:
+		var before := float(stats.get(stat))
+		var multiplier := 1.0 + float(totals[stat]) / 100.0
+		stats.set(stat, before * multiplier)
+		stats.record_change(stat, "Percent bonuses (+%s%%)" % String.num(float(totals[stat])), &"multiply", multiplier, before, float(stats.get(stat)))
 
 
 static func _clamp_stats(stats: CombatStats) -> void:

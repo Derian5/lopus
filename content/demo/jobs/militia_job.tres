@@ -9,13 +9,13 @@ max_hp = 150.0
 damage = 2.0
 attack_speed = 0.1
 movement_speed = 0.0
-attack_range = 25.0
+attack_range = 100.0
 armor = 4.0
 
 [resource]
 script = ExtResource("1_job")
-innate_ability_ids = Array[StringName]([&"ability.militia_strength_in_numbers"])
 stat_modifiers = SubResource("StatBlock_militia")
+innate_ability_ids = Array[StringName]([&"ability.militia_strength_in_numbers"])
 id = &"job.militia"
 display_name = "Militia"
 description = "The renewable baseline role for unassigned soldiers."

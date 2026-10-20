@@ -1,0 +1,565 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_summon",
+  "name": "CBO Summon Portal",
+  "comp": {
+   "w": 256,
+   "h": 256,
+   "dur": 0.75,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 37
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 192,
+   "t0": 0.0,
+   "t1": 0.72,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_summon_pop",
+    "name": "Flash",
+    "type": "sprite",
+    "start": 0.32,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.85,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.04,
+       "v": 0.85,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.25,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 190,
+     "x": 0,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.3,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.175,
+        "v": 1.4,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.6,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.5900000000000001
+   },
+   {
+    "id": "lr_summon_burst",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.32,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 20,
+     "shape": "point",
+     "sx": 60,
+     "dir": "omni",
+     "angle": 0,
+     "spread": 360,
+     "speed": 420,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 16
+      }
+     ],
+     "seed": 12
+    },
+    "pt": {
+     "life": 0.3,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 26,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.5,
+     "gravY": 0,
+     "drag": 2.5,
+     "glow": 0.4,
+     "spin": 0
+    },
+    "end": 0.37
+   },
+   {
+    "id": "lr_summon_in",
+    "name": "Vortex",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 30,
+     "shape": "ring",
+     "sx": 100,
+     "sy": 10,
+     "dir": "in",
+     "speed": 260,
+     "rate": 70,
+     "seed": 4,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.35,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 22,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.4
+       },
+       {
+        "t": 1,
+        "v": 1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.12,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.75
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         255,
+         255,
+         255
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.4,
+     "drag": 0,
+     "glow": 0.5,
+     "squash": 1
+    },
+    "end": 0.32
+   },
+   {
+    "id": "lr_summon_ring",
+    "name": "Ring",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.136,
+       "v": 0.63,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.34,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.06
+      }
+     },
+     "size": 210,
+     "x": 0,
+     "y": 30,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.34,
+        "v": 0.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.36000000000000004
+   },
+   {
+    "id": "lr_summon_out",
+    "name": "Ring",
+    "type": "sprite",
+    "start": 0.33,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.8,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.144,
+       "v": 0.5599999999999999,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.36,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.1
+      }
+     },
+     "size": 210,
+     "x": 0,
+     "y": 30,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.36,
+        "v": 1.3,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.71
+   },
+   {
+    "id": "lr_summon_floor",
+    "name": "Floor Glow",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.25,
+       "v": 0.5,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.7,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 220,
+     "x": 0,
+     "y": 30,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.8,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.7,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      255,
+      255
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.72
+   }
+  ]
+ },
+ "tex": {}
+}

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3 uid="uid://b24dcrhnte2cs"]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.troll_priest", &"enemy.troll_priest", &"enemy.troll_priest", &"enemy.summoner"])
+gold_reward = 195
+enemy_power = 0.9
+min_encounter_index = 5
+max_encounter_index = 8
+difficulty_hint = "High"
+key_properties = Array[String](["Three healers", "Rewards fast pressure"])
+is_unknown = false
+is_boss = false
+id = &"encounter.bolt_screen"
+display_name = "Witch Wall"
+description = "Witch doctors chant behind a wall of brutes, mending every wound."
+tags = Array[StringName]([&"encounter", &"act1"])

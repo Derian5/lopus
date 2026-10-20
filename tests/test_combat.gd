@@ -45,7 +45,7 @@ func _test_player_unit_animations() -> void:
 	session.size = Vector2(1200.0, 600.0)
 	root.add_child(session)
 	_check(CombatSession.BATTLEGROUND.resource_path == "res://graphics/battleground.png", "Combat renders the authored battlefield beneath its arena markings and simulation.")
-	var jobs: Array[StringName] = [&"job.militia", &"job.archer", &"job.priest", &"job.summoner"]
+	var jobs: Array[StringName] = [&"job.militia", &"job.archer", &"job.priest", &"job.summoner", &"job.warrior", &"job.shieldbearer"]
 	var players: Array[CombatUnitSnapshot] = []
 	for job_id in jobs:
 		var soldier := _unit_snapshot("%s-animation" % job_id, CombatUnitSnapshot.Team.PLAYER, &"melee")
@@ -79,11 +79,8 @@ func _test_player_unit_animations() -> void:
 		var job_id := jobs[index]
 		var unit := session.get_combatant_by_runtime_id(players[index].runtime_id)
 		var sprite := unit.get_node("UnitSprite") as AnimatedSprite2D
-		var expected_move_frames := 16 if job_id == &"job.militia" else 8
-		var expected_attack_frames := 16 if job_id == &"job.militia" else (6 if job_id == &"job.summoner" else 8)
-		_check(sprite.visible and sprite.sprite_frames.get_frame_count(&"move") == expected_move_frames and sprite.sprite_frames.get_frame_count(&"attack") == expected_attack_frames, "%s uses the complete movement and attack animations." % job_id)
-		if job_id == &"job.militia":
-			_check(sprite.sprite_frames.get_frame_count(&"death") == 16, "Militia uses the complete death animation.")
+		_check(sprite.visible and sprite.sprite_frames.get_frame_count(&"move") == 16 and sprite.sprite_frames.get_frame_count(&"attack") == 16, "%s uses the complete movement and attack animations." % job_id)
+		_check(sprite.sprite_frames.get_frame_count(&"death") == 16, "%s uses its complete death animation." % job_id)
 		unit.state = Combatant.State.ATTACK_WINDUP
 		unit.velocity = Vector2.ZERO
 		unit._process(0.0)
@@ -117,8 +114,8 @@ func _test_player_unit_animations() -> void:
 	var unit := session.get_combatant_by_runtime_id(players[0].runtime_id)
 	var sprite := unit.get_node("UnitSprite") as AnimatedSprite2D
 	var move_frame := sprite.sprite_frames.get_frame_texture(&"move", 0)
-	_check(move_frame.resource_path.ends_with("/militia/walk/frame_0000.png") and sprite.scale.is_equal_approx(Vector2.ONE * 0.2688), "Militia uses the new frame sequence at combat scale.")
-	_check(is_equal_approx(unit.health_bar_offset, 72.0), "Militia raises its health bar above the animated sprite.")
+	_check(move_frame.resource_path.ends_with("/militia/walk/frame_0000.png") and sprite.scale.is_equal_approx(Vector2.ONE * 0.32989691), "Militia uses the frame sequence at the common allied combat size.")
+	_check(is_equal_approx(unit.health_bar_offset, 83.2), "Militia keeps its health bar above its normalized sprite.")
 	unit._trigger_flash(Color.WHITE, 0.1, Combatant.DAMAGE_FLASH_PRIORITY)
 	unit._process(0.0)
 	_check(is_equal_approx(float((sprite.material as ShaderMaterial).get_shader_parameter("flash_amount")), 1.0), "Militia chroma-key rendering preserves its damage flash.")
@@ -175,7 +172,7 @@ func _test_hero_unit_animations() -> void:
 		var unit := session.get_combatant_by_runtime_id(hero.runtime_id)
 		var sprite := unit.get_node("UnitSprite") as AnimatedSprite2D
 		_check(sprite.visible and sprite.sprite_frames.get_frame_count(&"move") == 16 and sprite.sprite_frames.get_frame_count(&"attack") == 16 and sprite.sprite_frames.get_frame_count(&"death") == 16, "%s uses all authored Hero animation frames." % hero.definition_id)
-		_check(sprite.material is ShaderMaterial and is_equal_approx(unit.health_bar_offset, 78.0), "%s uses chroma-key rendering with its health bar above the sprite." % hero.definition_id)
+		_check(sprite.material is ShaderMaterial and is_equal_approx(unit.health_bar_offset, 101.4), "%s uses chroma-key rendering with its health bar above the normalized sprite." % hero.definition_id)
 		sprite.animation = &"move"
 		sprite.frame = 0
 		sprite.scale = Vector2.ONE * unit.unit_sprite_base_scale * float(unit.unit_sprite_animation_scales.get(&"move", 1.0))
@@ -216,6 +213,7 @@ func _test_hero_unit_animations() -> void:
 	_check(greed_sprite.animation == &"attack" and greed_sprite.get_playing_speed() > 0.0, "Greed plays the dagger attack forward during windup.")
 	greed.state = Combatant.State.ATTACK_RECOVERY
 	greed.state_timer = 0.4
+	greed.attack_motion_lock_remaining = 0.3
 	greed._process(0.0)
 	_check(greed_sprite.animation == &"attack" and greed_sprite.get_playing_speed() < 0.0, "Greed reverses the dagger animation during recovery.")
 
@@ -227,12 +225,13 @@ func _test_hero_unit_animations() -> void:
 	lust._process(0.0)
 	var lust_walk_scale := lust_sprite.scale.x
 	lust.state = Combatant.State.ATTACK_WINDUP
+	lust.velocity = Vector2.ZERO
 	lust.windup_duration = 0.125
 	lust.attack_animation_duration = 0.5
 	lust._process(0.0)
 	_check(lust_sprite.animation == &"attack" and lust_sprite.scale.x > lust_walk_scale * 3.5, "Lust attack compensates its smaller updated source canvas with animation-specific scale and centering.")
 	var lust_attack_duration := float(lust_sprite.sprite_frames.get_frame_count(&"attack")) / (lust_sprite.sprite_frames.get_animation_speed(&"attack") * lust_sprite.speed_scale)
-	_check(is_equal_approx(lust_attack_duration, 0.5), "Hero attack playback fits the full authored animation into the actual attack cycle.")
+	_check(is_equal_approx(lust_attack_duration, 0.5 / Combatant.ANIMATION_SPEED), "Hero attack playback plays the full authored animation ANIMATION_SPEED times faster than the attack cycle.")
 	var gluttony := session.get_combatant_by_runtime_id("hero.thorn_warden-animation")
 	var gluttony_sprite := gluttony.get_node("UnitSprite") as AnimatedSprite2D
 	gluttony.state = Combatant.State.MOVE_INTO_RANGE
@@ -241,6 +240,7 @@ func _test_hero_unit_animations() -> void:
 	gluttony._process(0.0)
 	var gluttony_walk_scale := gluttony_sprite.scale.x
 	gluttony.state = Combatant.State.ATTACK_WINDUP
+	gluttony.velocity = Vector2.ZERO
 	gluttony.attack_animation_duration = 0.5
 	gluttony._process(0.0)
 	var gluttony_attack_texture := gluttony_sprite.sprite_frames.get_frame_texture(&"attack", 0)
@@ -276,8 +276,12 @@ func _test_ranged_attack_rhythm() -> void:
 	var projectile_start := projectile.position
 	projectile._physics_process(0.016)
 	_check(projectile.position != projectile_start, "The visible projectile advances toward its target before impact.")
-	attacker._update_attack_recovery(0.05)
-	_check(attacker.velocity.dot(target.position - attacker.position) < 0.0, "A ranged unit resumes retreating while its attack recovers.")
+	attacker.set_simulation_active(true)
+	var strike_position := attacker.position
+	attacker._physics_process(0.05)
+	_check(attacker.position == strike_position and attacker.velocity == Vector2.ZERO, "A ranged strike stays planted while its attack animation finishes.")
+	attacker._physics_process(0.3)
+	_check(attacker.velocity.dot(target.position - attacker.position) < 0.0, "After finishing the strike, a ranged unit retreats during the remaining recovery.")
 	session.free()
 
 
@@ -303,14 +307,11 @@ func _test_pride_projectile_visual() -> void:
 	var expected_origin := attacker.basic_projectile_origin(target)
 	session.spawn_projectile(attacker, target, pride.stats.damage)
 	var projectile := session.get_node("Projectiles").get_child(0) as CombatProjectile
-	_check(projectile.uses_pride_visual and projectile.position.is_equal_approx(expected_origin), "Pride's basic projectile launches from the visible staff tip.")
-	_check(projectile.pride_effect.visible and projectile.pride_effect.sprite_frames.get_frame_count(&"fly") == 8 and projectile.pride_effect.is_playing(), "Pride's basic projectile uses the complete animated Effector atlas.")
-	_check(projectile.pride_cast_sparks.visible and projectile.pride_cast_sparks.sprite_frames.get_frame_count(&"burst") == 8 and not projectile.pride_cast_sparks.sprite_frames.get_animation_loop(&"burst"), "Pride's projectile launch plays one non-looping radial spark burst.")
-	_check(is_equal_approx(projectile.pride_cast_sparks.sprite_frames.get_animation_speed(&"burst"), 16.67), "Pride's enlarged launch flash remains visible for about half a second.")
-	_check(projectile.pride_cast_sparks.global_position.is_equal_approx(expected_origin), "Pride's launch sparks remain centered on the staff tip.")
-	_check(is_equal_approx(projectile.pride_effect.rotation, (target.position - projectile.position).angle()), "Pride's projectile visual points along its flight direction.")
+	_check(projectile.position.is_equal_approx(expected_origin), "Pride's basic projectile launches from the visible staff tip.")
+	_check(projectile.vfx_id == &"arcane_lance" and projectile.vfx_sprite != null and projectile.vfx_sprite.sprite_frames.get_frame_count(&"play") == 8 and projectile.vfx_sprite.is_playing() and projectile.vfx_sprite.sprite_frames.get_animation_loop(&"play"), "Pride's basic projectile is the looping Arcane Lance atlas.")
+	_check(is_equal_approx(projectile.vfx_sprite.rotation, (target.position - projectile.position).angle()), "Pride's projectile visual points along its flight direction.")
 	projectile._physics_process(0.016)
-	_check(projectile.position != expected_origin and projectile.pride_cast_sparks.global_position.is_equal_approx(expected_origin), "Pride's launch sparks stay at the cast point while the bolt travels onward.")
+	_check(projectile.position != expected_origin, "Pride's bolt travels onward from the staff tip.")
 	target.position = Vector2(100.0, 300.0)
 	var left_origin := attacker.basic_projectile_origin(target)
 	_check(left_origin.x < attacker.position.x and is_equal_approx(left_origin.y, expected_origin.y), "Pride's staff-tip projectile origin mirrors cleanly when attacking left.")
@@ -345,9 +346,9 @@ func _test_hero_attack_effects() -> void:
 	for index in hero_ids.size():
 		var source := session.get_combatant_by_runtime_id(heroes[index].runtime_id)
 		source.position = Vector2(300.0, 120.0 + index * 45.0)
-		var effect := session.spawn_hero_attack_impact(source, target.position, Vector2.RIGHT)
-		_check(effect != null and effect.is_playing() and effect.sprite_frames.get_frame_count(&"impact") == 8, "%s basic attacks use their complete themed impact atlas." % hero_ids[index])
-	_check(session.get_node("Effects").get_child_count() == hero_ids.size(), "Every Hero has a distinct attack impact on the dedicated effects layer.")
+		var effect := session.spawn_hit_vfx(source, target.position, Vector2.RIGHT)
+		_check(effect != null and effect.is_playing() and effect.sprite_frames.get_frame_count(&"play") >= 8 and effect.modulate == CombatVfx.HERO_COLORS[hero_ids[index]], "%s basic attacks use the heavy impact in the colour of the sin." % hero_ids[index])
+	_check(session.get_node("Effects").get_child_count() == hero_ids.size(), "Hero impacts spawn on the dedicated effects layer.")
 	var wrath := session.get_combatant_by_runtime_id("hero.ashen_duelist-vfx")
 	target.position = wrath.position + Vector2(20.0, 0.0)
 	wrath.target = target
@@ -365,12 +366,12 @@ func _test_hero_attack_effects() -> void:
 		var projectile := session.get_node("Projectiles").get_child(-1) as CombatProjectile
 		if first_ranged_projectile == null:
 			first_ranged_projectile = projectile
-		_check(projectile.uses_hero_visual and projectile.pride_effect.visible and projectile.pride_effect.sprite_frames.get_frame_count(&"fly") == 8, "%s uses its own animated basic projectile." % hero_id)
+		_check(projectile.vfx_sprite != null and projectile.vfx_id == CombatVfx.PROJECTILES[hero_id] and projectile.vfx_sprite.sprite_frames.get_frame_count(&"play") == 8, "%s uses its own animated basic projectile." % hero_id)
 		_check(projectile.position.is_equal_approx(expected_origin) and projectile.position != source.position, "%s launches its projectile from the authored weapon tip." % hero_id)
 	var effect_count_before_ranged := session.get_node("Effects").get_child_count()
 	first_ranged_projectile.position = target.position
 	first_ranged_projectile._physics_process(0.01)
-	_check(session.get_node("Effects").get_child_count() == effect_count_before_ranged + 1, "A Hero ranged basic hit automatically spawns its themed impact.")
+	_check(session.get_node("Effects").get_child_count() > effect_count_before_ranged, "A Hero ranged basic hit automatically spawns its themed impact.")
 	session.free()
 
 

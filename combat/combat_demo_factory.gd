@@ -60,7 +60,7 @@ static func create_enemy_army(melee_count := 8, ranged_count := 4) -> Array[Comb
 	var result: Array[CombatUnitSnapshot] = []
 	var registry = _get_registry()
 	var melee_definition := registry.get_definition(&"enemy.raider") as EnemyDefinition
-	var ranged_definition := registry.get_definition(&"enemy.crossbowman") as EnemyDefinition
+	var ranged_definition := registry.get_definition(&"enemy.summoner") as EnemyDefinition
 
 	for index in melee_count:
 		result.append(_create_enemy_snapshot(melee_definition, index, &"melee"))

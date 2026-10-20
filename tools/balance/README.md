@@ -5,6 +5,7 @@
 | Слой | Где | Назначение |
 |---|---|---|
 | `act_one_enemy_power_curve` | `demo_route.tres` | Сила врагов по индексу боя (`0..12`). Растёт вместе с уровнями героев и veterancy солдат |
+| `act_two_enemy_power_curve` | `demo_route.tres` | То же для Акта II (`0..11`). Пусто = сила 1 |
 | `enemy_power` | `EncounterDefinition` | Относительная сила конкретной карты внутри своего tier |
 | `base_stats` | `EnemyDefinition` | Базовые характеристики врага |
 
@@ -14,20 +15,24 @@
 
 Сейчас Act I содержит 12 обычных боёв (индексы `0..11`) и босса 13-м боем (`act_one_boss_wave = 13`).
 
+### Баланс (Balance Lab, октябрь 2026)
+
+Цель — средний винрейт около 30% по всем стилям Balance Lab, потери в каждом бою и гибель дальников. Кривые подобраны прогонами `sim_cli.gd` (48 забегов на итерацию): ранние бои ослаблены (0.48–0.72), середина Акта I и босс усилены, у Акта II своя растущая кривая. Ловушки Hexer's Mire, Marching Warband и Witch Doctor's Escort ослаблены через `enemy_power`, слишком лёгкие Raiding Party, Brute Vanguard, Bonebreakers, боссы и карты Акта II — усилены.
+
+Удар по тылу: Troll Berserker (`targeting_mode = "back_line"` в `EnemyDefinition`) бежит к ближайшему дальнику; Bone-Breaking Leap использует цель `RANDOM_BACK_LINE_ENEMY`.
+
 ### Враги Act I — жители пустоши
+
+Врагов 8 (включая боссов и призыв Bog Spawn). Ogre Juggernaut, Ogre War-Drummer, Troll Spear-Thrower и Bog Spitter удалены как повторяющие других.
 
 | ID | Имя | Роль | Способности |
 |---|---|---|---|
 | `enemy.raider` | Ogre Brute | Бронированный ближний бой | Skull Crack — периодический оглушающий удар |
-| `enemy.crossbowman` | Troll Spear-Thrower | Дальний бой | Headhunter — всегда целится в самого дальнего врага |
-| `enemy.summoner` | Troll Hexer | Призыватель | Call Bog Spitters; Bog Curse — враги рядом атакуют медленнее |
-| `enemy.massive_ogre` | Ogre Juggernaut | Тяжёлый | Massive Bloodrage |
+| `enemy.summoner` | Troll Hexer | Призыватель | Call Bog Spawn; Bog Curse — враги рядом атакуют медленнее |
 | `enemy.troll_priest` | Troll Witch Doctor | Поддержка | Лечение и яд |
 | `enemy.ogre_bonebreaker` | Ogre Bonebreaker | Элитный прыгун | Bone-Breaking Leap — прыгает во вторую линию и оглушает |
 | `enemy.troll_berserker` | Troll Berserker | Быстрый ближний бой | Troll Blood — регенерация от каждого полученного удара; Berserk |
-| `enemy.ogre_drummer` | Ogre War-Drummer | Поддержка | Dread Drums — враги рядом атакуют медленнее; War Chant — щит раненому союзнику |
-| `enemy.bog_spitter` | Bog Spitter | Призыв Hexer | Sticky Spit — замедление |
-| `enemy.bog_spawn` | Bog Spawn | Призыв Bog King | Rotten Burst — взрыв при смерти |
+| `enemy.bog_spawn` | Bog Spawn | Призыв Bog King и Troll Hexer | Rotten Burst — взрыв при смерти |
 | `enemy.bog_king` | Mugrot the Bog King | Мини-босс (`BossDefinition`, 2 фазы) | Call of the Mire, Mire Slam, Ancient Troll Blood |
 | `enemy.iron_warden` | The Iron Warden | Босс Act I | Iron Resolve — щит и броня при низком HP |
 

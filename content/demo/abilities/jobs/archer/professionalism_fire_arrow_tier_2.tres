@@ -36,6 +36,8 @@ effect_id = &"effect.archer_professionalism_apply_burn"
 
 [resource]
 script = ExtResource("1")
+price = 250
+upgrades_ability_id = &"ability.archer_professionalism_fire_arrow_tier_1"
 presentation_icon = ExtResource("generated_icon")
 activation_mode = 1
 cooldown_seconds = 5.0

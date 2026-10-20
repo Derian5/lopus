@@ -81,18 +81,18 @@ theme_override_styles/panel = SubResource("Panel")
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.55, 0.42, 1)
 theme_override_font_sizes/font_size = 20
-text = "THE IRON WARDEN HAS FALLEN. ONE HERO MUST BE LEFT BEHIND."
+text = "VICTORY HAS A PRICE. THE STRONGEST WILL PAY IT."
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="Instructions" type="Label" parent="Page/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.74, 0.7, 0.74, 1)
-text = "Compare every permanent loss before choosing. Alive and Dead Heroes are eligible. The decision cannot be reversed through Resurrection, UI, or Save/Load."
+text = "One Hero stands closest to the crown. The other two will not let them reach it. Select the favorite to reveal the betrayal."
 horizontal_alignment = 1
 autowrap_mode = 2
 theme_type_variation = &"MutedLabel"
-visible = false
+visible = true
 
 [node name="CardsScroll" type="ScrollContainer" parent="Page/VBox"]
 layout_mode = 2
@@ -121,16 +121,174 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 disabled = true
-text = "CHOOSE HERO FOR EXECUTION"
+text = "SET THE BETRAYAL IN MOTION"
 theme_type_variation = &"DangerButton"
 theme_override_font_sizes/font_size = 20
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="ConfirmationOverlay" type="Control" parent="."]
 unique_name_in_owner = true
-title = "Irreversible Execution"
-ok_button_text = "EXECUTE HERO"
-cancel_button_text = "GO BACK"
+visible = false
+z_index = 90
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dimmer" type="ColorRect" parent="ConfirmationOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.008, 0.004, 0.004, 0.82)
+
+[node name="Center" type="CenterContainer" parent="ConfirmationOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ConfirmationPanel" type="PanelContainer" parent="ConfirmationOverlay/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+
+[node name="Content" type="VBoxContainer" parent="ConfirmationOverlay/Center/ConfirmationPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="ConfirmationOverlay/Center/ConfirmationPanel/Content"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_colors/font_color = Color(0.76, 0.61, 0.38, 1)
+theme_override_font_sizes/font_size = 24
+text = "THE PRICE OF VICTORY"
+horizontal_alignment = 1
+
+[node name="CondemnedName" type="Label" parent="ConfirmationOverlay/Center/ConfirmationPanel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_colors/font_color = Color(0.95, 0.42, 0.31, 1)
+theme_override_font_sizes/font_size = 36
+text = "THE FAVORITE"
+horizontal_alignment = 1
+
+[node name="Sentence" type="Label" parent="ConfirmationOverlay/Center/ConfirmationPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.69, 0.59, 1)
+theme_override_font_sizes/font_size = 19
+text = "One step from the crown.\nOne betrayal from the grave."
+horizontal_alignment = 1
+
+[node name="ConfirmationBody" type="Label" parent="ConfirmationOverlay/Center/ConfirmationPanel/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.87, 0.81, 0.71, 1)
+theme_override_font_sizes/font_size = 18
+text = "Their fate is sealed."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="AcceptPriceButton" type="Button" parent="ConfirmationOverlay/Center/ConfirmationPanel/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"DangerButton"
+theme_override_font_sizes/font_size = 20
+text = "SUCH IS THE PRICE"
+
+[node name="CutsceneOverlay" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 100
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Backdrop" type="ColorRect" parent="CutsceneOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.018, 0.006, 0.012, 1)
+
+[node name="CutsceneStage" type="Node2D" parent="CutsceneOverlay"]
+unique_name_in_owner = true
+
+[node name="CutsceneCurtain" type="ColorRect" parent="CutsceneOverlay"]
+unique_name_in_owner = true
+z_index = 10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+modulate = Color(1, 1, 1, 0)
+
+[node name="CutsceneTitle" type="Label" parent="CutsceneOverlay"]
+unique_name_in_owner = true
+z_index = 11
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 54.0
+offset_bottom = 106.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.95, 0.34, 0.27, 1)
+theme_override_font_sizes/font_size = 30
+text = "THE CONSPIRACY REVEALED"
+horizontal_alignment = 1
+theme_type_variation = &"TitleLabel"
+
+[node name="CutsceneSpeaker" type="Label" parent="CutsceneOverlay"]
+unique_name_in_owner = true
+z_index = 11
+layout_mode = 1
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -152.0
+offset_bottom = -120.0
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="CutsceneCaption" type="Label" parent="CutsceneOverlay"]
+unique_name_in_owner = true
+z_index = 11
+layout_mode = 1
+anchors_preset = 12
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -116.0
+offset_right = -80.0
+offset_bottom = -58.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.82, 0.76, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+text = "The two lesser Heroes turn upon the favorite."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 
 [connection signal="pressed" from="Page/VBox/Header/MenuButton" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="Page/VBox/ExecuteButton" to="." method="_on_execute_pressed"]
-[connection signal="confirmed" from="ConfirmationDialog" to="." method="_on_execution_confirmed"]
+[connection signal="pressed" from="ConfirmationOverlay/Center/ConfirmationPanel/Content/AcceptPriceButton" to="." method="_on_execution_confirmed"]

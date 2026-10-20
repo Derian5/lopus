@@ -3,6 +3,23 @@ extends Control
 
 
 const BATTLEGROUND := preload("res://graphics/battleground.png")
+## Animated battlefield: a looping video behind everything and a foreground frame in
+## front of the units that drifts with the mouse (parallax). Loaded on scene entry,
+## never in the Balance Lab.
+const BACKDROP_VIDEO_PATH := "res://graphics/battleground/battleground_back.ogv"
+const FOREGROUND_PATH := "res://graphics/battleground/battleground_front.png"
+## How far (px) each layer drifts when the mouse is at the edge of the arena. The
+## foreground moves against the mouse, the backdrop a little with it: depth.
+const FOREGROUND_PARALLAX := Vector2(34.0, 18.0)
+const BACKDROP_PARALLAX := Vector2(10.0, 5.0)
+## Layers are drawn slightly larger than the arena so drifting never shows an edge.
+const PARALLAX_OVERSCAN := 1.06
+const PARALLAX_SMOOTHING := 5.0
+## Above units, projectiles and effects, below health bars (Combatant overhead z 100).
+const FOREGROUND_Z := 90
+## The foreground is the closest, darkest plane (a silhouette against the lit field).
+const FOREGROUND_TINT := Color(0.46, 0.42, 0.4)
+const VIGNETTE_Z := 85
 
 
 signal battle_finished(winner: StringName, duration: float, timed_out: bool)
@@ -15,6 +32,11 @@ const MAX_BATTLE_DURATION := 120.0
 const OVERLAP_RESOLUTION_SPEED := 900.0
 const REINFORCEMENT_EDGE_INSET := 48.0
 const SUMMON_SPAWN_DISTANCE := 58.0
+const MELEE_APPROACH_SLOTS := 12
+const TARGET_SWITCH_ADVANTAGE := 32.0
+## Preloaded rather than used by class name, so headless runs work before the editor scans new classes.
+const VFX := preload("res://combat/vfx/combat_vfx.gd")
+const VFX_DIRECTOR := preload("res://combat/vfx/combat_vfx_director.gd")
 
 var combatants: Array[Combatant] = []
 var player_snapshots: Array[CombatUnitSnapshot] = []
@@ -36,14 +58,38 @@ var summon_serial := 0
 var smoke_zones: Array[Dictionary] = []
 var active_global_taunts: Array[Dictionary] = []
 var active_summon_merges: Dictionary = {}
+var initial_player_army_count := 0
+var critical_hits := 0
+## Set by the aura effects when any unit in this battle gets that aura, so the aura
+## lookups (called for every stat query) can skip scanning all units otherwise.
+var any_soldier_damage_aura := false
+var any_item_slow_aura := false
+var any_attack_speed_aura := false
+## Visual effects (CombatVfx). The Balance Lab turns them off: they never affect combat.
+var vfx_enabled := true
+var vfx_director: Node
+var backdrop: VideoStreamPlayer
+var foreground: TextureRect
+var vignette: TextureRect
+var parallax_offset := Vector2.ZERO
+## Short light flashes of effects (kept apart from the Effects layer).
+var light_layer: Node2D
 
 
 func _ready() -> void:
 	resized.connect(queue_redraw)
+	resized.connect(_layout_scenery)
+	light_layer = Node2D.new()
+	light_layer.name = "VfxLights"
+	add_child(light_layer)
+	vfx_director = VFX_DIRECTOR.new(self)
+	add_child(vfx_director)
+	_setup_scenery()
 	queue_redraw()
 
 
 func _process(delta: float) -> void:
+	_update_parallax(delta)
 	if not battle_active:
 		return
 	_update_smoke_zones(delta)
@@ -77,6 +123,7 @@ func setup(
 
 
 func restart_battle() -> void:
+	_setup_scenery()
 	_clear_battle()
 	events.clear()
 	statistics.reset()
@@ -86,10 +133,15 @@ func restart_battle() -> void:
 	last_battle_timed_out = false
 	reinforcements_spawned = false
 	summon_serial = 0
+	any_soldier_damage_aura = false
+	any_item_slow_aura = false
+	any_attack_speed_aura = false
 	combat_rng.seed = combat_seed
 	var bounds := get_arena_bounds()
 	_spawn_team(player_snapshots, bounds, true)
 	_spawn_team(enemy_snapshots, bounds, false)
+	critical_hits = 0
+	initial_player_army_count = player_army_alive_count()
 	_initialize_lust_bonds()
 	queue_redraw()
 
@@ -113,10 +165,14 @@ func find_closest_target(requester: Combatant) -> Combatant:
 func find_basic_attack_target(requester: Combatant) -> Combatant:
 	if requester._has_forced_basic_target():
 		return requester.forced_basic_target
+	if requester.snapshot.targeting_mode == &"back_line":
+		var hunted := find_back_line_target(requester)
+		if is_instance_valid(hunted):
+			return _stable_basic_target(requester, hunted, true)
 	if requester.prefers_farthest_enemy:
 		return find_farthest_target(requester)
 	if not requester.targets_farthest_enemy:
-		return find_closest_target(requester)
+		return _stable_basic_target(requester, find_closest_target(requester))
 	var farthest: Combatant
 	var farthest_distance := -1.0
 	for candidate in combatants:
@@ -129,6 +185,74 @@ func find_basic_attack_target(requester: Combatant) -> Combatant:
 			farthest = candidate
 			farthest_distance = distance
 	return farthest if is_instance_valid(farthest) else find_closest_target(requester)
+
+
+## Keep a valid basic target unless switching offers a meaningful distance gain.
+func _stable_basic_target(requester: Combatant, candidate: Combatant, back_line_only := false) -> Combatant:
+	var current := requester.target
+	if not is_instance_valid(current) or not current.can_be_targeted_by(requester) or current.snapshot.team == requester.snapshot.team:
+		return candidate
+	if back_line_only and current.snapshot.attack_type != &"ranged":
+		return candidate
+	if not is_instance_valid(candidate) or candidate == current:
+		return current
+	var current_distance := requester.position.distance_to(current.position)
+	var candidate_distance := requester.position.distance_to(candidate.position)
+	var advantage := maxf(TARGET_SWITCH_ADVANTAGE, current_distance * 0.2)
+	return candidate if candidate_distance + advantage < current_distance else current
+
+
+## Assign deterministic approach sectors without changing the combatant update order
+## or drawing any additional random numbers. A claimed sector stays with its fighter.
+func melee_approach_position(requester: Combatant, target: Combatant, preferred_slot := -1) -> Dictionary:
+	var reach := requester.basic_attack_reach(target)
+	var radius := maxf(requester.body_radius + target.body_radius, reach - Combatant.APPROACH_INSET)
+	var inset := requester.arena_bounds.grow(-requester.body_radius)
+	var away := Vector2.LEFT if requester.position.x < target.position.x else Vector2.RIGHT
+	var fallback := (target.position + away * radius).clamp(inset.position, inset.end)
+	var best := {"slot": -1, "position": fallback}
+	var best_score := INF
+	for slot in MELEE_APPROACH_SLOTS:
+		# Leave angular margin for the navigation arrival tolerance and crowding.
+		var side_slots := MELEE_APPROACH_SLOTS / 2
+		var angle := lerpf(-PI / 9.0, PI / 9.0, float(slot % side_slots) / float(side_slots - 1))
+		if slot >= side_slots:
+			angle += PI
+		var point := target.position + Vector2.RIGHT.rotated(angle) * radius
+		point = point.clamp(inset.position, inset.end)
+		var target_distance := point.distance_to(target.position)
+		if target_distance < requester.body_radius + target.body_radius - 0.1 or target_distance > reach + 0.01 or not requester.is_basic_attack_side_position(target, point):
+			continue
+		var score := requester.position.distance_squared_to(point)
+		if slot == preferred_slot:
+			score -= 1600.0
+		for other in combatants:
+			if other == requester or other.snapshot.team != requester.snapshot.team or not other.is_alive():
+				continue
+			if other.approach_target == target and other.approach_slot_index == slot and other.target == target and other.pending_ability == null:
+				score += 1000000.0
+			elif other.approach_target == target and other.target == target and other.approach_goal.distance_to(point) < requester.body_radius + other.body_radius + 2.0:
+				score += 1000000.0
+			var clearance := requester.personal_space_radius() + other.personal_space_radius()
+			score += maxf(0.0, clearance * clearance - other.position.distance_squared_to(point)) * 2.0
+		if score < best_score:
+			best_score = score
+			best = {"slot": slot, "position": point}
+	return best
+
+
+## Nearest ranged enemy of the requester (the "back line"), or null if there is none.
+func find_back_line_target(requester: Combatant) -> Combatant:
+	var best: Combatant
+	var best_distance := INF
+	for candidate in combatants:
+		if candidate.snapshot.team == requester.snapshot.team or candidate.snapshot.attack_type != &"ranged" or not candidate.can_be_targeted_by(requester):
+			continue
+		var distance := requester.position.distance_squared_to(candidate.position)
+		if distance < best_distance - 0.01 or (is_equal_approx(distance, best_distance) and _runtime_id_before(candidate, best)):
+			best = candidate
+			best_distance = distance
+	return best
 
 
 func find_farthest_target(requester: Combatant) -> Combatant:
@@ -239,7 +363,102 @@ func resolve_ability_target(requester: Combatant, ability: AbilityDefinition) ->
 			return lowest
 		AbilityDefinition.TargetingPolicy.MOST_TARGETED_ALLY:
 			return _most_targeted_ally(requester, ability)
+		AbilityDefinition.TargetingPolicy.RANDOM_BACK_LINE_ENEMY:
+			var back_line: Array[Combatant] = []
+			var any: Array[Combatant] = []
+			for candidate in combatants:
+				if candidate.can_be_targeted_by(requester) and candidate.snapshot.team != requester.snapshot.team and _is_within_ability_search_radius(requester, candidate, ability):
+					any.append(candidate)
+					if candidate.snapshot.attack_type == &"ranged":
+						back_line.append(candidate)
+			var pool := back_line if not back_line.is_empty() else any
+			pool.sort_custom(func(a: Combatant, b: Combatant) -> bool: return a.snapshot.runtime_id < b.snapshot.runtime_id)
+			return pool[combat_rng.randi_range(0, pool.size() - 1)] if not pool.is_empty() else null
+		AbilityDefinition.TargetingPolicy.HIGHEST_DAMAGE_ENEMY:
+			return _best_enemy(requester, ability, &"damage", true)
+		AbilityDefinition.TargetingPolicy.HIGHEST_HP_NON_BOSS_ENEMY:
+			return _best_enemy(requester, ability, &"current_hp", false)
 	return null
+
+
+## Enemy with the highest value of a stat (or current HP); ties go to the lower runtime id.
+func _best_enemy(requester: Combatant, ability: AbilityDefinition, stat: StringName, allow_boss: bool) -> Combatant:
+	var best: Combatant
+	var best_value := -INF
+	for candidate in combatants:
+		if not candidate.can_be_targeted_by(requester) or candidate.snapshot.team == requester.snapshot.team or not _is_within_ability_search_radius(requester, candidate, ability):
+			continue
+		if not allow_boss and candidate.snapshot.is_boss:
+			continue
+		if ability.excluded_target_status_id != &"" and candidate.has_status(ability.excluded_target_status_id):
+			continue
+		var value := candidate.current_hp if stat == &"current_hp" else candidate.get_effective_stat(stat)
+		if value > best_value + 0.0001 or (is_equal_approx(value, best_value) and _runtime_id_before(candidate, best)):
+			best = candidate
+			best_value = value
+	return best
+
+
+# --- item mechanics ------------------------------------------------------------
+
+## Living Heroes and Soldiers of the player's army (summons excluded).
+func player_army_alive_count() -> int:
+	var count := 0
+	for combatant in combatants:
+		if combatant.is_alive() and combatant.items.home_team() == CombatUnitSnapshot.Team.PLAYER and combatant.snapshot.unit_kind in [CombatUnitSnapshot.UnitKind.HERO, CombatUnitSnapshot.UnitKind.SOLDIER]:
+			count += 1
+	return count
+
+
+## Nearest other living ally that soaks part of the damage for this unit.
+func find_damage_redirector(target: Combatant) -> Combatant:
+	var best: Combatant
+	var best_distance := INF
+	for candidate in combatants:
+		if candidate == target or not candidate.items.has_damage_redirect() or not candidate.is_targetable():
+			continue
+		if candidate.snapshot.team != target.snapshot.team:
+			continue
+		var distance := candidate.position.distance_to(target.position)
+		if distance <= candidate.items.redirect_radius and distance < best_distance:
+			best = candidate
+			best_distance = distance
+	return best
+
+
+## Strongest Soldier damage aura covering this Soldier (auras do not stack).
+func get_soldier_damage_aura(target: Combatant) -> Dictionary:
+	var result := {"percent": 0.0, "ability_id": &""}
+	if not any_soldier_damage_aura:
+		return result
+	for candidate in combatants:
+		var runtime := candidate.items
+		if runtime.soldier_aura_radius <= 0.0 or not candidate.is_alive() or candidate.snapshot.team != target.snapshot.team:
+			continue
+		if candidate.position.distance_to(target.position) > runtime.soldier_aura_radius:
+			continue
+		var percent := runtime.veteran_aura_percent if target.snapshot.veterancy_level >= runtime.veteran_min_level else runtime.soldier_aura_percent
+		if percent > float(result.percent):
+			result = {"percent": percent, "ability_id": runtime.soldier_aura_ability_id}
+	return result
+
+
+## Strongest enemy slowing aura on this unit (attack and movement speed).
+func get_item_slow_aura(target: Combatant) -> Dictionary:
+	var result := {"percent": 0.0, "ability_id": &""}
+	if not any_item_slow_aura:
+		return result
+	for candidate in combatants:
+		var runtime := candidate.items
+		if runtime.slow_aura_radius <= 0.0 or not candidate.is_alive() or candidate.snapshot.team == target.snapshot.team:
+			continue
+		if candidate.position.distance_to(target.position) <= runtime.slow_aura_radius and runtime.slow_aura_percent > float(result.percent):
+			result = {"percent": runtime.slow_aura_percent, "ability_id": runtime.slow_aura_ability_id}
+	return result
+
+
+func record_critical_hit(_source: Combatant) -> void:
+	critical_hits += 1
 
 
 func _is_within_ability_search_radius(source: Combatant, candidate: Combatant, ability: AbilityDefinition) -> bool:
@@ -261,6 +480,7 @@ func deliver_ability(source: Combatant, target: Combatant, ability: AbilityDefin
 	if not battle_active or not is_instance_valid(target) or not target.is_alive():
 		return
 	record_ability_used(source, target, ability.id)
+	source.play_ability_animation(target, ability)
 	if ability.delivery_method == AbilityDefinition.DeliveryMethod.PROJECTILE:
 		spawn_ability_projectile(source, target, ability)
 		return
@@ -294,6 +514,8 @@ func get_last_stand_duration(target: Combatant) -> float:
 
 func get_enemy_attack_speed_aura_multiplier(target: Combatant) -> float:
 	var multiplier := 1.0
+	if not any_attack_speed_aura:
+		return multiplier
 	for candidate in combatants:
 		if (
 			candidate.is_alive()
@@ -687,6 +909,7 @@ func has_enemy_in_radius(source: Combatant, radius: float) -> bool:
 
 
 func damage_enemies_in_radius(source: Combatant, radius: float, damage: float, ability_id: StringName, effect_id: StringName, allow_source_lifesteal := true) -> void:
+	spawn_area_vfx(source.position, radius, _ability_vfx_color(ability_id))
 	for candidate in combatants:
 		if candidate.snapshot.team != source.snapshot.team and candidate.is_targetable() and candidate.position.distance_to(source.position) <= radius:
 			candidate.take_damage(damage, source, ability_id, effect_id, false, allow_source_lifesteal)
@@ -870,6 +1093,7 @@ func perform_leap_slam(
 		approach_direction = Vector2.LEFT if source.snapshot.team == CombatUnitSnapshot.Team.PLAYER else Vector2.RIGHT
 	source.position = impact_position + approach_direction * (source.body_radius + primary_target.body_radius)
 	_clamp_combatant_to_arena(source)
+	spawn_area_vfx(impact_position, radius, _ability_vfx_color(ability_id))
 	primary_target.take_damage(damage, source, ability_id, effect_id, true)
 	var stun_template := get_node("/root/ContentRegistry").get_definition(&"status.stun") as StatusDefinition
 	for candidate in combatants:
@@ -896,6 +1120,7 @@ func apply_ground_slam(
 	ability_id: StringName,
 	effect_id: StringName
 ) -> void:
+	spawn_area_vfx(impact_position, radius, _ability_vfx_color(ability_id))
 	for candidate in combatants:
 		if candidate.snapshot.team != source.snapshot.team and candidate.is_targetable() and candidate.position.distance_to(impact_position) <= radius:
 			candidate.take_damage(damage, source, ability_id, effect_id, true)
@@ -929,6 +1154,10 @@ func should_dodge(target: Combatant, is_basic_attack := false) -> bool:
 			dodge_chance = maxf(dodge_chance, float(zone.dodge_chance))
 	if is_basic_attack:
 		dodge_chance = maxf(dodge_chance, target.get_gluttony_grease_miss_chance())
+		# The Dodge stat stacks with other evasion sources multiplicatively.
+		var stat_dodge := target.get_effective_stat(&"dodge") / 100.0
+		if stat_dodge > 0.0:
+			dodge_chance = 1.0 - (1.0 - dodge_chance) * (1.0 - stat_dodge)
 	return dodge_chance > 0.0 and combat_rng.randf() < dodge_chance
 
 
@@ -960,11 +1189,18 @@ func _update_smoke_zones(delta: float) -> void:
 func get_separation_vector(requester: Combatant) -> Vector2:
 	var separation := Vector2.ZERO
 	for other in combatants:
-		if other == requester or not other.is_alive():
+		if other == requester:
 			continue
 		var offset := requester.position - other.position
-		var distance := offset.length()
 		var separation_distance := requester.body_radius + other.body_radius
+		if other.snapshot.team == requester.snapshot.team:
+			separation_distance = requester.personal_space_radius() + other.personal_space_radius()
+		# Cheap squared pre-check (with a margin, so the exact test below still decides).
+		if offset.length_squared() > separation_distance * separation_distance * 1.0001:
+			continue
+		if not other.is_alive():
+			continue
+		var distance := offset.length()
 		if distance >= separation_distance:
 			continue
 		var direction := offset / distance if distance > 0.001 else (Vector2.LEFT if requester.snapshot.runtime_id < other.snapshot.runtime_id else Vector2.RIGHT)
@@ -974,23 +1210,35 @@ func get_separation_vector(requester: Combatant) -> Vector2:
 
 func _resolve_combatant_overlaps(delta: float) -> void:
 	var maximum_correction := OVERLAP_RESOLUTION_SPEED * delta
-	for first_index in combatants.size():
-		var first := combatants[first_index]
-		if not first.is_alive() or first.temporarily_removed:
-			continue
-		for second_index in range(first_index + 1, combatants.size()):
-			var second := combatants[second_index]
-			if not second.is_alive() or second.temporarily_removed:
-				continue
+	# Living units only, in the same order as combatants (the pair order matters).
+	var living: Array[Combatant] = []
+	for combatant in combatants:
+		if combatant.is_alive() and not combatant.temporarily_removed:
+			living.append(combatant)
+	var count := living.size()
+	for first_index in count:
+		var first := living[first_index]
+		for second_index in range(first_index + 1, count):
+			var second := living[second_index]
 			var offset := second.position - first.position
+			var reach := first.body_radius + second.body_radius
+			if offset.length_squared() > reach * reach * 1.0001:
+				continue
 			var distance := offset.length()
 			var required_distance := first.body_radius + second.body_radius
 			if distance >= required_distance:
 				continue
 			var direction := offset / distance if distance > 0.001 else (Vector2.RIGHT if first.snapshot.runtime_id < second.snapshot.runtime_id else Vector2.LEFT)
 			var correction := direction * minf((required_distance - distance) * 0.5, maximum_correction)
-			first.position -= correction
-			second.position += correction
+			var first_locked := first.is_attack_motion_locked()
+			var second_locked := second.is_attack_motion_locked()
+			if first_locked and not second_locked:
+				second.position += correction * 2.0
+			elif second_locked and not first_locked:
+				first.position -= correction * 2.0
+			else:
+				first.position -= correction
+				second.position += correction
 	var bounds := get_arena_bounds()
 	for combatant in combatants:
 		if combatant.is_alive() and not combatant.temporarily_removed:
@@ -1006,10 +1254,69 @@ func spawn_projectile(source: Combatant, target: Combatant, damage: float) -> vo
 	projectile.setup(source, target, damage, source.snapshot.placeholder_color.lightened(0.2))
 
 
-func spawn_hero_attack_impact(source: Combatant, impact_position: Vector2, direction: Vector2) -> AnimatedSprite2D:
-	if not battle_active:
+## Melee basic hit: a spark spray turned along the blow. Heroes, bosses and big enemies
+## hit with the heavy impact; Heroes in the colour of their sin.
+func spawn_hit_vfx(source: Combatant, impact_position: Vector2, direction: Vector2) -> AnimatedSprite2D:
+	if not battle_active or not vfx_enabled or not is_instance_valid(source):
 		return null
-	return HeroAttackVfx.spawn_impact($Effects, source.snapshot.definition_id, impact_position, direction)
+	var is_hero := source.snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO
+	var heavy := is_hero or source.snapshot.is_boss or source.snapshot.definition_id in VFX.HEAVY_HITTERS
+	var effect_id := &"hit_heavy" if heavy else &"hit_slash"
+	var scale := 0.82 if source.snapshot.is_boss else (0.6 if heavy else 0.46)
+	var tint: Color = VFX.HERO_COLORS.get(source.snapshot.definition_id, Color.WHITE)
+	if source.snapshot.team == CombatUnitSnapshot.Team.ENEMY and not heavy:
+		tint = Color(1.0, 0.82, 0.74)
+	var angle := direction.angle() if not direction.is_zero_approx() else 0.0
+	if not heavy and source.snapshot.job_id in VFX.SPEAR_JOBS:
+		# Spear thrust: a flurry of sparks off the point, lighting the ground around it.
+		var spark_at := impact_position + Vector2(0.0, -16.0)
+		VFX.flash_light(light_layer, spark_at, Color(1.0, 0.72, 0.38), 1.1, 0.55, 0.16)
+		VFX.spark_lights(light_layer, spark_at, direction, Color(1.0, 0.66, 0.3), 3)
+		return VFX.spawn($Effects, &"spear_sparks", spark_at, 0.5, Color.WHITE, angle, VFX.IMPACT_Z, true)
+	if heavy:
+		VFX.flash_light(light_layer, impact_position, Color(1.0, 0.78, 0.5) * tint, 0.9, 1.3, 0.2)
+	return VFX.spawn($Effects, effect_id, impact_position + Vector2(0.0, -16.0), scale, tint, angle, VFX.IMPACT_Z, not heavy)
+
+
+## Where a shot lands: a burst in the colour of the shot (arrows spark instead).
+func spawn_projectile_hit_vfx(projectile_effect: StringName, impact_position: Vector2, direction: Vector2, tint := Color.WHITE) -> void:
+	if not vfx_enabled:
+		return
+	var at := impact_position + Vector2(0.0, -16.0)
+	if projectile_effect == &"arrow":
+		VFX.spawn($Effects, &"hit_slash", at, 0.4, Color(1.0, 0.92, 0.8), direction.angle(), VFX.IMPACT_Z, true)
+		return
+	var color: Color = VFX.PROJECTILE_COLORS.get(projectile_effect, Color.WHITE) * tint
+	if projectile_effect == &"venom_bolt":
+		# A crossbow bolt: a piercing hit plus a splash of poison.
+		VFX.spawn($Effects, &"hit_slash", at, 0.48, Color(0.85, 1.0, 0.75), direction.angle(), VFX.IMPACT_Z)
+		VFX.spawn($Effects, &"magic_burst", at, 0.42, color, 0.0, VFX.IMPACT_Z, true)
+		return
+	# Magic shots land with a big burst and a flash of light; Hero spells also shake the ground.
+	VFX.spawn($Effects, &"magic_burst", at, 0.72, color, 0.0, VFX.IMPACT_Z)
+	VFX.flash_light(light_layer, at, color, 1.8, 2.4, 0.4)
+	if projectile_effect in [&"arcane_lance", &"gloom_orb"]:
+		VFX.spawn($Effects, &"slam_ring", impact_position, 0.32, color, 0.0, VFX.GROUND_Z + 1, true)
+
+
+## Area abilities: an isometric shockwave as wide as the ability radius.
+func spawn_area_vfx(impact_position: Vector2, radius: float, tint := Color.WHITE) -> void:
+	if not vfx_enabled or radius <= 0.0:
+		return
+	# The rings of the atlas are ~230 px wide at scale 1: dust under the units, light above.
+	var scale := clampf(radius * 2.0 / 230.0, 0.35, 2.5)
+	VFX.spawn($Effects, &"slam_dust", impact_position, scale, Color.WHITE, 0.0, VFX.GROUND_Z)
+	VFX.spawn($Effects, &"slam_ring", impact_position, scale, tint, 0.0, VFX.GROUND_Z + 1)
+	VFX.flash_light(light_layer, impact_position, Color(1.0, 0.8, 0.55) * tint, 1.4, 2.0 * scale + 1.0, 0.45)
+
+
+## Footstep dust, kicked up behind a walking unit (low priority).
+func spawn_dust_vfx(combatant: Combatant) -> void:
+	if not vfx_enabled:
+		return
+	var scale := 0.9 if combatant.snapshot.is_boss else (0.62 if combatant.snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO else 0.5)
+	var behind := -signf(combatant.velocity.x) * combatant.body_radius * 0.5
+	VFX.spawn($Effects, &"walk_dust", combatant.feet_position() + Vector2(behind, -15.0 * scale), scale, Color.WHITE, 0.0, VFX.GROUND_Z, true)
 
 
 func spawn_ability_projectile(source: Combatant, target: Combatant, ability: AbilityDefinition) -> void:
@@ -1024,6 +1331,7 @@ func apply_projectile_impact(source: Combatant, target: Combatant, ability: Abil
 	if ability.area_radius <= 0.0:
 		_apply_ability_effects(source, target, ability)
 		return
+	spawn_area_vfx(impact_position, ability.area_radius, _ability_vfx_color(ability.id))
 	for candidate in combatants:
 		if (
 			candidate.is_targetable()
@@ -1063,6 +1371,12 @@ func record_ability_used(source: Combatant, target: Combatant, ability_id: Strin
 		target.snapshot.runtime_id if is_instance_valid(target) else "",
 		ability_id
 	)
+	if not is_instance_valid(source):
+		return
+	var ability := get_ability_definition(ability_id)
+	for candidate in combatants:
+		if not candidate.items.cast_frenzies.is_empty() and candidate.is_alive() and candidate.snapshot.team != source.snapshot.team:
+			candidate.items.on_enemy_ability_used(source, ability)
 
 
 func record_status_applied(
@@ -1081,6 +1395,10 @@ func record_status_applied(
 
 
 func notify_combatant_died(combatant: Combatant, source: Combatant = null) -> void:
+	if combatant.snapshot.unit_kind != CombatUnitSnapshot.UnitKind.SUMMON or combatant.items.lifetime_remaining < 0.0:
+		for candidate in combatants:
+			if not candidate.items.death_summons.is_empty() and candidate.is_alive() and candidate.snapshot.team != combatant.snapshot.team:
+				candidate.items.on_enemy_died_nearby(combatant)
 	for owner_id in active_summon_merges.keys():
 		var merge: Dictionary = active_summon_merges[owner_id]
 		if merge.merged == combatant:
@@ -1108,9 +1426,20 @@ func _gui_input(event: InputEvent) -> void:
 	_select_combatant(nearest)
 
 
+## Share of the arena height above the walkable ground: the painted battlefield shows
+## ruins and sky there, so units (their body centre, feet about 60 px lower) never go up.
+const WALKABLE_TOP_FRACTION := 0.21
+
+
 func get_arena_bounds() -> Rect2:
 	var margin := Vector2(48.0, 48.0)
-	return Rect2(margin, Vector2(maxf(size.x - margin.x * 2.0, 200.0), maxf(size.y - margin.y * 2.0, 200.0)))
+	var top := maxf(margin.y, size.y * WALKABLE_TOP_FRACTION)
+	return Rect2(Vector2(margin.x, top), Vector2(maxf(size.x - margin.x * 2.0, 200.0), maxf(size.y - top - margin.y, 200.0)))
+
+
+func _ability_vfx_color(ability_id: StringName) -> Color:
+	var ability := get_ability_definition(ability_id) if not String(ability_id).is_empty() else null
+	return ability.presentation_color.lerp(Color.WHITE, 0.35) if ability != null else Color.WHITE
 
 
 func get_combatant_by_runtime_id(runtime_id: String) -> Combatant:
@@ -1124,41 +1453,12 @@ func select_combatant_by_runtime_id(runtime_id: String) -> void:
 	_select_combatant(get_combatant_by_runtime_id(runtime_id))
 
 
-## Automatic formation (melee in front, ranged behind); FormationService mirrors this
-## layout for the War Council preview. Player units with a custom starting position
-## chosen on the Battlefield tab spawn there instead.
+## Use the same formation as the preview, including Heroes behind melee Soldiers
+## and any positions chosen manually on the Battlefield tab.
 func _spawn_team(snapshots: Array[CombatUnitSnapshot], bounds: Rect2, player_team: bool) -> void:
-	var row_spacing := minf(72.0, bounds.size.y / 7.0)
-	var column_spacing := 72.0
-	var rows := 6
-	var melee_count := snapshots.filter(func(snapshot: CombatUnitSnapshot) -> bool: return snapshot.attack_type != &"ranged").size()
-	var ranged_count := snapshots.size() - melee_count
-	var melee_columns := ceili(float(melee_count) / rows)
-	var ranged_columns := ceili(float(ranged_count) / rows)
-	var total_columns := maxi(melee_columns + ranged_columns, 1)
-	var front_x := bounds.position.x + 125.0 + (total_columns - 1) * column_spacing
-	if not player_team:
-		front_x = bounds.end.x - 125.0 - (total_columns - 1) * column_spacing
-	var melee_index := 0
-	var ranged_index := 0
-	for snapshot in snapshots:
-		var is_ranged := snapshot.attack_type == &"ranged"
-		var formation_index := ranged_index if is_ranged else melee_index
-		var group_count := ranged_count if is_ranged else melee_count
-		var column := formation_index / rows
-		var formation_column := melee_columns + column if is_ranged else column
-		var x := front_x - formation_column * column_spacing if player_team else front_x + formation_column * column_spacing
-		var row := formation_index % rows
-		var used_rows := mini(rows, group_count)
-		var y_offset := (row - (used_rows - 1) * 0.5) * row_spacing
-		var spawn_position := Vector2(x, bounds.get_center().y + y_offset)
-		if player_team and FormationService.has_custom(snapshot.formation_position):
-			spawn_position = bounds.position + FormationService.clamp_to_zone(snapshot.formation_position) * bounds.size
-		_spawn_combatant(snapshot, spawn_position, bounds, true)
-		if is_ranged:
-			ranged_index += 1
-		else:
-			melee_index += 1
+	var positions := FormationService.spawn_positions(snapshots, bounds, player_team)
+	for index in snapshots.size():
+		_spawn_combatant(snapshots[index], positions[index], bounds, true)
 
 
 func _spawn_combatant(snapshot: CombatUnitSnapshot, spawn_position: Vector2, bounds: Rect2, initial_battle_spawn := false) -> Combatant:
@@ -1207,7 +1507,8 @@ func spawn_summon(
 	ability_id: StringName,
 	effect_id: StringName,
 	max_active_summons: int,
-	summoner_contribution_percent: float
+	summoner_contribution_percent: float,
+	at_position := Vector2.INF
 ) -> Combatant:
 	if definition == null or not can_spawn_summon(source, ability_id, effect_id, max_active_summons):
 		return null
@@ -1230,7 +1531,7 @@ func spawn_summon(
 	snapshot.summoner_contribution_percent = clampf(summoner_contribution_percent, 0.0, 100.0)
 	CombatSnapshotBuilder.apply_veterancy_growth(snapshot.stats, snapshot.veterancy_level, get_node("/root/ContentRegistry"))
 	var bounds := get_arena_bounds()
-	var spawn_position := _summon_position(source.position, summon_serial, bounds)
+	var spawn_position := _summon_position(source.position if at_position == Vector2.INF else at_position, summon_serial, bounds)
 	var summon := _spawn_combatant(snapshot, spawn_position, bounds)
 	record_event(CombatEvent.UNIT_SUMMONED, source.snapshot.runtime_id, runtime_id, ability_id, effect_id, 1.0)
 	return summon
@@ -1402,7 +1703,7 @@ func _check_battle_end() -> void:
 	for combatant in combatants:
 		if not combatant.is_alive():
 			continue
-		if combatant.snapshot.team == CombatUnitSnapshot.Team.PLAYER:
+		if combatant.items.home_team() == CombatUnitSnapshot.Team.PLAYER:
 			player_alive = true
 		else:
 			enemy_alive_count += 1
@@ -1432,6 +1733,10 @@ func _finish_battle(winner: StringName, timed_out: bool) -> void:
 	battle_active = false
 	last_winner = winner
 	last_battle_timed_out = timed_out
+	if winner == &"player":
+		for combatant in combatants:
+			if combatant.items.home_team() == CombatUnitSnapshot.Team.PLAYER:
+				statistics.bonus_gold += combatant.items.total_post_battle_gold()
 	for combatant in combatants:
 		combatant.set_simulation_active(false)
 	for projectile in $Projectiles.get_children():
@@ -1462,6 +1767,11 @@ func _clear_battle() -> void:
 	active_summon_merges.clear()
 	selected_combatant = null
 	combatants.clear()
+	if vfx_director != null:
+		vfx_director.clear()
+	if light_layer != null:
+		for light in light_layer.get_children():
+			light.free()
 	for unit in $Units.get_children():
 		unit.free()
 	for projectile in $Projectiles.get_children():
@@ -1491,8 +1801,10 @@ func _runtime_id_before(candidate: Combatant, current: Combatant) -> bool:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.125, 0.11, 0.09))
-	_draw_battleground(Rect2(Vector2.ZERO, size))
+	# With the animated backdrop the video (drawn behind this node) is the ground.
+	if backdrop == null:
+		draw_rect(Rect2(Vector2.ZERO, size), Color(0.125, 0.11, 0.09))
+		_draw_battleground(Rect2(Vector2.ZERO, size))
 	var bounds := get_arena_bounds()
 	draw_rect(bounds, Color(0.12, 0.08, 0.04, 0.08), true)
 	draw_rect(bounds, Color(0.37, 0.31, 0.22), false, 2.0)
@@ -1522,3 +1834,88 @@ func _draw_battleground(target_rect: Rect2) -> void:
 		source_rect.size.y = texture_size.x / target_aspect
 		source_rect.position.y = (texture_size.y - source_rect.size.y) * 0.5
 	draw_texture_rect_region(BATTLEGROUND, target_rect, source_rect)
+
+
+# --- animated battlefield ---------------------------------------------------------
+
+func _setup_scenery() -> void:
+	if not vfx_enabled or backdrop != null:
+		return
+	var video := load(BACKDROP_VIDEO_PATH) as VideoStream if ResourceLoader.exists(BACKDROP_VIDEO_PATH) else null
+	if video != null:
+		backdrop = VideoStreamPlayer.new()
+		backdrop.name = "Backdrop"
+		backdrop.stream = video
+		backdrop.expand = true
+		backdrop.volume_db = -80.0
+		backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		# Drawn behind this node's own drawing (arena frame, smoke zones).
+		backdrop.show_behind_parent = true
+		if "loop" in backdrop:
+			backdrop.set("loop", true)
+		backdrop.finished.connect(backdrop.play)
+		add_child(backdrop)
+		move_child(backdrop, 0)
+		backdrop.play()
+	var front := load(FOREGROUND_PATH) as Texture2D if ResourceLoader.exists(FOREGROUND_PATH) else null
+	if front != null:
+		foreground = TextureRect.new()
+		foreground.name = "Foreground"
+		foreground.texture = front
+		foreground.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		foreground.stretch_mode = TextureRect.STRETCH_SCALE
+		foreground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		foreground.z_index = FOREGROUND_Z
+		foreground.modulate = FOREGROUND_TINT
+		add_child(foreground)
+	vignette = TextureRect.new()
+	vignette.name = "Vignette"
+	vignette.texture = VFX.get_vignette_texture()
+	vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	vignette.stretch_mode = TextureRect.STRETCH_SCALE
+	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vignette.z_index = VIGNETTE_Z
+	var unshaded := CanvasItemMaterial.new()
+	unshaded.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	vignette.material = unshaded
+	add_child(vignette)
+	_layout_scenery()
+	queue_redraw()
+
+
+## Both layers cover the arena (cropping like the old battleground) with a little
+## overscan, shifted by the current parallax offset.
+func _layout_scenery() -> void:
+	if backdrop != null:
+		var video_texture := backdrop.get_video_texture()
+		var video_size := Vector2(video_texture.get_size()) if video_texture != null and video_texture.get_width() > 0 else Vector2(1888.0, 1072.0)
+		# The backdrop drifts the other way and less: it is far away.
+		var back_offset := -parallax_offset / FOREGROUND_PARALLAX * BACKDROP_PARALLAX
+		_cover(backdrop, video_size, back_offset)
+	if foreground != null:
+		_cover(foreground, foreground.texture.get_size(), parallax_offset)
+	if vignette != null:
+		vignette.position = Vector2.ZERO
+		vignette.size = size
+
+
+func _cover(layer: Control, content_size: Vector2, offset: Vector2) -> void:
+	if size.x <= 0.0 or size.y <= 0.0 or content_size.x <= 0.0 or content_size.y <= 0.0:
+		return
+	var scale := maxf(size.x / content_size.x, size.y / content_size.y) * PARALLAX_OVERSCAN
+	var drawn := content_size * scale
+	layer.size = drawn
+	layer.position = (size - drawn) * 0.5 + offset
+
+
+## Mouse position over the arena, -1..1 on both axes, eases the layers toward it.
+func _update_parallax(delta: float) -> void:
+	if foreground == null and backdrop == null:
+		return
+	var target := Vector2.ZERO
+	if size.x > 0.0 and size.y > 0.0:
+		var mouse := get_local_mouse_position() / size * 2.0 - Vector2.ONE
+		mouse = mouse.clamp(Vector2(-1.0, -1.0), Vector2(1.0, 1.0))
+		target = -mouse * FOREGROUND_PARALLAX
+	parallax_offset = parallax_offset.lerp(target, clampf(delta * PARALLAX_SMOOTHING, 0.0, 1.0))
+	_layout_scenery()

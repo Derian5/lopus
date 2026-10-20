@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/butcher_cleaver.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/on_hit_status_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/damage_effect.gd" id="5"]
+
+[sub_resource type="Resource" id="Periodic_bleed"]
+script = ExtResource("5")
+effect_id = &"effect.item_bleed_tick"
+amount = 15.0
+
+[sub_resource type="Resource" id="Status_bleed"]
+script = ExtResource("4")
+id = &"status.item_bleed"
+display_name = "Bleeding"
+description = "Takes damage every second."
+default_duration = 5.0
+max_stacks = 3
+stack_policy = 1
+periodic_interval = 1.0
+periodic_effects = Array[Resource]([SubResource("Periodic_bleed")])
+polarity = 2
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_butcher_cleaver_0"
+status = SubResource("Status_bleed")
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_butcher_cleaver"
+display_name = "Butcher's Cut"
+description = "Basic attacks cause [dmg]bleeding for {e0.status.periodic_effects.0.amount} damage per second[/dmg] for {e0.status.default_duration}s, stacking up to {e0.status.max_stacks} times."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Butcher's Cut"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

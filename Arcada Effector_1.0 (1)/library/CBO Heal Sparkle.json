@@ -1,0 +1,317 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_heal",
+  "name": "CBO Heal Sparkle",
+  "comp": {
+   "w": 256,
+   "h": 256,
+   "dur": 0.85,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 192,
+   "t0": 0.0,
+   "t1": 0.78,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_heal_crosses",
+    "name": "Crosses",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 20,
+     "shape": "box",
+     "sx": 100,
+     "sy": 60,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 6,
+     "speed": 110,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 4
+      },
+      {
+       "t": 0.12,
+       "n": 3
+      },
+      {
+       "t": 0.24,
+       "n": 2
+      }
+     ],
+     "seed": 4
+    },
+    "pt": {
+     "life": 0.6,
+     "sprite": {
+      "kind": "shape",
+      "id": "spark",
+      "p": {}
+     },
+     "size": 46,
+     "sizeRnd": 0.3,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.3
+       },
+       {
+        "t": 0.25,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.5
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.12,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.75
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         235,
+         255,
+         225
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         150,
+         255,
+         140
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         70,
+         210,
+         90
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 0,
+     "drag": 1.0,
+     "glow": 0.6
+    }
+   },
+   {
+    "id": "lr_heal_rays",
+    "name": "Rays",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 50,
+     "shape": "box",
+     "sx": 110,
+     "sy": 10,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 2,
+     "speed": 220,
+     "rate": 34,
+     "seed": 5,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.45,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 30,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 0.2
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.12,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.75
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         220,
+         255,
+         200
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         220,
+         110
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.5,
+     "drag": 1,
+     "glow": 0.4
+    },
+    "end": 0.4
+   },
+   {
+    "id": "lr_heal_glow",
+    "name": "Glow",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.12,
+       "v": 0.45,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.65,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 170,
+     "x": 0,
+     "y": 10,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.7,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.65,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 0.75,
+     "rot": 0,
+     "color": [
+      110,
+      255,
+      140
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.67
+   }
+  ]
+ },
+ "tex": {}
+}

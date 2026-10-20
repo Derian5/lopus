@@ -165,6 +165,8 @@ static func atlas_texture(region: Rect2) -> AtlasTexture:
 
 
 func _role_text(definition: HeroDefinition) -> String:
+	if not definition.role_title.is_empty():
+		return definition.role_title
 	var roles := PackedStringArray()
 	for tag in definition.tags:
 		if tag != &"hero" and tag != &"test":

@@ -2,7 +2,12 @@ class_name CombatStats
 extends RefCounted
 
 
-const STAT_NAMES: Array[StringName] = [&"max_hp", &"damage", &"attack_speed", &"movement_speed", &"attack_range", &"armor"]
+const STAT_NAMES: Array[StringName] = [&"max_hp", &"damage", &"attack_speed", &"movement_speed", &"attack_range", &"armor", &"crit_chance", &"crit_multiplier", &"lifesteal", &"dodge", &"hp_regen", &"cooldown_reduction", &"damage_taken", &"armor_penetration"]
+const PRIMARY_STAT_NAMES: Array[StringName] = [&"max_hp", &"damage", &"attack_speed", &"movement_speed", &"attack_range", &"armor"]
+const SECONDARY_STAT_NAMES: Array[StringName] = [&"crit_chance", &"crit_multiplier", &"lifesteal", &"dodge", &"hp_regen", &"cooldown_reduction", &"damage_taken", &"armor_penetration"]
+const DEFAULT_CRIT_MULTIPLIER := 2.0
+const MAX_DODGE := 60.0
+const MAX_COOLDOWN_REDUCTION := 75.0
 
 var max_hp := 100.0
 var damage := 10.0
@@ -10,6 +15,14 @@ var attack_speed := 1.0
 var movement_speed := 100.0
 var attack_range := 48.0
 var armor := 0.0
+var crit_chance := 0.0
+var crit_multiplier := 0.0
+var lifesteal := 0.0
+var dodge := 0.0
+var hp_regen := 0.0
+var cooldown_reduction := 0.0
+var damage_taken := 0.0
+var armor_penetration := 0.0
 var breakdowns: Dictionary = {}
 
 
@@ -34,6 +47,8 @@ func duplicate_stats() -> CombatStats:
 	copy.movement_speed = movement_speed
 	copy.attack_range = attack_range
 	copy.armor = armor
+	for stat in SECONDARY_STAT_NAMES:
+		copy.set(stat, get(stat))
 	copy.breakdowns = breakdowns.duplicate(true)
 	return copy
 
@@ -92,7 +107,15 @@ func multiply(multiplier: float) -> void:
 
 
 func apply_modifiers(modifiers: Array[StatModifier]) -> void:
-	for operation in [StatModifier.Operation.ADD, StatModifier.Operation.MULTIPLY]:
+	for operation in [StatModifier.Operation.ADD, StatModifier.Operation.ADD_PERCENT, StatModifier.Operation.MULTIPLY]:
+		if operation == StatModifier.Operation.ADD_PERCENT:
+			var sums := {}
+			for modifier in modifiers:
+				if modifier != null and modifier.operation == operation and _has_stat(modifier.stat):
+					sums[modifier.stat] = float(sums.get(modifier.stat, 0.0)) + modifier.value
+			for stat in sums:
+				set(stat, float(get(stat)) * (1.0 + float(sums[stat]) / 100.0))
+			continue
 		for modifier in modifiers:
 			if modifier == null or modifier.operation != operation or not _has_stat(modifier.stat):
 				continue
@@ -101,7 +124,7 @@ func apply_modifiers(modifiers: Array[StatModifier]) -> void:
 
 
 func _has_stat(stat: String) -> bool:
-	return stat in ["max_hp", "damage", "attack_speed", "movement_speed", "attack_range", "armor"]
+	return StringName(stat) in STAT_NAMES
 
 
 func _clamp_values() -> void:
@@ -111,3 +134,11 @@ func _clamp_values() -> void:
 	movement_speed = maxf(movement_speed, 0.0)
 	attack_range = maxf(attack_range, 0.0)
 	armor = maxf(armor, 0.0)
+	crit_chance = clampf(crit_chance, 0.0, 100.0)
+	crit_multiplier = maxf(crit_multiplier, 0.0)
+	lifesteal = maxf(lifesteal, 0.0)
+	dodge = clampf(dodge, 0.0, MAX_DODGE)
+	hp_regen = maxf(hp_regen, 0.0)
+	cooldown_reduction = clampf(cooldown_reduction, 0.0, MAX_COOLDOWN_REDUCTION)
+	damage_taken = maxf(damage_taken, -90.0)
+	armor_penetration = clampf(armor_penetration, 0.0, 100.0)

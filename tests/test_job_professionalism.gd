@@ -34,9 +34,8 @@ func _test_content_and_thresholds() -> void:
 	var job := registry.get_definition(&"job.archer", false) as JobDefinition
 	var tier_1 := registry.get_definition(&"ability.archer_professionalism_fire_arrow_tier_1", false) as AbilityDefinition
 	var tier_2 := registry.get_definition(&"ability.archer_professionalism_fire_arrow_tier_2", false) as AbilityDefinition
-	_check(job != null and job.professionalism_thresholds == [3, 6], "Archer authors ordered professionalism thresholds 3 and 6.")
-	_check(job.professionalism_ability_ids == [&"ability.archer_professionalism_fire_arrow_tier_1", &"ability.archer_professionalism_fire_arrow_tier_2"], "Archer maps each threshold to a stable tier ability ID.")
-	_check(job.available_ability_ids.is_empty(), "Archer has no separate purchasable ability.")
+	_check(job != null and job.available_ability_ids == [tier_1.id, tier_2.id], "Archer offers both skill levels through its Market catalog.")
+	_check(tier_1.upgrades_ability_id.is_empty() and tier_2.upgrades_ability_id == tier_1.id and tier_1.price > 0 and tier_2.price > 0, "Fire Arrow II requires a purchased Fire Arrow I.")
 	_check(tier_1 != null and tier_2 != null and tier_1.activation_mode == AbilityDefinition.ActivationMode.REPLACE_BASIC_ATTACK and tier_2.activation_mode == AbilityDefinition.ActivationMode.REPLACE_BASIC_ATTACK, "Both professionalism tiers are generic basic-attack replacements.")
 	_check(tier_1.cooldown_seconds == 5.0 and tier_2.cooldown_seconds == 5.0 and tier_1.area_radius == 150.0 and tier_2.area_radius == 150.0, "Both fire arrows author the exact cooldown and impact radius.")
 	_check((tier_1.effects[0] as DamageEffect).amount == 50.0 and (tier_2.effects[0] as DamageEffect).amount == 100.0, "Fire Arrow impact values are exact.")
@@ -45,11 +44,10 @@ func _test_content_and_thresholds() -> void:
 	_check(burn_1.id == burn_2.id and burn_1.id == &"status.archer_professionalism_burn" and burn_1.default_duration == 5.0 and burn_1.max_stacks == 1 and burn_1.stack_policy == StatusDefinition.StackPolicy.REFRESH_DURATION, "Fire Arrow burn has one shared refresh-only status ID and five-second duration.")
 	_check((burn_1.periodic_effects[0] as DamageEffect).amount == 20.0 and (burn_2.periodic_effects[0] as DamageEffect).amount == 40.0, "Fire Arrow burn tier damage values are exact without changing global Burn.")
 	var invalid_job := JobDefinition.new()
-	invalid_job.id = &"job.invalid_professionalism"
+	invalid_job.id = &"job.invalid_upgrade_chain"
 	invalid_job.stat_modifiers = StatBlock.new()
-	invalid_job.professionalism_thresholds = [3, 3, 0]
-	invalid_job.professionalism_ability_ids = [&"ability.archer_professionalism_fire_arrow_tier_1"]
-	_check(not registry._validate_job(invalid_job, false), "Content validation rejects mismatched, non-increasing professionalism tiers.")
+	invalid_job.available_ability_ids = [tier_2.id]
+	_check(not registry._validate_job(invalid_job, false), "Content validation rejects an upgrade whose preceding level is absent from its Job catalog.")
 
 	for count in [0, 2, 3, 5, 6, 8]:
 		var run := _run_with_archers(count)
@@ -57,23 +55,18 @@ func _test_content_and_thresholds() -> void:
 		build.job_id = &"job.archer"
 		run.job_builds.append(build)
 		var snapshots := CombatSnapshotBuilder.build_player_army(run, registry)
-		var expected: StringName = &""
-		if count >= 6:
-			expected = tier_2.id
-		elif count >= 3:
-			expected = tier_1.id
 		for snapshot in snapshots:
-			var professionalism := snapshot.abilities.filter(func(ability: AbilityDefinition) -> bool: return String(ability.id).begins_with("ability.archer_professionalism_"))
-			if snapshot.job_id == &"job.archer":
-				_check(professionalism.size() == (0 if expected.is_empty() else 1) and (expected.is_empty() or professionalism[0].id == expected), "%d Archers grant only the highest satisfied tier to every Archer." % count)
-			else:
-				_check(professionalism.is_empty(), "%d Archers do not grant professionalism to another Job." % count)
-		_check(build.active_ability_id.is_empty() and build.passive_ability_ids.is_empty() and build.owned_ability_ids.is_empty(), "Derived professionalism at %d assignments consumes no JobBuild slots or ownership." % count)
-		if count == 3:
-			var retained_snapshot := snapshots[0]
-			run.soldiers[0].current_job_id = &"job.militia"
-			run.soldiers.remove_at(1)
-			_check(retained_snapshot.abilities.has(tier_1), "An existing battle snapshot keeps its tier after roster assignments change.")
+			_check(not snapshot.abilities.has(tier_1) and not snapshot.abilities.has(tier_2), "%d Archers do not unlock skills by assignment count." % count)
+		build.set_active_ability(tier_1.id)
+		var bought := CombatSnapshotBuilder.build_player_army(run, registry)
+		for snapshot in bought:
+			if snapshot.job_id == job.id:
+				_check(snapshot.abilities.has(tier_1) and not snapshot.abilities.has(tier_2), "Purchased Fire Arrow I applies to every Archer independently of count.")
+		build.unlock_ability(tier_2.id)
+		build.equip_purchased_ability(tier_2)
+		for snapshot in CombatSnapshotBuilder.build_player_army(run, registry):
+			if snapshot.job_id == job.id:
+				_check(snapshot.abilities.has(tier_2) and not snapshot.abilities.has(tier_1), "A purchased upgrade replaces the previous level rather than stacking it.")
 
 
 func _test_replacement_and_projectile() -> void:
@@ -175,7 +168,7 @@ func _test_impact_aoe_and_burn() -> void:
 func _test_tooltips() -> void:
 	var job_text := ContentButton.describe_content(&"job.archer")
 	var ability_text := ContentButton.describe_content(&"ability.archer_professionalism_fire_arrow_tier_1")
-	_check(job_text.contains("3 Archers:[/b] Fire Arrow I") and job_text.contains("6 Archers:[/b] Fire Arrow II"), "Job tooltip lists professionalism thresholds and tier abilities.")
+	_check(job_text.contains("MARKET SKILLS") and job_text.contains("Level 1: Fire Arrow I") and job_text.contains("Level 2: Fire Arrow II") and not job_text.contains("PROFESSIONALISM"), "Job tooltip lists purchasable levels instead of assignment thresholds.")
 	_check(ability_text.contains("EMPOWERED ATTACK") and ability_text.contains("radius.png[/img] [b]150[/b]") and ability_text.contains("50[/b] damage"), "Ability tooltip identifies empowered attacks, radius and damage from data.")
 
 
@@ -191,7 +184,9 @@ func _test_management_preview() -> void:
 	screen._select_unit("soldier", 0)
 	var ability_rows := screen.get_node("%AbilityRows")
 	var has_fire_arrow_icon := ability_rows.get_children().any(func(slot: Node) -> bool: return slot is ContentIconButton and slot.content_id == &"ability.archer_professionalism_fire_arrow_tier_1")
-	_check(ability_rows.get_child_count() >= HeroState.MAX_ABILITY_SLOTS and has_fire_arrow_icon, "Management Soldier preview derives professionalism from the full current roster and reserves four icon slots.")
+	_check(ability_rows.get_child_count() >= HeroState.MAX_ABILITY_SLOTS and has_fire_arrow_icon, "Management shows unpurchased skills and reserves four icon slots.")
+	var preview := ability_rows.get_children().filter(func(slot: Node) -> bool: return slot is ContentIconButton and slot.content_id == &"ability.archer_professionalism_fire_arrow_tier_1")[0] as ContentIconButton
+	_check(preview.locked and preview.badge_text == "NOT BOUGHT" and preview.tooltip_override.contains("NOT PURCHASED"), "Unpurchased skills explain that they must be bought in the Market.")
 	var archer_heading := screen.get_node("%Roster").get_children().filter(func(row: Node) -> bool: return row is ManagementDropSlot and row.target_payload.get("job_id", &"") == &"job.archer")
 	_check(not archer_heading.is_empty() and not archer_heading[0].text.contains("PROFESSIONALISM") and not archer_heading[0].text.contains("NEXT"), "Management Job rows omit professionalism tier and threshold text.")
 	screen.free()
@@ -199,7 +194,7 @@ func _test_management_preview() -> void:
 
 func _test_warrior_bloodthirst() -> void:
 	var warrior_job := registry.get_definition(&"job.warrior") as JobDefinition
-	_check(warrior_job.professionalism_thresholds == [3, 6] and warrior_job.professionalism_ability_ids.size() == 2, "Warrior professionalism unlocks at 3 and 6 Warriors.")
+	_check(warrior_job.available_ability_ids.size() == 2, "Warrior has two purchasable skill levels.")
 	var tier_1 := registry.get_definition(&"ability.warrior_professionalism_bloodthirst_tier_1") as AbilityDefinition
 	var tier_2 := registry.get_definition(&"ability.warrior_professionalism_bloodthirst_tier_2") as AbilityDefinition
 	var warrior_a := _snapshot("warrior-a", CombatUnitSnapshot.Team.PLAYER, 400.0, 0.0)

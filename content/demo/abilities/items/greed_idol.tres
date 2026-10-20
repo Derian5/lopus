@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/greed_idol.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/gold_stat_scaling_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/post_battle_gold_effect.gd" id="4"]
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_greed_idol_0"
+percent_per_step = 2.0
+gold_step = 50
+max_percent = 50.0
+
+[sub_resource type="Resource" id="Effect1"]
+script = ExtResource("4")
+effect_id = &"effect.item_greed_idol_1"
+gold = 50
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_greed_idol"
+display_name = "Marauder's Hoard"
+description = "[buff]+{e0.percent_per_step}% damage and Max HP[/buff] for every {e0.gold_step} Gold you hold (up to +{e0.max_percent}%). After a won battle [gold]+{e1.gold} Gold[/gold]."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0"), SubResource("Effect1")])
+presentation_text = "Marauder's Hoard"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

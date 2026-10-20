@@ -19,6 +19,10 @@ enum TargetingPolicy {
 	RANDOM_ENEMY_WITHOUT_STATUS,
 	LOWEST_CURRENT_HP_ALLY,
 	MOST_TARGETED_ALLY,
+	HIGHEST_DAMAGE_ENEMY,
+	HIGHEST_HP_NON_BOSS_ENEMY,
+	## Random ranged enemy within the search radius, otherwise any enemy.
+	RANDOM_BACK_LINE_ENEMY,
 }
 
 enum DeliveryMethod {
@@ -49,6 +53,8 @@ enum ActivationMode {
 @export var presentation_color := Color.WHITE
 @export var presentation_text := ""
 @export_range(0, 1000000, 1, "or_greater") var price := 0
+## A purchasable Job upgrade requires ownership of this preceding level.
+@export var upgrades_ability_id: StringName
 @export var available_to_heroes := true
 @export var allowed_hero_ids: Array[StringName] = []
 @export var hero_levels: Array[AbilityLevelDefinition] = []
@@ -57,6 +63,20 @@ enum ActivationMode {
 
 func is_allowed_for_hero(hero_definition_id: StringName) -> bool:
 	return available_to_heroes and (allowed_hero_ids.is_empty() or allowed_hero_ids.has(hero_definition_id))
+
+
+func job_skill_level(registry: Node) -> int:
+	var level := 1
+	var current: AbilityDefinition = self
+	var visited := {}
+	while not current.upgrades_ability_id.is_empty() and not visited.has(current.id):
+		visited[current.id] = true
+		var previous := registry.get_definition(current.upgrades_ability_id, false) as AbilityDefinition
+		if previous == null:
+			break
+		level += 1
+		current = previous
+	return level
 
 
 func for_hero_level(level: int) -> AbilityDefinition:

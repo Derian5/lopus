@@ -66,7 +66,7 @@ func _test_starting_army_and_snapshots() -> void:
 	var priest := snapshots[9]
 	_check(warrior.job_id == &"job.warrior" and warrior.stats.armor > archer.stats.armor, "Warrior snapshot is a durable frontline build.")
 	_check(archer.attack_type == &"ranged" and archer.stats.attack_range > warrior.stats.attack_range, "Archer snapshot has ranged behavior.")
-	_check(priest.abilities.size() == 2 and priest.abilities[0].id == &"ability.priest_heal" and priest.abilities[1].id == &"ability.priest_professionalism_cleansing_flame_tier_1", "Three Priests receive innate Heal and derived Tier 1 professionalism without a selected Job ability.")
+	_check(priest.abilities.size() == 1 and priest.abilities[0].id == &"ability.priest_heal", "Three Priests have innate Heal but receive no unpurchased skill from their assignment count.")
 	var summoner_soldier := SoldierState.new()
 	summoner_soldier.unique_id = "summoner-test"
 	summoner_soldier.generated_name = "Summoner Test"

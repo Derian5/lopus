@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/lamp_of_penance.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/heal_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_lamp_of_penance_0"
+amount = 400.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_lamp_of_penance"
+display_name = "Light of Penance"
+description = "[heal]Heals {e0.amount} HP[/heal] to the ally with the lowest HP within {search}."
+kind = 0
+cooldown_seconds = 10.0
+targeting_policy = 2
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+target_search_radius = 800.0
+presentation_text = "Light of Penance"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"active"])

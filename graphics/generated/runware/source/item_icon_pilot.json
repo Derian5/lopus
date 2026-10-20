@@ -1,0 +1,15 @@
+{
+  "model": "runware:400@2",
+  "model_name": "FLUX.2 [klein] 9B",
+  "source_size": [1024, 1024],
+  "final_size": [256, 256],
+  "format": "PNG",
+  "steps": 4,
+  "style": "Minimalist dark fantasy inventory icons, one large object on charcoal, bold silhouettes, restrained hand-painted ink texture, no text or frame, readable at 64 pixels.",
+  "images": [
+    {"item": "butcher_cleaver", "seed": 104201, "taskUUID": "dccf6170-d875-4156-9e18-4cdbf53ffdb9", "cost": 0.00195, "url": "https://im.runware.ai/image/os/a01d21/ws/3/ii/bc95891a-db34-4f5c-8271-7d0cf58e51cc.png", "subject": "Heavy rectangular silver cleaver, round blade hole, dark wooden handle, small crimson accent, diagonal composition."},
+    {"item": "thorn_crown", "seed": 104202, "taskUUID": "609d230a-1b87-4108-9c04-dce8aafefa1d", "cost": 0.00195, "url": "https://im.runware.ai/image/os/a01d21/ws/3/ii/60a227ba-06cb-4295-8630-fd4675e63472.png", "subject": "Open circular crown of two thick thorny branches, six large thorns, bone-brown with a muted crimson accent."},
+    {"item": "vial_of_tears", "seed": 104203, "taskUUID": "90f62055-c6ff-46ac-a804-f24dc18c3efd", "cost": 0.00195, "url": "https://im.runware.ai/image/os/a01d21/ws/3/ii/2b512b1a-ae36-44c8-be5e-236481857b02.png", "subject": "Teardrop-shaped glass vial with cork, half-filled with luminous pale blue liquid."},
+    {"item": "horn_of_besieged", "seed": 104204, "taskUUID": "de1bca12-5008-481a-8543-6412b561d5cd", "cost": 0.00195, "url": "https://im.runware.ai/image/os/a01d21/ws/3/ii/e864f246-c8a9-4e3c-ae31-102b722bf8f0.png", "subject": "Crescent-shaped ivory war horn, wide bell top-right, two broad aged bronze bands."}
+  ]
+}

@@ -11,7 +11,7 @@ var _glyph := ""
 var badge_text := ""
 ## Empty slots draw a quiet engraved "+" instead of placeholder letters.
 var _empty_slot := false
-## Locked slots (e.g. professionalism not reached yet) dim the icon and show a padlock.
+## Unpurchased ability previews dim the icon and show a padlock.
 var locked := false:
 	set(value):
 		locked = value

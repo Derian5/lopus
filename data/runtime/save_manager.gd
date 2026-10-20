@@ -415,14 +415,32 @@ func _validate_run(run_state: RunState, registry: Node) -> String:
 			return "Job build references a missing Job."
 		if not run_state.unlocked_job_ids.has(build.job_id):
 			return "A locked Job has an active build."
+		var owned_job_skills := {}
 		for ability_id in build.owned_ability_ids:
 			if registry != null and not registry.get_definition(ability_id, false) is AbilityDefinition:
 				return "Job build owns a missing ability."
+			if owned_job_skills.has(ability_id):
+				return "Job build owns a duplicate ability."
+			owned_job_skills[ability_id] = true
+			if registry != null:
+				var job := registry.get_definition(build.job_id, false) as JobDefinition
+				var ability := registry.get_definition(ability_id, false) as AbilityDefinition
+				if not job.available_ability_ids.has(ability_id):
+					return "Job build owns an ability unavailable to its Job."
+				if not ability.upgrades_ability_id.is_empty() and not build.owned_ability_ids.has(ability.upgrades_ability_id):
+					return "Job build owns an upgrade without buying the preceding skill level."
 		if not String(build.active_ability_id).is_empty() and not build.owned_ability_ids.has(build.active_ability_id):
 			return "Job build equips an ability it does not own."
 		for ability_id in build.passive_ability_ids:
 			if not build.owned_ability_ids.has(ability_id):
 				return "Job build equips an ability it does not own."
+		if registry != null:
+			var equipped := build.passive_ability_ids.duplicate()
+			if not build.active_ability_id.is_empty():
+				equipped.append(build.active_ability_id)
+			for ability_id in equipped:
+				if build.has_owned_upgrade(ability_id, registry):
+					return "Job build equips a skill level superseded by a purchased upgrade."
 		var modifier_error := _validate_modifiers(build.stat_modifiers)
 		if not modifier_error.is_empty():
 			return modifier_error

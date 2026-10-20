@@ -106,6 +106,55 @@ func _content_tooltip_text() -> String:
 	return describe_content(content_id)
 
 
+const ITEM_STAT_ICONS := {
+	"damage": "damage", "max_hp": "heal", "armor": "shield", "attack_speed": "buff", "movement_speed": "buff",
+	"crit_chance": "damage", "crit_multiplier": "damage", "lifesteal": "heal", "dodge": "shield",
+	"hp_regen": "heal", "cooldown_reduction": "cooldown", "damage_taken": "debuff", "armor_penetration": "damage",
+}
+
+
+## MOBA-style item card: category, stat lines with icons, item abilities, price.
+static func describe_item(item: ItemDefinition, registry: Node) -> String:
+	var lines: Array[String] = []
+	lines.append("[font_size=21][color=%s][b]%s[/b][/color][/font_size]" % [AbilityText.TITLE, item.display_name.to_upper()])
+	var kind := "%s ITEM" % ItemDefinition.category_name(item.category).to_upper()
+	if item.is_unique():
+		var names: Array[String] = []
+		for hero_id in item.allowed_hero_ids:
+			var hero := registry.get_definition(hero_id, false) as HeroDefinition
+			names.append(hero.display_name if hero != null else String(hero_id))
+		kind = "UNIQUE  -  %s ONLY" % ", ".join(names).to_upper()
+	elif item.hero_eligibility != ItemDefinition.HeroEligibility.ANY:
+		kind += "  -  %s" % item.eligibility_text().to_upper()
+	lines.append("[color=%s]%s[/color]" % [AbilityText.MUTED, kind])
+	lines.append("")
+	for modifier in item.passive_effects:
+		if modifier == null:
+			continue
+		var text := modifier.display_text()
+		var split := text.find(" ")
+		var number := text.substr(0, split) if split > 0 else text
+		var label := text.substr(split + 1) if split > 0 else ""
+		lines.append("%s [b]%s[/b] %s" % [AbilityText.icon(String(ITEM_STAT_ICONS.get(modifier.stat, "buff"))), number, label])
+	for ability_id in item.ability_ids:
+		var ability := registry.get_definition(ability_id, false) as AbilityDefinition
+		if ability == null:
+			continue
+		lines.append("")
+		var passive := ability.kind == AbilityDefinition.AbilityKind.PASSIVE
+		var header := "%s [color=%s]%s[/color]  [color=%s][b]%s[/b][/color]" % [AbilityText.icon("passive" if passive else "active"), AbilityText.MUTED, "PASSIVE" if passive else "ACTIVE", AbilityText.TITLE, ability.display_name]
+		lines.append(header)
+		var stats := AbilityText.stat_line(ability)
+		if not stats.is_empty():
+			lines.append(stats)
+		lines.append("[color=%s]%s[/color]" % [AbilityText.BODY, AbilityText.render(ability)])
+	if not item.description.is_empty():
+		lines.append("")
+		lines.append("[i][color=%s]%s[/color][/i]" % [AbilityText.MUTED, item.description])
+	lines.append("%s [color=%s]%d Gold[/color]   [color=%s]sells for %d[/color]" % [AbilityText.icon("gold"), AbilityText.TAG_STYLES.gold.color, item.price, AbilityText.MUTED, item.sell_price])
+	return "\n".join(lines)
+
+
 static func describe_content(content_id: StringName) -> String:
 	var registry: Node = Engine.get_main_loop().root.get_node_or_null("ContentRegistry")
 	if registry == null:
@@ -121,12 +170,7 @@ static func describe_content(content_id: StringName) -> String:
 	elif definition is StatusDefinition:
 		_describe_status(lines, definition, registry, "", false)
 	elif definition is ItemDefinition:
-		if definition.hero_eligibility != ItemDefinition.HeroEligibility.ANY:
-			lines.append("Heroes: %s" % definition.eligibility_text())
-		lines.append("Effects:")
-		for modifier in definition.passive_effects:
-			lines.append("- %s" % _modifier_text(modifier))
-		lines.append("Buy: %d Gold / Sell: %d Gold" % [definition.price, definition.sell_price])
+		return describe_item(definition, registry)
 	elif definition is EncounterDefinition:
 		lines.append("Reward: %d Gold / Initial enemies: %d" % [definition.gold_reward, definition.enemy_ids.size()])
 		if definition.has_reinforcements():
@@ -140,7 +184,7 @@ static func describe_content(content_id: StringName) -> String:
 
 ## MOBA-style ability tooltip (see AbilityText). level 0 shows every hero level;
 ## leveled runtime copies (AbilityDefinition.for_hero_level) highlight their own level.
-## Job tooltip: role, prices, innate abilities and professionalism ranks.
+## Job tooltip: role, prices, innate abilities and purchasable skill levels.
 static func describe_job(job: JobDefinition, registry: Node) -> String:
 	var lines: Array[String] = ["[font_size=21][color=%s][b]%s[/b][/color][/font_size]" % [AbilityText.TITLE, job.display_name.to_upper()]]
 	lines.append("[color=%s]%s[/color]" % [AbilityText.BODY, job.description])
@@ -153,13 +197,13 @@ static func describe_job(job: JobDefinition, registry: Node) -> String:
 			var ability := registry.get_definition(ability_id, false) as AbilityDefinition
 			if ability != null:
 				lines.append("[b]%s[/b]  %s" % [ability.display_name, AbilityText.render(ability)])
-	if not job.professionalism_thresholds.is_empty():
+	if not job.available_ability_ids.is_empty():
 		lines.append("")
-		lines.append("[color=%s]PROFESSIONALISM[/color]" % AbilityText.MUTED)
-		for index in job.professionalism_thresholds.size():
-			var ability := registry.get_definition(job.professionalism_ability_ids[index], false) as AbilityDefinition
+		lines.append("[color=%s]MARKET SKILLS[/color]" % AbilityText.MUTED)
+		for ability_id in job.available_ability_ids:
+			var ability := registry.get_definition(ability_id, false) as AbilityDefinition
 			if ability != null:
-				lines.append("[b]%d %ss:[/b] %s" % [job.professionalism_thresholds[index], job.display_name, ability.display_name])
+				lines.append("[b]Level %d: %s[/b]  -  %d Gold" % [ability.job_skill_level(registry), ability.display_name, ability.price])
 	return "\n".join(lines)
 
 
@@ -343,10 +387,7 @@ static func _describe_status(lines: PackedStringArray, status: StatusDefinition,
 static func _modifier_text(modifier: StatModifier) -> String:
 	if modifier == null:
 		return "Invalid stat modifier"
-	var stat_name := modifier.stat.replace("_", " ").capitalize()
-	if modifier.operation == StatModifier.Operation.MULTIPLY:
-		return "%s x%.2f" % [stat_name, modifier.value]
-	return "%s %+.1f" % [stat_name, modifier.value]
+	return modifier.display_text()
 
 
 static func _duration_text(duration: float) -> String:

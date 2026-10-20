@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/spinner_needle.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/on_hit_stack_trigger_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+
+[sub_resource type="Resource" id="Status_thread"]
+script = ExtResource("4")
+id = &"status.item_thread"
+display_name = "Thread"
+description = "At 3 Threads the unit is bound in place."
+default_duration = 4.0
+max_stacks = 3
+stack_policy = 1
+polarity = 2
+
+[sub_resource type="Resource" id="Status_bound"]
+script = ExtResource("4")
+id = &"status.item_bound"
+display_name = "Bound"
+description = "Cannot move."
+default_duration = 2.0
+max_stacks = 1
+stack_policy = 0
+prevents_movement = true
+polarity = 2
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_spinner_needle_0"
+stack_status = SubResource("Status_thread")
+stacks_required = 3
+trigger_status = SubResource("Status_bound")
+per_target_cooldown = 8.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_spinner_needle"
+display_name = "Binding Thread"
+description = "Basic attacks weave a Thread. At {e0.stacks_required} Threads the target is [cc]bound in place for {e0.trigger_status.default_duration}s[/cc] (once per {e0.per_target_cooldown}s per target)."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Binding Thread"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

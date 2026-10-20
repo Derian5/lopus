@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/lamp_of_penance.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+
+[sub_resource type="Resource" id="Stat0"]
+script = ExtResource("3")
+stat = "max_hp"
+operation = 0
+value = 250.0
+
+[sub_resource type="Resource" id="Stat1"]
+script = ExtResource("3")
+stat = "cooldown_reduction"
+operation = 0
+value = 35.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+category = 2
+passive_effects = Array[ExtResource("3")]([SubResource("Stat0"), SubResource("Stat1")])
+ability_ids = Array[StringName]([&"ability.item_lamp_of_penance"])
+price = 275
+sell_price = 137
+id = &"item.lamp_of_penance"
+display_name = "Lamp of Penance"
+description = "A relic of the cathedral's healers."
+tags = Array[StringName]([&"item", &"hero", &"support"])

@@ -23,4 +23,8 @@ enum Polarity {
 @export var prevents_movement := false
 @export var breaks_on_hp_damage := false
 @export var grants_negative_status_immunity := false
+## The unit flees from the status source and cannot attack or cast.
+@export var causes_fear := false
+## The unit takes no damage from any source.
+@export var grants_invulnerability := false
 @export var polarity := Polarity.NEUTRAL

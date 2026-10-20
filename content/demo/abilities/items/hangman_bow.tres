@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/hangman_bow.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/nth_hit_status_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="5"]
+
+[sub_resource type="Resource" id="Mod_noose_0"]
+script = ExtResource("5")
+stat = "damage_taken"
+operation = 0
+value = 35.0
+
+[sub_resource type="Resource" id="Status_noose"]
+script = ExtResource("4")
+id = &"status.item_noose"
+display_name = "Noose"
+description = "Takes more damage from all sources."
+default_duration = 6.0
+max_stacks = 1
+stack_policy = 0
+stat_modifiers = Array[ExtResource("5")]([SubResource("Mod_noose_0")])
+polarity = 2
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_hangman_bow_0"
+hits_required = 3
+status = SubResource("Status_noose")
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_hangman_bow"
+display_name = "Noose"
+description = "Every {e0.hits_required}rd basic attack tightens a Noose: the target [debuff]takes +{e0.status.stat_modifiers.0.value}% damage from all sources[/debuff] for {e0.status.default_duration}s."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Noose"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EncounterDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/encounter_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+enemy_ids = Array[StringName]([&"enemy.raider", &"enemy.raider", &"enemy.raider", &"enemy.summoner", &"enemy.summoner", &"enemy.summoner", &"enemy.troll_priest", &"enemy.troll_priest"])
+enemy_power = 1.5
+gold_reward = 235
+act = 2
+min_encounter_index = 0
+max_encounter_index = 11
+difficulty_hint = "High"
+key_properties = Array[String](["Bog Spawn swarm", "Healing support"])
+id = &"encounter.act2_crossbows"
+display_name = "Black Hex Coven"
+description = "A coven of hexers and witch doctors behind a narrow brute line."
+tags = Array[StringName]([&"encounter", &"act2", &"ranged"])

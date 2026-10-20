@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dfiffhw7dndnn"]
+
+[ext_resource type="Script" uid="uid://cup7fjmoyah4t" path="res://tools/vfx_preview/vfx_preview.gd" id="1"]
+
+[node name="VfxPreview" type="Node" unique_id=2132341682]
+script = ExtResource("1")

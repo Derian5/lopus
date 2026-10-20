@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Balance Lab Report</title>
+<style>
+:root{--bg:#14100c;--panel:#1e1812;--line:#3a2e22;--text:#e9dfcd;--muted:#9a8b74;--gold:#e6b85c;--good:#7fd67a;--bad:#e8735a;--accent:#c9a46a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Georgia,"Times New Roman",serif}
+header{padding:22px 28px;border-bottom:1px solid var(--line);background:linear-gradient(#211a13,#14100c)}
+h1{margin:0;font-size:24px;letter-spacing:.06em;color:var(--gold)}h2{font-size:17px;color:var(--accent);margin:26px 0 10px;letter-spacing:.05em}
+.meta{color:var(--muted);margin-top:6px}.cards{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 16px;min-width:140px}.card b{display:block;font-size:22px;color:var(--gold)}.card span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+nav{display:flex;gap:4px;padding:0 28px;border-bottom:1px solid var(--line);background:#18130e;position:sticky;top:0}
+nav button{background:none;border:0;color:var(--muted);padding:12px 16px;font:inherit;cursor:pointer;border-bottom:2px solid transparent}
+nav button.on{color:var(--gold);border-color:var(--gold)}main{padding:8px 28px 40px}section{display:none}section.on{display:block}
+table{border-collapse:collapse;width:100%;background:var(--panel);border:1px solid var(--line)}th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{color:var(--muted);font-weight:normal;text-transform:uppercase;font-size:11px;letter-spacing:.08em;cursor:pointer;user-select:none}th:first-child,td:first-child{text-align:left}
+tr:hover td{background:#261e16}.bar{display:inline-block;height:9px;border-radius:2px;background:var(--gold);vertical-align:middle;margin-right:8px}
+.good{color:var(--good)}.bad{color:var(--bad)}.muted{color:var(--muted)}.wrap{overflow-x:auto}
+.heat td.cell{color:#120d09;font-weight:bold;text-align:center}svg text{fill:var(--muted);font:11px Georgia,serif}
+details{background:var(--panel);border:1px solid var(--line);border-radius:4px;margin:6px 0;padding:6px 10px}summary{cursor:pointer}
+.timeline{display:flex;gap:3px;flex-wrap:wrap;margin:8px 0}.pip{width:26px;height:26px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#120d09}
+.metrics{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.metrics button{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:5px 12px;font:inherit;cursor:pointer;border-radius:3px}.metrics button.on{color:var(--gold);border-color:var(--gold)}
+.dead{color:var(--bad)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;color:var(--muted)}.legend i{display:inline-block;width:12px;height:3px;margin-right:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<header><h1>BALANCE LAB REPORT</h1><div class="meta" id="meta"></div><div class="cards" id="cards"></div></header>
+<nav id="tabs"></nav>
+<main>
+<section id="styles"></section>
+<section id="heroes"></section>
+<section id="encounters"></section>
+<section id="runs"></section>
+</main>
+<script>
+const DATA=/*__DATA__*/null;
+const S=DATA.summary, NAMES=DATA.style_names, HN=DATA.hero_names;
+const COLORS=["#e6b85c","#7fd6c4","#e8735a","#a88ae8","#7fd67a","#d98fbf","#8ec9ff"];
+const pct=v=>(100*v).toFixed(0)+"%", num=(v,d=1)=>Number(v).toFixed(d);
+const el=(t,h)=>{const e=document.createElement(t);if(h!==undefined)e.innerHTML=h;return e};
+const styles=DATA.styles_order.filter(s=>S.styles[s]);
+const runs=DATA.runs;
+const rate=o=>o.wins/Math.max(o.runs,1);
+const rateClass=r=>r>=0.6?"good":(r<=0.25?"bad":"");
+function heatColor(r){const a=[232,115,90],b=[230,184,92],c=[127,214,122];const m=r<.5?[a,b,r*2]:[b,c,(r-.5)*2];return `rgb(${m[0].map((x,i)=>Math.round(x+(m[1][i]-x)*m[2])).join(",")})`}
+
+document.getElementById("meta").textContent=`Generated ${DATA.generated} · ${runs.length} runs · ${S.total_battles} battles · ${Object.entries(DATA.options||{}).map(([k,v])=>k+"="+v).join("  ")}`;
+const wins=runs.filter(r=>r.result==="win").length;
+[["Runs",runs.length],["Overall winrate",pct(wins/Math.max(runs.length,1))],["Battles simulated",S.total_battles],["Avg battles won",num(runs.reduce((a,r)=>a+r.battles_won,0)/Math.max(runs.length,1))]].forEach(([l,v])=>{const c=el("div",`<b>${v}</b><span>${l}</span>`);c.className="card";document.getElementById("cards").append(c)});
+
+const tabs=[["styles","Play styles"],["heroes","Heroes"],["encounters","Encounters"],["runs","All runs"]];
+tabs.forEach(([id,label],i)=>{const b=el("button",label);b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));b.classList.add("on");document.getElementById(id).classList.add("on")};document.getElementById("tabs").append(b);if(i===0){b.classList.add("on");document.getElementById(id).classList.add("on")}});
+
+function sortable(t){t.querySelectorAll("th").forEach((th,i)=>th.onclick=()=>{const body=t.tBodies[0];const rows=[...body.rows];const asc=th.dataset.asc!=="1";th.dataset.asc=asc?"1":"0";rows.sort((a,b)=>{const x=a.cells[i].dataset.v??a.cells[i].textContent,y=b.cells[i].dataset.v??b.cells[i].textContent;const nx=parseFloat(x),ny=parseFloat(y);const c=isNaN(nx)||isNaN(ny)?String(x).localeCompare(String(y)):nx-ny;return asc?c:-c});rows.forEach(r=>body.append(r))})}
+function table(headers,rows){const t=el("table");t.innerHTML=`<thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody></tbody>`;rows.forEach(r=>{const tr=el("tr");r.forEach(c=>{const td=el("td");if(typeof c==="object"&&c!==null){td.innerHTML=c.h;if(c.v!==undefined)td.dataset.v=c.v;if(c.c)td.className=c.c}else td.innerHTML=c;tr.append(td)});t.tBodies[0].append(tr)});sortable(t);const w=el("div");w.className="wrap";w.append(t);return w}
+const kfmt=v=>v>=10000?(v/1000).toFixed(0)+"k":(v>=1000?(v/1000).toFixed(1)+"k":String(Math.round(v)));
+function lineChart(series,maxX,opts={}){const W=900,H=280,P=44;const all=series.flatMap(s=>s.pts.map(p=>p[1]));const maxY=Math.max(...all,1)*1.05;const X=x=>P+(W-P-12)*(x-1)/Math.max(maxX-1,1),Y=y=>H-24-(H-24-14)*y/maxY;
+const o=[`<svg viewBox="0 0 ${W} ${H+16}" width="100%" style="max-width:${W}px;background:#1e1812;border:1px solid #3a2e22">`];
+for(let i=0;i<=4;i++){const v=maxY*i/4;o.push(`<line x1="${P}" x2="${W-12}" y1="${Y(v)}" y2="${Y(v)}" stroke="#3a2e22"/><text x="4" y="${Y(v)+4}">${opts.int?num(v,1):kfmt(v)}</text>`)}
+for(let x=1;x<=maxX;x++)o.push(`<text x="${X(x)-4}" y="${H-6}">${x}</text>`);
+if(opts.boss)o.push(`<line x1="${X(opts.boss)}" x2="${X(opts.boss)}" y1="10" y2="${H-24}" stroke="#8a5a3a" stroke-dasharray="4 4"/><text x="${X(opts.boss)+4}" y="22">Act I Boss</text>`);
+series.forEach(s=>{if(!s.pts.length)return;o.push(`<polyline fill="none" stroke="${s.color}" stroke-width="2.2" points="${s.pts.map(p=>X(p[0])+","+Y(p[1])).join(" ")}"/>`);s.pts.forEach(p=>o.push(`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="3.5" fill="${s.color}"><title>${s.name} · battle ${p[0]}: ${opts.int?num(p[1],1):Math.round(p[1])} (${p[2]} runs)</title></circle>`))});
+o.push(`<text x="${W/2-30}" y="${H+12}">battle #</text></svg>`);return o.join("")}
+const rateCell=r=>({h:`<span class="bar" style="width:${Math.round(r*80)}px"></span>${pct(r)}`,v:r,c:rateClass(r)});
+
+// Play styles
+(function(){const sec=document.getElementById("styles");sec.append(el("h2","Win rate by play style"));
+sec.append(table(["Style","Runs","Winrate","Avg battles won","Soldiers lost / battle","Hero deaths / battle","Avg final Hero level","Gold on Heroes","Gold on army","Resurrections","Rerolls"],styles.map(s=>{const o=S.styles[s];const sp=o.spent||{};return [NAMES[s]||s,o.runs,rateCell(rate(o)),num(o.battles_won/o.runs),num(o.soldiers_lost/Math.max(o.battles,1),2),num(o.hero_deaths/Math.max(o.battles,1),2),num(o.levels/o.runs),Math.round((sp.hero_items||0)/o.runs),Math.round(((sp.job_unlock||0)+(sp.job_capacity||0)+(sp.job_ability||0))/o.runs),Math.round((sp.resurrection||0)/o.runs),Math.round((sp.reroll||0)/o.runs)]})));
+sec.append(el("p",`<span class="muted">Gold columns are averages per run.</span>`));
+sec.append(el("h2","Survival: share of runs still alive after each battle"));
+const maxB=Math.max(...runs.map(r=>r.battles.length),1);const W=900,H=260,P=36;const svg=[`<svg viewBox="0 0 ${W} ${H+30}" width="100%" style="max-width:${W}px;background:#1e1812;border:1px solid #3a2e22">`];
+for(let y=0;y<=4;y++){const yy=P+(H-P*2)*y/4;svg.push(`<line x1="${P}" x2="${W-10}" y1="${yy}" y2="${yy}" stroke="#3a2e22"/><text x="4" y="${yy+4}">${100-y*25}%</text>`)}
+for(let b=0;b<=maxB;b++){const x=P+(W-P-10)*b/maxB;svg.push(`<text x="${x-4}" y="${H+4}">${b}</text>`)}
+const legend=el("div");legend.className="legend";
+styles.forEach((s,i)=>{const rs=runs.filter(r=>r.style===s);const pts=[];for(let b=0;b<=maxB;b++){const alive=rs.filter(r=>r.battles_won>=b).length/Math.max(rs.length,1);pts.push(`${P+(W-P-10)*b/maxB},${P+(H-P*2)*(1-alive)}`)}svg.push(`<polyline fill="none" stroke="${COLORS[i%COLORS.length]}" stroke-width="2.5" points="${pts.join(" ")}"/>`);legend.append(el("span",`<i style="background:${COLORS[i%COLORS.length]}"></i>${NAMES[s]||s}`))});
+svg.push(`<text x="${W/2-40}" y="${H+24}">battles won</text></svg>`);sec.append(legend);sec.append(el("div",svg.join("")));
+sec.append(el("h2","Where runs end (number of the lost battle)"));
+sec.append(table(["Style",...Array.from({length:maxB},(_,i)=>"#"+(i+1))],styles.map(s=>{const d=S.styles[s].deaths_at||{};return [NAMES[s]||s,...Array.from({length:maxB},(_,i)=>{const n=d[String(i+1)]||0;return n?{h:String(n),c:"bad",v:n}:{h:"·",c:"muted",v:0}})]})));
+})();
+
+// Heroes
+(function(){const sec=document.getElementById("heroes");const ids=Object.keys(S.heroes).sort((a,b)=>rate(S.heroes[b])-rate(S.heroes[a])||S.heroes[b].battles_won/S.heroes[b].runs-S.heroes[a].battles_won/S.heroes[a].runs);
+sec.append(el("h2","Hero strength (all styles together)"));
+sec.append(el("p",`<span class="muted">Winrate = share of runs with this Hero in the trio that reached the Demo End. Per-battle values only count battles the Hero fought. A Hero executed after the Act I Boss stops collecting battles. Click a column to sort.</span>`));
+sec.append(table(["Hero","Runs","Winrate","Avg battles won","Avg final level","Damage / battle","Tanked / battle","Healing / battle","Kills / battle","Deaths / battle","Damage / run","Tanked / run","Healing / run","Best dmg battle","Best tank battle","Best heal battle","Executed"],ids.map(id=>{const h=S.heroes[id];const b=Math.max(h.battles,1),r=Math.max(h.runs,1);return [h.name,h.runs,rateCell(rate(h)),{h:num(h.battles_won/h.runs),v:h.battles_won/h.runs},{h:num((h.final_level||0)/r),v:(h.final_level||0)/r},{h:Math.round(h.damage/b),v:h.damage/b},{h:Math.round(h.tanked/b),v:h.tanked/b},{h:Math.round(h.healing/b),v:h.healing/b},num(h.kills/b,2),{h:num(h.deaths/b,2),v:h.deaths/b,c:h.deaths/b>0.5?"bad":""},{h:kfmt(h.damage/r),v:h.damage/r},{h:kfmt(h.tanked/r),v:h.tanked/r},{h:kfmt(h.healing/r),v:h.healing/r},{h:kfmt(h.best_damage||0),v:h.best_damage||0},{h:kfmt(h.best_tanked||0),v:h.best_tanked||0},{h:kfmt(h.best_healing||0),v:h.best_healing||0},{h:pct(h.executed/h.runs),v:h.executed/h.runs}]})));
+sec.append(el("h2","Hero progression through the run"));
+sec.append(el("p",`<span class="muted">Average over every run where the Hero fought that battle (hover a dot for the number of runs). Level is the level after the battle. Lines thin out late in the run because fewer runs get that far.</span>`));
+const HC={};ids.forEach((id,i)=>HC[id]=COLORS[i%COLORS.length]);
+const maxX=Math.max(1,...ids.flatMap(id=>Object.keys(S.heroes[id].by_battle||{}).map(Number)));
+const bossAt=Math.max(0,...runs.flatMap(r=>r.battles.filter(b=>b.boss&&b.act===1).map(b=>b.number)));
+const METRICS=[["level","Level"],["damage","Damage"],["tanked","Tanked"],["healing","Healing"],["kills","Kills"],["deaths","Death rate"]];
+const mbar=el("div");mbar.className="metrics";const chart=el("div");const lg=el("div");lg.className="legend";
+ids.forEach(id=>lg.append(el("span",`<i style="background:${HC[id]}"></i>${S.heroes[id].name}`)));
+function draw(metric){mbar.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.m===metric));
+const series=ids.map(id=>{const bb=S.heroes[id].by_battle||{};return {name:S.heroes[id].name,color:HC[id],pts:Object.keys(bb).map(Number).sort((a,b)=>a-b).map(k=>{const o=bb[k];return [k,o[metric]/Math.max(o.n,1),o.n]})}});
+chart.innerHTML=lineChart(series,maxX,{int:metric==="level"||metric==="kills"||metric==="deaths",boss:bossAt||0})}
+METRICS.forEach(([m,l])=>{const b=el("button",l);b.dataset.m=m;b.onclick=()=>draw(m);mbar.append(b)});
+sec.append(mbar);sec.append(lg);sec.append(chart);draw("level");
+sec.append(el("h2","Act I vs Act II (per battle)"));
+sec.append(table(["Hero","Act I battles","Act I dmg","Act I tanked","Act I healing","Act II battles","Act II dmg","Act II tanked","Act II healing"],ids.map(id=>{const a=(S.heroes[id].by_act||{});const c=k=>a[k]||{n:0,damage:0,tanked:0,healing:0};const one=c("1"),two=c("2");const v=(o,k)=>({h:o.n?Math.round(o[k]/o.n):"—",v:o.n?o[k]/o.n:0});return [S.heroes[id].name,one.n,v(one,"damage"),v(one,"tanked"),v(one,"healing"),two.n,v(two,"damage"),v(two,"tanked"),v(two,"healing")]})));
+sec.append(el("h2","Average battles won with each Hero"));
+const max=Math.max(...ids.map(id=>S.heroes[id].battles_won/S.heroes[id].runs),1);
+const bars=el("div");ids.forEach((id,i)=>{const v=S.heroes[id].battles_won/S.heroes[id].runs;bars.append(el("div",`<span style="display:inline-block;width:110px">${S.heroes[id].name}</span><span class="bar" style="width:${Math.round(v/max*500)}px;background:${COLORS[i%COLORS.length]}"></span>${num(v)}`))});sec.append(bars);
+sec.append(el("h2","Hero × play style"));
+sec.append(el("p",`<span class="muted">Each cell: winrate · average battles won (runs). Colour follows how far the runs got out of ${DATA.route_battles} battles.</span>`));
+const t=el("table");t.className="heat";t.innerHTML=`<thead><tr><th>Hero</th>${styles.map(s=>`<th>${NAMES[s]||s}</th>`).join("")}</tr></thead><tbody></tbody>`;
+ids.forEach(id=>{const tr=el("tr");tr.append(el("td",S.heroes[id].name));styles.forEach(s=>{const o=S.hero_style[id+"|"+s];const td=el("td");if(o&&o.runs){const r=rate(o);const avg=o.battles_won/o.runs;td.className="cell";td.style.background=heatColor(Math.min(1,avg/Math.max(DATA.route_battles,1)));td.textContent=`${pct(r)} · ${num(avg)} (${o.runs})`}else{td.textContent="—";td.className="muted"}tr.append(td)});t.tBodies[0].append(tr)});
+const w=el("div");w.className="wrap";w.append(t);sec.append(w);
+})();
+
+// Encounters
+(function(){const sec=document.getElementById("encounters");sec.append(el("h2","Encounters by danger"));
+const ids=Object.keys(S.encounters).sort((a,b)=>S.encounters[b].losses/S.encounters[b].fights-S.encounters[a].losses/S.encounters[a].fights);
+sec.append(table(["Encounter","Act","Battle #","Fights","Loss rate","Soldiers lost / fight","Avg duration (s)","Timeouts"],ids.map(id=>{const e=S.encounters[id];const lr=e.losses/e.fights;return [e.name,e.act,Object.keys(e.numbers).sort((a,b)=>a-b).join(", "),e.fights,{h:pct(lr),v:lr,c:lr>=0.5?"bad":(lr<=0.1?"good":"")},num(e.soldiers_lost/e.fights,2),num(e.duration/e.fights),e.timeouts]})));
+})();
+
+// Runs
+(function(){const sec=document.getElementById("runs");sec.append(el("h2","Every simulated run"));
+sec.append(el("p",`<span class="muted">Green = clean win, gold = win with 4+ soldiers lost, red = loss. Hover a square for details.</span>`));
+runs.forEach(r=>{const d=el("details");const heroes=r.heroes.map(h=>HN[h]||h).join(", ");const res=r.result==="win"?`<span class="good">WIN</span>`:`<span class="bad">${r.result.toUpperCase()}</span> at ${r.died_at}`;
+d.innerHTML=`<summary><b>${NAMES[r.style]||r.style}</b> · seed ${r.seed} · ${heroes} · ${res} · ${r.battles_won} battles won${(r.jobs&&r.jobs.length)?" · jobs: "+r.jobs.map(j=>j.replace("job.","")).join(" + "):""}${r.executed_hero?" · executed "+(HN[r.executed_hero]||r.executed_hero):""}${r.error?' · <span class="bad">'+r.error+'</span>':""}</summary>`;
+const tl=el("div");tl.className="timeline";r.battles.forEach(b=>{const p=el("div",String(b.number));p.className="pip";p.style.background=b.win?(b.soldiers_lost>=4?"#e6b85c":"#7fd67a"):"#e8735a";p.title=`${b.encounter_name}: ${b.win?"win":"loss"}, ${b.duration}s, soldiers lost ${b.soldiers_lost}, heroes died ${b.heroes_died}, gold ${b.gold_before} -> ${b.gold_after}, levels ${b.hero_levels.join("/")}`;tl.append(p)});d.append(tl);
+d.append(table(["#","Encounter","Result","Duration","Soldiers lost","Heroes died","Hero dmg","Army dmg","Gold before","Gold after","Hero levels","Items","Army"],r.battles.map(b=>[b.number,b.encounter_name,b.win?{h:"win",c:"good"}:{h:"loss",c:"bad"},b.duration,b.soldiers_lost,b.heroes_died,b.hero_damage,b.army_damage,b.gold_before,b.gold_after,b.hero_levels.join(" / "),b.items??"",Object.entries(b.army||{}).map(([k,v])=>`${k} ${v}`).join(", ")])));
+if(r.battles.some(b=>b.heroes&&b.heroes.length)){d.append(el("p",`<span class="muted">Heroes per battle: level (gain) · damage / tanked / healing · kills. Red = died in that battle, — = not in battle (executed).</span>`));
+d.append(table(["#",...r.heroes.map(h=>HN[h]||h)],r.battles.map(b=>[b.number,...r.heroes.map(h=>{const x=(b.heroes||[]).find(y=>y.id===h);if(!x)return {h:"—",c:"muted",v:-1};const gain=x.level-x.level_before;return {h:`L${x.level}${gain>0?` (+${gain})`:""} · ${kfmt(x.damage)} / ${kfmt(x.tanked)} / ${kfmt(x.healing)} · ${x.kills}k`,v:x.damage,c:x.died?"dead":""}})])));
+const tot=r.heroes.map(h=>r.hero_stats[h]||{});d.append(el("p",`<span class="muted">Run totals — </span>${r.heroes.map((h,i)=>`${HN[h]||h}: L${r.final_levels[i]} · ${kfmt(tot[i].damage||0)} dmg, ${kfmt(tot[i].tanked||0)} tanked, ${kfmt(tot[i].healing||0)} healed, ${tot[i].kills||0} kills, ${tot[i].deaths||0} deaths`).join(" &nbsp;|&nbsp; ")}`))}
+sec.append(d)});
+})();
+</script>
+</body>
+</html>

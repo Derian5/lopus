@@ -35,6 +35,8 @@ var abilities: Array[AbilityDefinition] = []
 var post_combat_xp_bonus_percent := 0.0
 var equipped_item_instance_ids: Array[StringName] = []
 var equipped_item_definition_ids: Array[StringName] = []
+## Run-permanent stat gains already earned, by source ability id ({id: total value}).
+var permanent_gains: Dictionary = {}
 var summoner_runtime_id := ""
 var summoning_ability_id: StringName
 var summoning_effect_id: StringName
@@ -68,6 +70,7 @@ func duplicate_snapshot() -> CombatUnitSnapshot:
 	copy.post_combat_xp_bonus_percent = post_combat_xp_bonus_percent
 	copy.equipped_item_instance_ids = equipped_item_instance_ids.duplicate()
 	copy.equipped_item_definition_ids = equipped_item_definition_ids.duplicate()
+	copy.permanent_gains = permanent_gains.duplicate()
 	copy.summoner_runtime_id = summoner_runtime_id
 	copy.summoning_ability_id = summoning_ability_id
 	copy.summoning_effect_id = summoning_effect_id

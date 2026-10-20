@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/horn_of_besieged.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/ally_radius_status_effect.gd" id="3"]
+[ext_resource type="Script" path="res://content/definitions/status_definition.gd" id="4"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="5"]
+
+[sub_resource type="Resource" id="Mod_besieged_0"]
+script = ExtResource("5")
+stat = "attack_speed"
+operation = 2
+value = 60.0
+
+[sub_resource type="Resource" id="Status_besieged"]
+script = ExtResource("4")
+id = &"status.item_besieged"
+display_name = "Call of the Besieged"
+description = "Attacks faster."
+default_duration = 8.0
+max_stacks = 1
+stack_policy = 0
+stat_modifiers = Array[ExtResource("5")]([SubResource("Mod_besieged_0")])
+polarity = 1
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_horn_of_besieged_0"
+status = SubResource("Status_besieged")
+radius = 0.0
+min_wounded_allies = 3
+wounded_health_ratio = 0.5
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_horn_of_besieged"
+display_name = "Call of the Besieged"
+description = "When {e0.min_wounded_allies}+ allies are below {e0.wounded_health_ratio:pct}% HP, the whole army [buff]attacks {e0.status.stat_modifiers.0.value}% faster[/buff] for {e0.status.default_duration}s."
+kind = 0
+cooldown_seconds = 40.0
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Call of the Besieged"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"active"])

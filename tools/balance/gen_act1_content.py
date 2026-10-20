@@ -23,17 +23,13 @@ ROOT = _project_root()
 # from the ability data ({e0.damage}, {area}, ...); cooldown/range/radius live in the header, not the text, keywords are colour tags ([dmg], [cc], ...).
 TEMPLATES = {
     'ability.ogre_skull_crack': 'The next basic attack deals [dmg]{e0.amount} bonus damage[/dmg] and [cc]stuns for {e1.status.default_duration}s[/cc].',
-    'ability.troll_headhunter': 'Always throws at the farthest enemy and gains [buff]+{e0.attack_range_bonus} attack range[/buff].',
     'ability.troll_hex_of_rot': 'Enemies within {e0.radius} attack [debuff]{e0.multiplier:inv_pct}% slower[/debuff]. Slowing auras do not stack.',
-    'ability.enemy_summon': 'Calls a [summon]Bog Spitter[/summon] from the mire, up to {e0.max_active_summons} at once.',
-    'ability.bog_sticky_spit': 'The next attack deals [dmg]{e0.amount} bonus damage[/dmg] and [cc]slows movement by {e1.status.stat_modifiers.0.value:inv_pct}%[/cc] for {e1.status.default_duration}s.',
+    'ability.enemy_summon': 'Calls a [summon]Bog Spawn[/summon] from the mire, up to {e0.max_active_summons} at once.',
     'ability.bog_rotten_burst': 'On death, bursts for [dmg]{e0.damage} damage[/dmg] to enemies within {e0.radius}.',
-    'ability.ogre_bone_leap': 'Leaps onto a random enemy within {search}, dealing [dmg]{e0.damage} damage[/dmg]. Enemies within {e0.impact_radius} are [cc]knocked back and stunned for {e0.stun_duration}s[/cc].',
+    'ability.ogre_bone_leap': 'Leaps onto a random [kw]back-line[/kw] enemy (ranged) within {search}, dealing [dmg]{e0.damage} damage[/dmg]. Enemies within {e0.impact_radius} are [cc]knocked back and stunned for {e0.stun_duration}s[/cc].',
     'ability.troll_blood': 'Each basic attack it takes adds a stack of [heal]regeneration: {e0.max_hp_percent_per_stack}% Max HP per second[/heal], up to {e0.max_stacks} stacks. Burst it down quickly.',
     'ability.bog_king_troll_blood': 'Each basic attack it takes adds a stack of [heal]regeneration: {e0.max_hp_percent_per_stack}% Max HP per second[/heal], up to {e0.max_stacks} stacks. Burst it down quickly.',
     'ability.troll_berserk': 'After taking damage, [buff]attacks {e0.modifier.value:bonus_pct}% faster[/buff] for {e0.duration}s.',
-    'ability.ogre_dread_drums': 'Enemies within {e0.radius} attack [debuff]{e0.multiplier:inv_pct}% slower[/debuff]. Slowing auras do not stack.',
-    'ability.ogre_war_chant': '[shield]Shields for {e0.amount}[/shield] the most wounded ally for {e0.duration}s.',
     'ability.bog_king_slam': 'The next basic attack also deals [dmg]{e0.damage_multiplier:pct}% damage[/dmg] to every enemy within {e0.radius}.',
     'ability.bog_king_call': 'Raises a [summon]Bog Spawn[/summon], up to {e0.max_active_summons} at once. Bog Spawn burst when they die.',
     'ability.warden_iron_resolve': 'The first time it drops below {e0.health_threshold:pct}% HP, gains a [shield]shield of {e0.shield_max_hp_multiplier:pct}% Max HP[/shield] and [buff]+{e0.armor_multiplier:bonus_pct}% armor[/buff] for {e0.duration}s.',
@@ -176,13 +172,6 @@ def define_abilities(t):
             activation_mode=1, cooldown_seconds=float(t["crack_cd"]), initial_cooldown_seconds=3.0,
             targeting_policy=1, delivery_method=1, priority=60,
             tags=snames(["ability", "active", "enemy", "stun"]))
-    # Troll Spear-Thrower: hunts the softest targets in the back line.
-    ability(A + "crossbowman/troll_headhunter.tres", "ability.troll_headhunter", "Headhunter",
-            "Passive. Always throws at the farthest enemy and gains %d attack range." % t["hunt_range"],
-            "pride_farthest_attack", color(0.55, 0.75, 0.3),
-            lambda r: [r.add_sub("Headhunter", DEF + "/effects/farthest_attack_effect.gd", {"effect_id": '&"effect.troll_headhunter"', "attack_range_bonus": float(t["hunt_range"])})],
-            kind=1, targeting_policy=0, delivery_method=0,
-            tags=snames(["ability", "passive", "enemy", "ranged"]))
     # Troll Hexer: hexes the closest enemy so its attacks slow down.
     ability(A + "summoner/troll_hex_of_rot.tres", "ability.troll_hex_of_rot", "Bog Curse",
             "Passive. Enemies within %d attack %d%% slower." % (t["hex_radius"], round((1 - t["hex_mult"]) * 100)),
@@ -190,24 +179,13 @@ def define_abilities(t):
             lambda r: [r.add_sub("Curse", DEF + "/effects/attack_speed_aura_effect.gd", {"effect_id": '&"effect.troll_hex_of_rot"', "radius": float(t["hex_radius"]), "multiplier": float(t["hex_mult"])})],
             kind=1, targeting_policy=0, delivery_method=0,
             tags=snames(["ability", "passive", "enemy", "aura"]))
-    # Hexer summon (re-pointed at the Bog Spitter).
-    ability(A + "summoner/enemy_summon.tres", "ability.enemy_summon", "Call Bog Spitters",
-            "Every %g seconds calls a Bog Spitter from the mire, up to %d at once." % (t["spit_cd"], t["spit_max"]),
+    # Hexer summon: calls Bog Spawn (shared with the Bog King).
+    ability(A + "summoner/enemy_summon.tres", "ability.enemy_summon", "Call Bog Spawn",
+            "Every %g seconds calls a Bog Spawn from the mire, up to %d at once." % (t["spit_cd"], t["spit_max"]),
             "enemy_summon", color(0.58, 0.35, 0.78),
-            lambda r: [r.add_sub("Summon", DEF + "/effects/summon_effect.gd", {"effect_id": '&"effect.enemy_summon"', "summoned_unit": r.add_ext("Resource", "res://content/demo/enemies/bog_spitter.tres"), "max_active_summons": t["spit_max"]})],
+            lambda r: [r.add_sub("Summon", DEF + "/effects/summon_effect.gd", {"effect_id": '&"effect.enemy_summon"', "summoned_unit": r.add_ext("Resource", "res://content/demo/enemies/bog_spawn.tres"), "max_active_summons": t["spit_max"]})],
             cooldown_seconds=float(t["spit_cd"]), initial_cooldown_seconds=1.5, targeting_policy=0, priority=100,
             tags=snames(["ability", "active", "summon", "enemy"]))
-    # Bog Spitter: sticky spit slows.
-    ability(A + "bog_spitter/bog_sticky_spit.tres", "ability.bog_sticky_spit", "Sticky Spit",
-            "Every %g seconds the next attack deals %d bonus damage and slows the target's movement by 40%% for 4 seconds." % (t["sticky_cd"], t["sticky_dmg"]),
-            "gluttony_grease", color(0.45, 0.7, 0.3),
-            lambda r: [
-                r.add_sub("SpitDamage", DEF + "/effects/damage_effect.gd", {"effect_id": '&"effect.bog_sticky_spit_damage"', "amount": float(t["sticky_dmg"])}),
-                r.add_sub("SpitSlow", DEF + "/effects/apply_status_effect.gd", {"effect_id": '&"effect.bog_sticky_spit_slow"', "status": r.add_ext("Resource", SLOW)}),
-            ],
-            activation_mode=1, cooldown_seconds=float(t["sticky_cd"]), initial_cooldown_seconds=1.0,
-            targeting_policy=1, delivery_method=2, priority=50,
-            tags=snames(["ability", "active", "enemy", "slow"]))
     # Bog Spawn: bursts on death.
     ability(A + "bog_spawn/bog_rotten_burst.tres", "ability.bog_rotten_burst", "Rotten Burst",
             "Passive. Bursts on death, dealing %d damage to enemies within %d." % (t["burst_dmg"], t["burst_radius"]),
@@ -221,7 +199,7 @@ def define_abilities(t):
             "Every %g seconds leaps onto a random enemy within %d, dealing %d damage, knocking back and stunning enemies within %d for %.1f seconds." % (t["leap_cd"], t["leap_search"], t["leap_dmg"], t["leap_radius"], t["leap_stun"]),
             "wrath_leap_slam", color(0.86, 0.42, 0.2),
             lambda r: [r.add_sub("Leap", DEF + "/effects/leap_slam_effect.gd", {"effect_id": '&"effect.ogre_bone_leap"', "damage": float(t["leap_dmg"]), "impact_radius": float(t["leap_radius"]), "knockback_distance": 80.0, "stun_duration": float(t["leap_stun"])})],
-            cooldown_seconds=float(t["leap_cd"]), initial_cooldown_seconds=float(t["leap_initial"]), targeting_policy=3, delivery_method=0,
+            cooldown_seconds=float(t["leap_cd"]), initial_cooldown_seconds=float(t["leap_initial"]), targeting_policy=10, delivery_method=0,
             area_radius=float(t["leap_radius"]), target_search_radius=float(t["leap_search"]), priority=110,
             tags=snames(["ability", "active", "enemy", "movement", "stun"]))
     # Troll Berserker / Bog King: troll blood regeneration builds as they are struck.
@@ -241,19 +219,6 @@ def define_abilities(t):
             lambda r: [r.add_sub("Haste", DEF + "/effects/stat_modifier_effect.gd", {"effect_id": '&"effect.troll_berserk"', "modifier": r.add_sub("HasteModifier", DEF + "/effects/stat_modifier.gd", {"stat": "attack_speed", "operation": 1, "value": float(t["berserk_mult"])}), "duration": float(t["berserk_dur"])})],
             cooldown_seconds=float(t["berserk_cd"]), required_recent_damage_seconds=2.0, targeting_policy=0, delivery_method=0, priority=90,
             tags=snames(["ability", "active", "enemy", "self_buff"]))
-    # Ogre War-Drummer: dread drums slow nearby enemies and rally ogres.
-    ability(A + "ogre_drummer/ogre_dread_drums.tres", "ability.ogre_dread_drums", "Dread Drums",
-            "Passive. Enemies within %d attack %d%% slower." % (t["drum_radius"], round((1 - t["drum_mult"]) * 100)),
-            "pride_attack_speed_aura", color(0.82, 0.6, 0.28),
-            lambda r: [r.add_sub("Drums", DEF + "/effects/attack_speed_aura_effect.gd", {"effect_id": '&"effect.ogre_dread_drums"', "radius": float(t["drum_radius"]), "multiplier": float(t["drum_mult"])})],
-            kind=1, targeting_policy=0, delivery_method=0,
-            tags=snames(["ability", "passive", "enemy", "aura"]))
-    ability(A + "ogre_drummer/ogre_war_chant.tres", "ability.ogre_war_chant", "War Chant",
-            "Every %g seconds shields the most wounded ally for %d damage for 6 seconds." % (t["chant_cd"], t["chant_shield"]),
-            "despair_burdened_guard", color(0.9, 0.7, 0.32),
-            lambda r: [r.add_sub("Chant", DEF + "/effects/shield_effect.gd", {"effect_id": '&"effect.ogre_war_chant"', "amount": float(t["chant_shield"]), "duration": 6.0})],
-            cooldown_seconds=float(t["chant_cd"]), initial_cooldown_seconds=3.0, targeting_policy=2, delivery_method=0, priority=80,
-            tags=snames(["ability", "active", "enemy", "shield"]))
     # Bog King: slam and the endless mire.
     ability(A + "bog_king/bog_king_slam.tres", "ability.bog_king_slam", "Mire Slam",
             "Every %g seconds the next basic attack also hits every enemy within %d for %d%% damage." % (t["slam_cd"], t["slam_radius"], round(t["slam_mult"] * 100)),
@@ -281,7 +246,7 @@ def define_abilities(t):
 E = "content/demo/enemies/"
 
 
-def enemy(path, enemy_id, name, description, stats, attack_type, abilities, rgb, tags, boss=None):
+def enemy(path, enemy_id, name, description, stats, attack_type, abilities, rgb, tags, boss=None, targeting="closest"):
     script = DEF + ("/boss_definition.gd" if boss else "/enemy_definition.gd")
     res = Res("BossDefinition" if boss else "EnemyDefinition", script)
     block = {k: float(v) for k, v in stats.items()}
@@ -301,6 +266,7 @@ def enemy(path, enemy_id, name, description, stats, attack_type, abilities, rgb,
         "attack_type": sname(attack_type),
         "ability_ids": snames(abilities),
         "placeholder_color": color(*rgb),
+        "targeting_mode": targeting,
         "id": sname(enemy_id),
         "display_name": name,
         "description": description,
@@ -310,37 +276,25 @@ def enemy(path, enemy_id, name, description, stats, attack_type, abilities, rgb,
 
 
 def define_enemies(t, s):
-    enemy(E + "raider.tres", "enemy.raider", "Ogre Brute",
+    enemy(E + "ogre_brute.tres", "enemy.raider", "Ogre Brute",
           "A thick-skinned wasteland ogre that cracks skulls and stuns whoever stands in front of it.",
           s["brute"], "melee", ["ability.ogre_skull_crack"], (0.62, 0.36, 0.22), ["enemy", "melee", "ogre", "brute"])
-    enemy(E + "crossbowman.tres", "enemy.crossbowman", "Troll Spear-Thrower",
-          "A lanky troll skirmisher that hurls barbed spears at the farthest target it can find.",
-          s["spear"], "ranged", ["ability.troll_headhunter"], (0.5, 0.66, 0.3), ["enemy", "ranged", "troll", "skirmisher"])
-    enemy(E + "summoner.tres", "enemy.summoner", "Troll Hexer",
-          "A bog troll shaman that calls spitting creatures from the mire and curses nearby foes.",
+    enemy(E + "troll_hexer.tres", "enemy.summoner", "Troll Hexer",
+          "A bog troll shaman that calls bloated Bog Spawn from the mire and curses nearby foes.",
           s["hexer"], "ranged", ["ability.enemy_summon", "ability.troll_hex_of_rot"], (0.48, 0.3, 0.6), ["enemy", "ranged", "troll", "summoner"])
-    enemy(E + "massive_ogre.tres", "enemy.massive_ogre", "Ogre Juggernaut",
-          "A colossal armored ogre that swells into a life-draining bloodrage once it is hurt.",
-          s["juggernaut"], "melee", ["ability.massive_ogre_rage"], (0.48, 0.24, 0.14), ["enemy", "melee", "ogre", "heavy"])
-    enemy(E + "troll_priest.tres", "enemy.troll_priest", "Troll Witch Doctor",
+    enemy(E + "troll_witch_doctor.tres", "enemy.troll_priest", "Troll Witch Doctor",
           "A durable troll mystic that mends its kin and spreads lasting venom across new targets.",
           s["witch"], "ranged", ["ability.troll_priest_heal", "ability.troll_priest_poison"], (0.34, 0.58, 0.2), ["enemy", "ranged", "support", "troll", "priest"])
     enemy(E + "ogre_bonebreaker.tres", "enemy.ogre_bonebreaker", "Ogre Bonebreaker",
           "A scarred ogre champion that leaps over the front line to smash the archers and priests behind it.",
           s["bonebreaker"], "melee", ["ability.ogre_bone_leap"], (0.72, 0.3, 0.16), ["enemy", "melee", "ogre", "elite"])
     enemy(E + "troll_berserker.tres", "enemy.troll_berserker", "Troll Berserker",
-          "A fast, frenzied troll whose blood knits its wounds shut with every blow it takes.",
-          s["berserker"], "melee", ["ability.troll_blood", "ability.troll_berserk"], (0.3, 0.55, 0.36), ["enemy", "melee", "troll", "regeneration"])
-    enemy(E + "ogre_drummer.tres", "enemy.ogre_drummer", "Ogre War-Drummer",
-          "A drummer whose dread rhythm saps the enemy's strikes while it shields wounded ogres.",
-          s["drummer"], "ranged", ["ability.ogre_dread_drums", "ability.ogre_war_chant"], (0.78, 0.56, 0.26), ["enemy", "ranged", "ogre", "support"])
-    enemy(E + "bog_spitter.tres", "enemy.bog_spitter", "Bog Spitter",
-          "A small mire creature called by Troll Hexers. Its sticky spit slows its prey.",
-          s["spitter"], "ranged", ["ability.bog_sticky_spit"], (0.42, 0.62, 0.4), ["enemy", "summon", "ranged", "troll"])
+          "A fast, frenzied troll that runs past the front line to tear into archers and priests. Its blood knits its wounds shut with every blow it takes.",
+          s["berserker"], "melee", ["ability.troll_blood", "ability.troll_berserk"], (0.3, 0.55, 0.36), ["enemy", "melee", "troll", "regeneration"], targeting="back_line")
     enemy(E + "bog_spawn.tres", "enemy.bog_spawn", "Bog Spawn",
-          "A bloated mire creature raised by the Bog King. It bursts in a spray of rot when slain.",
+          "A bloated mire creature raised by the Bog King and Troll Hexers. It bursts in a spray of rot when slain.",
           s["spawn"], "melee", ["ability.bog_rotten_burst"], (0.46, 0.56, 0.24), ["enemy", "summon", "melee", "troll"])
-    enemy(E + "bog_king.tres", "enemy.bog_king", "Mugrot the Bog King",
+    enemy(E + "mugrot_the_bog_king.tres", "enemy.bog_king", "Mugrot the Bog King",
           "Mini-boss. An ancient troll chieftain whose blood never stops healing and whose mire never stops spawning.",
           s["bog_king"], "melee", ["ability.bog_king_call", "ability.bog_king_slam", "ability.bog_king_troll_blood"], (0.3, 0.45, 0.2),
           ["enemy", "boss", "miniboss", "melee", "troll"],
@@ -355,9 +309,8 @@ def define_enemies(t, s):
 
 N = "content/demo/encounters/act_1/"
 SHORT = {
-    "B": "enemy.raider", "S": "enemy.crossbowman", "H": "enemy.summoner", "J": "enemy.massive_ogre",
-    "W": "enemy.troll_priest", "K": "enemy.ogre_bonebreaker", "Z": "enemy.troll_berserker",
-    "D": "enemy.ogre_drummer", "M": "enemy.bog_king", "X": "enemy.iron_warden",
+    "B": "enemy.raider", "H": "enemy.summoner", "W": "enemy.troll_priest", "K": "enemy.ogre_bonebreaker",
+    "Z": "enemy.troll_berserker", "M": "enemy.bog_king", "X": "enemy.iron_warden",
 }
 
 
@@ -437,33 +390,33 @@ S = {
 
 # (file, id, name, description, tier, min, max, gold, power, units, props, {reinf...})
 ENC = [
-    ("tutorial_volley.tres", "encounter.tutorial_volley", "Ogres on the Road", "A small ogre band blocks the old road out of the ruins.", "Low", 0, 0, 110, 1.0, "5B", ["Ogre Brutes only", "Skull Crack stuns your front line"]),
-    ("raider_line.tres", "encounter.raider_line", "Brute Patrol", "Ogre Brutes on patrol with a single troll scout.", "Low", 1, 3, 120, 1.55, "5B 1S", ["Dense melee front", "One spear-thrower hunting your back line"]),
-    ("spear_ambush.tres", "encounter.spear_ambush", "Spear Ambush", "Trolls in the dunes rain spears on anyone who wanders too far behind.", "Low", 1, 3, 125, 0.83, "2B 4S", ["Four Headhunters target your back line", "Thin front"]),
-    ("hexers_mire.tres", "encounter.hexers_mire", "Hexer's Mire", "Troll Hexers keep calling spitters from a stinking bog.", "Low", 2, 4, 125, 1.5, "3B 3H", ["Endless Bog Spitters", "Kill the Hexers first"]),
-    ("lone_juggernaut.tres", "encounter.lone_juggernaut", "Lone Juggernaut", "A Juggernaut and its keepers. More brutes wait over the dune.", "Low", 1, 3, 130, 1.76, "1J 2B", ["Bloodraging heavy"], {"reinf": "2B", "threshold": 1, "entry": 1}),
+    ("ogres_on_the_road.tres", "encounter.tutorial_volley", "Ogres on the Road", "A small ogre band blocks the old road out of the ruins.", "Low", 0, 0, 110, 1.4, "5B", ["Ogre Brutes only", "Skull Crack stuns your front line"]),
+    ("brute_patrol.tres", "encounter.raider_line", "Brute Patrol", "Ogre Brutes on patrol with a single Troll Hexer.", "Low", 1, 3, 120, 1.55, "5B 1H", ["Dense melee front", "One Hexer calling Bog Spawn"]),
+    ("spear_ambush.tres", "encounter.spear_ambush", "Raiding Party", "A raiding party led by a scarred champion.", "Low", 1, 3, 125, 1.73, "4B 1K", ["A Bonebreaker leaps into your back line", "Brutes hold the front"]),
+    ("hexers_mire.tres", "encounter.hexers_mire", "Hexer's Mire", "Troll Hexers keep calling Bog Spawn from a stinking bog.", "Low", 2, 4, 125, 0.9, "3B 3H", ["Endless Bog Spawn", "Kill the Hexers first"]),
+    ("lone_juggernaut.tres", "encounter.lone_juggernaut", "Brute Vanguard", "A few brutes scout ahead. More wait over the dune.", "Low", 1, 3, 130, 2.75, "3B", ["Reinforcements over the dune"], {"reinf": "2B", "threshold": 1, "entry": 1}),
     ("berserker_pack.tres", "encounter.berserker_pack", "Berserker Pack", "Fast trolls that regenerate unless you burst them down.", "Moderate", 3, 6, 150, 1.45, "5Z", ["Troll Blood regeneration", "Berserk when struck"]),
-    ("ogre_summon.tres", "encounter.ogres_attack", "Ogres Attack", "Juggernauts escort two Hexers while brutes follow behind.", "Moderate", 3, 6, 155, 1.31, "2J 2H", ["Two Juggernauts"], {"reinf": "4B", "threshold": 2, "entry": 1}),
-    ("witch_escort.tres", "encounter.witch_escort", "Witch Doctor's Escort", "Brutes guard two Witch Doctors who mend every wound.", "Moderate", 4, 6, 155, 1.15, "4B 2W", ["Healing and venom", "Brutes shield the casters"]),
-    ("war_drums.tres", "encounter.war_drums", "War Drums", "The drums sound over the wasteland and your soldiers' blows grow heavy.", "Moderate", 4, 7, 160, 1.01, "4B 2D 2S", ["Dread Drums slow your attacks", "War Chant shields the wounded"]),
-    ("warband.tres", "encounter.warband", "Marching Warband", "A full ogre warband on the march.", "Moderate", 4, 7, 165, 0.94, "6B 3S", ["Large mixed force", "Durable melee majority"]),
-    ("bonebreakers.tres", "encounter.bonebreakers", "Bonebreakers", "Ogre champions that leap straight into your archers.", "Moderate", 4, 7, 170, 1.19, "2K 3B 1S", ["Leaps into your back line", "Stuns on landing"]),
-    ("bolt_screen.tres", "encounter.bolt_screen", "Spear Wall", "A screen of spear-throwers behind a line of brutes.", "High", 5, 8, 195, 0.9, "3B 6S", ["Six Headhunters", "Rewards fast pressure"]),
-    ("reinforced_assault.tres", "encounter.reinforced_assault", "Encirclement", "The first wave pins you down while the second closes in from every side.", "High", 5, 10, 205, 1.02, "3B 2S", ["Second wave from all sides"], {"reinf": "1K 2B 2S", "threshold": 2, "entry": 0}),
-    ("TEST BATTLE.tres", "encounter.crossfire", "Troll Warcamp", "A troll warcamp: berserkers in front, witch doctors and spears behind.", "High", 6, 10, 210, 0.77, "3B 2Z 2W 2S", ["Healing support", "Regenerating berserkers"]),
-    ("blood_frenzy.tres", "encounter.blood_frenzy", "Blood Frenzy", "A Juggernaut leads a frenzied pack. More berserkers howl in the distance.", "High", 6, 11, 215, 0.86, "1J 3Z 1W", ["Bloodrage and regeneration"], {"reinf": "3Z", "threshold": 2, "entry": 1}),
-    ("bog_rising.tres", "encounter.bog_rising", "Bog Rising", "Hexers flood the field with spitters while berserkers charge.", "High", 7, 11, 220, 0.86, "3H 3Z 1W", ["Endless Bog Spitters"], {"reinf": "4B", "threshold": 2, "entry": 0}),
-    ("juggernaut_line.tres", "encounter.juggernaut_line", "Juggernaut Line", "Three Juggernauts march to the beat of the drums.", "High", 7, 11, 230, 0.8, "3J 2D", ["Three bloodraging heavies", "Dread Drums"]),
-    ("night_raid.tres", "encounter.night_raid", "Night Raid", "Bonebreakers and berserkers strike your camp at night.", "High", 8, 11, 235, 0.92, "2K 3Z", ["Back-line leaps"], {"reinf": "2K 2S", "threshold": 2, "entry": 1}),
-    ("bog_king_court.tres", "encounter.bog_king_court", "Court of the Bog King", "Mini-boss. Mugrot the Bog King holds court in his mire.", "Elite", 5, 7, 280, 0.92, "1M 2Z 2S", ["Mini-boss: regenerating troll chieftain", "Bog Spawn burst on death"], {"reinf": "3B", "threshold": 2, "entry": 1}),
-    ("bog_king_revenge.tres", "encounter.bog_king_revenge", "Mugrot's Revenge", "Mini-boss. The Bog King returns with his witch doctors and juggernauts.", "Elite", 9, 11, 320, 0.75, "1M 1W 2J", ["Mini-boss with healers"], {"reinf": "3Z", "threshold": 2, "entry": 0}),
-    ("great_hunt.tres", "encounter.great_hunt", "The Great Hunt", "The whole warband hunts you across the wasteland.", "Elite", 8, 11, 300, 0.75, "5B 3S 2D", ["Huge army"], {"reinf": "3K 2Z", "threshold": 2, "entry": 0}),
-    ("siege_of_bones.tres", "encounter.siege_of_bones", "Siege of Bones", "Bonebreakers storm your line behind a hail of spears.", "Elite", 9, 11, 310, 0.7, "4K 2D 4S", ["Four leaping champions"], {"reinf": "3B", "threshold": 2, "entry": 1}),
+    ("ogres_attack.tres", "encounter.ogres_attack", "Ogres Attack", "Brutes escort two Hexers while more brutes follow behind.", "Moderate", 3, 6, 155, 1.31, "3B 2H", ["Hexers call Bog Spawn"], {"reinf": "4B", "threshold": 2, "entry": 1}),
+    ("witch_doctors_escort.tres", "encounter.witch_escort", "Witch Doctor's Escort", "Brutes guard two Witch Doctors who mend every wound.", "Moderate", 4, 6, 155, 0.92, "4B 2W", ["Healing and venom", "Brutes shield the casters"]),
+    ("war_drums.tres", "encounter.war_drums", "Hex Circle", "Hexers curse your soldiers while a witch doctor keeps the brutes standing.", "Moderate", 4, 7, 160, 1.01, "4B 2H 1W", ["Bog Curse slows your attacks", "Healing support"]),
+    ("marching_warband.tres", "encounter.warband", "Marching Warband", "A full ogre warband on the march.", "Moderate", 4, 7, 165, 0.7, "6B 2H 1W", ["Large mixed force", "Durable melee majority"]),
+    ("bonebreakers.tres", "encounter.bonebreakers", "Bonebreakers", "Ogre champions that leap straight into your archers.", "Moderate", 4, 7, 170, 1.55, "2K 4B", ["Leaps into your back line", "Stuns on landing"]),
+    ("spear_wall.tres", "encounter.bolt_screen", "Witch Wall", "Witch doctors chant behind a wall of brutes, mending every wound.", "High", 5, 8, 195, 0.9, "3B 3W 1H", ["Three healers", "Rewards fast pressure"]),
+    ("encirclement.tres", "encounter.reinforced_assault", "Encirclement", "The first wave pins you down while the second closes in from every side.", "High", 5, 10, 205, 1.02, "3B 1H 1W", ["Second wave from all sides"], {"reinf": "1K 3B 1H", "threshold": 2, "entry": 0}),
+    ("troll_warcamp.tres", "encounter.crossfire", "Troll Warcamp", "A troll warcamp: berserkers in front, witch doctors and a hexer behind.", "High", 6, 10, 210, 0.77, "3B 2Z 2W 1H", ["Healing support", "Regenerating berserkers"]),
+    ("blood_frenzy.tres", "encounter.blood_frenzy", "Blood Frenzy", "A Bonebreaker leads a frenzied pack. More berserkers howl in the distance.", "High", 6, 11, 215, 0.86, "1K 3Z 1W", ["Leaps and regeneration"], {"reinf": "3Z", "threshold": 2, "entry": 1}),
+    ("bog_rising.tres", "encounter.bog_rising", "Bog Rising", "Hexers flood the field with Bog Spawn while berserkers charge.", "High", 7, 11, 220, 0.86, "3H 3Z 1W", ["Endless Bog Spawn"], {"reinf": "4B", "threshold": 2, "entry": 0}),
+    ("juggernaut_line.tres", "encounter.juggernaut_line", "Bonebreaker Line", "Three Bonebreakers advance behind a pair of cursing Hexers.", "High", 7, 11, 230, 0.8, "3K 2H", ["Three leaping champions", "Bog Curse"]),
+    ("night_raid.tres", "encounter.night_raid", "Night Raid", "Bonebreakers and berserkers strike your camp at night.", "High", 8, 11, 235, 0.92, "2K 3Z", ["Back-line leaps"], {"reinf": "2K 2B", "threshold": 2, "entry": 1}),
+    ("court_of_the_bog_king.tres", "encounter.bog_king_court", "Court of the Bog King", "Mini-boss. Mugrot the Bog King holds court in his mire.", "Elite", 5, 7, 280, 0.92, "1M 2Z 1W", ["Mini-boss: regenerating troll chieftain", "Bog Spawn burst on death"], {"reinf": "3B", "threshold": 2, "entry": 1}),
+    ("mugrots_revenge.tres", "encounter.bog_king_revenge", "Mugrot's Revenge", "Mini-boss. The Bog King returns with his witch doctors and bonebreakers.", "Elite", 9, 11, 320, 0.75, "1M 1W 2K", ["Mini-boss with healers"], {"reinf": "3Z", "threshold": 2, "entry": 0}),
+    ("great_hunt.tres", "encounter.great_hunt", "The Great Hunt", "The whole warband hunts you across the wasteland.", "Elite", 8, 11, 300, 0.75, "5B 2H 1W", ["Huge army"], {"reinf": "3K 2Z", "threshold": 2, "entry": 0}),
+    ("siege_of_bones.tres", "encounter.siege_of_bones", "Siege of Bones", "Bonebreakers storm your line while hexers curse it and witch doctors mend the wounded.", "Elite", 9, 11, 310, 0.7, "4K 2H 2W", ["Four leaping champions"], {"reinf": "3B", "threshold": 2, "entry": 1}),
     ("endless_swamp.tres", "encounter.endless_swamp", "Endless Swamp", "Hexers, witch doctors and berserkers wait in a swamp that never ends.", "Elite", 8, 11, 300, 0.66, "2H 2W 4Z", ["Summons, healing and regeneration"], {"reinf": "3Z", "threshold": 2, "entry": 0}),
-    ("unknown_fog.tres", "encounter.unknown_fog", "Shapes in the Fog", "Something moves in the fog. You cannot tell what.", "Moderate", 1, 3, 200, 1.6, "3Z 2S", ["Composition concealed"], {"unknown": True}),
-    ("unknown_ambush.tres", "encounter.unknown_ambush", "Unknown Ambush", "Scouts report an ambush but not who is waiting.", "High", 6, 11, 340, 0.81, "4B 3S 1K", ["Composition concealed"], {"reinf": "2K 2Z", "threshold": 2, "entry": 0, "unknown": True}),
-    ("warden_guard.tres", "encounter.warden_guard", "The Iron Warden", "The ogre warlord of the wasteland waits with his guard.", "Boss", 0, 100, 300, 0.87, "1X 3B 2S 1D", ["Armored boss with Iron Resolve", "Dread Drums", "Balanced escort"], {"boss": True}),
-    ("warden_horde.tres", "encounter.warden_horde", "Warden's Last Stand", "The Iron Warden calls every ogre left in the wasteland.", "Boss", 0, 100, 450, 0.66, "1X 4B 1J", ["Armored boss"], {"reinf": "2K 4B", "threshold": 2, "entry": 0, "boss": True}),
+    ("shapes_in_the_fog.tres", "encounter.unknown_fog", "Shapes in the Fog", "Something moves in the fog. You cannot tell what.", "Moderate", 1, 3, 200, 1.6, "3Z 2H", ["Composition concealed"], {"unknown": True}),
+    ("unknown_ambush.tres", "encounter.unknown_ambush", "Unknown Ambush", "Scouts report an ambush but not who is waiting.", "High", 6, 11, 340, 0.81, "4B 2H 1K", ["Composition concealed"], {"reinf": "2K 2Z", "threshold": 2, "entry": 0, "unknown": True}),
+    ("iron_warden.tres", "encounter.warden_guard", "The Iron Warden", "The ogre warlord of the wasteland waits with his guard.", "Boss", 0, 100, 300, 1.22, "1X 3B 2H", ["Armored boss with Iron Resolve", "Bog Curse slows your attacks", "Balanced guard"], {"boss": True}),
+    ("wardens_last_stand.tres", "encounter.warden_horde", "Warden's Last Stand", "The Iron Warden calls every ogre left in the wasteland.", "Boss", 0, 100, 450, 1.06, "1X 5B", ["Armored boss"], {"reinf": "2K 4B", "threshold": 2, "entry": 0, "boss": True}),
 ]
 
 

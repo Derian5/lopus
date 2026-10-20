@@ -9,7 +9,7 @@ max_hp = 60.0
 damage = 0.0
 attack_speed = 0.05
 movement_speed = 2.0
-attack_range = 210.0
+attack_range = 270.0
 armor = 1.0
 
 [resource]
@@ -19,9 +19,7 @@ attack_type = &"ranged"
 attack_definition_id = &"attack.basic_ranged"
 ai_behavior = &"support"
 innate_ability_ids = Array[StringName]([&"ability.priest_heal"])
-available_ability_ids = Array[StringName]([])
-professionalism_thresholds = Array[int]([3, 6])
-professionalism_ability_ids = Array[StringName]([&"ability.priest_professionalism_cleansing_flame_tier_1", &"ability.priest_professionalism_cleansing_flame_tier_2"])
+available_ability_ids = Array[StringName]([&"ability.priest_professionalism_cleansing_flame_tier_1", &"ability.priest_professionalism_cleansing_flame_tier_2"])
 restriction_tags = Array[StringName]([&"soldier"])
 capacity_price = 120
 unlock_price = 200

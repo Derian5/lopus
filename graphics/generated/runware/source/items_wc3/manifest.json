@@ -1,0 +1,121 @@
+{
+  "model": "runware:400@2",
+  "width": 128,
+  "height": 128,
+  "steps": 4,
+  "outputFormat": "PNG",
+  "includeCost": true,
+  "budget_usd": 0.20,
+  "status": "complete",
+  "delivery_note": "Some errors and timeouts were followed by successful results in getTaskDetails. Query known task IDs before retrying. New requests explicitly use deliveryMethod sync.",
+  "reference_image": "https://im.runware.ai/image/os/a07dlim3/ws/3/ii/b92027b2-65d0-4c0e-9794-1dad598f3b08.png",
+  "reference_media_uuid": "b0d9713a-bc7a-435a-9c6b-6e4218a2388f",
+  "images": [
+    {
+      "slug": "butcher_cleaver",
+      "seed": 204001,
+      "taskUUID": "27fefb59-c74d-4070-83fe-98f2616195a8",
+      "url": "https://im.runware.ai/image/os/a01d21/ws/3/ii/cab228b8-6184-4f38-95b5-05def57adec2.png",
+      "cost": 0.00195,
+      "inputs": {"referenceImages": ["b0d9713a-bc7a-435a-9c6b-6e4218a2388f"]},
+      "positivePrompt": "Create a butcher's cleaver inventory icon in exactly the reference art style. Replace bottle with one massive chipped grey iron cleaver diagonally, rectangular blade with round hole, short brown leather handle, rusty edge. Match the coarse painted texture, angular shading, desaturated materials, sharp small edge highlights and almost-black irregular background. Classic Warcraft III item icon aesthetic. One large tightly framed object, readable silhouette. No bottle, text, frame, cartoon outlines, neon, halo, smooth gradients or scenery."
+    },
+    {
+      "slug": "executioner_gloves",
+      "seed": 204004,
+      "taskUUID": "e3672ad3-7e86-4099-9116-dedd35a15f0f",
+      "url": "https://im.runware.ai/image/os/a07dlim3/ws/3/ii/c5a683df-0fe4-4ab5-892b-2e6daf16573e.png",
+      "cost": 0.00195,
+      "positivePrompt": "Authentic early 2000s Warcraft III inventory equipment icon, 128 pixel square, gritty low-resolution hand-painted texture. One pair of heavy executioner's iron gauntlets with angular segmented steel plates and worn brown leather cuffs, three-quarter view, large tightly framed silhouette. Cold grey steel painted in rough broad planes, small hard white highlights, subtle rusty crimson nicks, deep shadows, strong light from upper left. Nearly black irregular charcoal background. Limited desaturated palette, serious medieval fantasy. No lettering, border, frame, smooth cartoon contours, neon, glow, scenery or character."
+    },
+    {
+      "slug": "traitor_stiletto",
+      "seed": 204006,
+      "taskUUID": "7c7b7883-52c4-486f-bf75-53ea7abc1141",
+      "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/b37e889c-eddd-4eb2-ae6c-11160d2762d0.png",
+      "cost": 0.00195,
+      "positivePrompt": "Authentic early 2000s Warcraft III inventory equipment icon aesthetic, gritty low-resolution hand-painted texture. TRAITOR'S STILETTO: one long narrow triangular dark steel dagger with a sharp point, thick short crossguard and worn purple leather grip, diagonal tightly framed composition. Angular steel facets, small hard silver edge highlights, deep hard shadows, subtle burgundy stains, muted desaturated colors. Strong directional light upper left. Large readable silhouette on almost-black irregular charcoal violet painted background. Rough painterly realism, not smooth cartoon art. No text, border, frame, neon, magical halo, scenery or hands."
+    },
+    {
+      "slug": "devourer_ring",
+      "seed": 204007,
+      "taskUUID": "5b52ee27-c1bd-45df-8606-94bb2dd9fd3f",
+      "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/af840790-8742-494e-90ae-d4bb755e1bd9.png",
+      "cost": 0.00195,
+      "positivePrompt": "Authentic early 2000s Warcraft III inventory equipment icon aesthetic, gritty low-resolution hand-painted texture. DEVOURER'S RING: one thick aged iron finger ring with its setting carved as a wide fanged mouth surrounding a dark red stone, three-quarter view, obvious open ring band. Large chunky silhouette tightly framed. Angular grey metal, worn bone-white teeth, restrained crimson gemstone, small hard silver highlights, deep hard shadows. Strong directional light upper left. Almost-black irregular charcoal brown painted background. Rough painterly realism, not smooth cartoon art. No text, border, frame, neon, magical halo, scenery or hands."
+    },
+    {
+      "slug": "censer_of_decay",
+      "seed": 204008,
+      "taskUUID": "d6d682f1-71a7-4d0d-9524-ebdf0cce6add",
+      "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/f67ebab0-c937-46b1-8279-75c4f1859333.png",
+      "cost": 0.00195,
+      "positivePrompt": "Authentic early 2000s Warcraft III inventory equipment icon aesthetic, gritty low-resolution hand-painted texture. CENSER OF DECAY: one heavy tarnished bronze incense censer, angular perforated metal bowl with pointed lid and three short thick chains gathered above. A faint small wisp of dirty olive smoke. Large chunky silhouette tightly framed. Coarse bronze planes with green patina, small hard ochre highlights, deep brown shadows, muted desaturated colors. Strong directional light upper left. Almost-black irregular charcoal olive painted background. Rough painterly realism, not smooth cartoon art. No text, border, frame, neon, bright halo, scenery or hands."
+    },
+    {
+      "slug": "vial_of_tears",
+      "seed": 104233,
+      "taskUUID": "9ed8650f-46eb-4f80-a2be-c215216cbc97",
+      "url": "https://im.runware.ai/image/os/a07dlim3/ws/3/ii/b92027b2-65d0-4c0e-9794-1dad598f3b08.png",
+      "cost": 0.00195,
+      "previously_approved_reference": true,
+      "positivePrompt": "Authentic early 2000s Warcraft III inventory equipment icon aesthetic, 128 pixel square, gritty low-resolution hand-painted texture. A rugged medieval alchemist's tear vial, squat angular teardrop-shaped thick smoky glass bottle tilted slightly diagonally, chunky dark brown cork and a battered iron collar. Half filled with muted pale blue liquid. The bottle is large and tightly framed, taking almost the whole icon. Faceted grey glass painted in hard broad planes, a few small sharp icy white highlights, cloudy dark blue liquid with one pale meniscus, rough worn cork and dull metal. Strong directional lighting from upper left, deep hard shadows, limited desaturated palette. Background almost black with subtle irregular slate blue painted texture, no rays, no magical halo. Classic RTS equipment thumbnail, rough angular game asset proportions and gritty detailed painted materials, not a polished illustration. No smooth gradients, no thick cartoon outlines, no neon, no bright cyan outline, no vector art, no cute shapes, no modern glossy 3D render, no lettering, no border, no frame, no scenery."
+    }
+  ],
+  "recovered_images": [
+    {"slug": "spinner_needle", "seed": 204102, "taskUUID": "c1cd3401-551b-4c12-9056-111111111102", "url": "https://im.runware.ai/image/os/a01d21/ws/3/ii/16440918-dc4f-4c33-abdb-09a4472ebb0d.png", "cost": 0.00195},
+    {"slug": "hangman_bow", "seed": 204103, "taskUUID": "c1cd3401-551b-4c12-9056-111111111103", "url": "https://im.runware.ai/image/os/a08dlim3/ws/3/ii/ae8f1cb7-9394-40bc-acf5-48bdf9a38fd5.png", "cost": 0.00195},
+    {"slug": "cathedral_hammer", "seed": 204109, "taskUUID": "c1cd3401-551b-4c12-9056-111111111109", "url": "https://im.runware.ai/image/os/a08dlim3/ws/3/ii/90503bb9-4fa8-470a-afe1-52f11f8222e2.png", "cost": 0.00195},
+    {"slug": "shadow_monk_cloak", "seed": 204112, "taskUUID": "c1cd3401-551b-4c12-9056-111111111112", "url": "https://im.runware.ai/image/os/a02d21/ws/3/ii/e752ba7c-6aa1-4ce4-8e82-1a34977f39d5.png", "cost": 0.00195},
+    {"slug": "thorn_crown", "seed": 204113, "taskUUID": "c1cd3401-551b-4c12-9056-111111111113", "url": "https://im.runware.ai/image/os/a02d21/ws/3/ii/91f136cb-9c5f-4e49-818b-914a667db212.png", "cost": 0.00195},
+    {"slug": "bone_bell", "seed": 204114, "taskUUID": "c1cd3401-551b-4c12-9056-111111111114", "url": "https://im.runware.ai/image/os/a02d21/ws/3/ii/1cef7799-0447-469d-beaa-f78fab0cb3e2.png", "cost": 0.00195},
+    {"slug": "plague_hound_hide", "seed": 204015, "taskUUID": "a4c49101-f2a7-4b12-8301-111111111115", "url": "https://im.runware.ai/image/os/a09dlim3/ws/3/ii/3316c74a-0eff-40e2-b44d-2848d51342f0.png", "cost": 0.00195},
+    {"slug": "spiked_cuirassier", "seed": 204116, "taskUUID": "c1cd3401-551b-4c12-9056-111111111116", "url": "https://im.runware.ai/image/os/a02d21/ws/3/ii/95d9c738-c5ae-40de-8e31-9123169f742b.png", "cost": 0.00195},
+    {"slug": "iron_maiden", "seed": 204117, "taskUUID": "c1cd3401-551b-4c12-9056-111111111117", "url": "https://im.runware.ai/image/os/a02d21/ws/3/ii/6c73581d-5946-4bbc-ad66-a6c6e30af0d6.png", "cost": 0.00195},
+    {"slug": "boar_heart", "seed": 204118, "taskUUID": "c1cd3401-551b-4c12-9056-111111111118", "url": "https://im.runware.ai/image/os/a02d21/ws/3/ii/34c42f1c-95eb-4744-abe6-a07047fca92e.png", "cost": 0.00195},
+    {"slug": "beads_of_diligence", "seed": 204220, "taskUUID": "dc07c942-7d16-4c62-bf8c-21bf15d1c120", "url": "https://im.runware.ai/image/os/a09dlim3/ws/3/ii/6f23cf27-932a-4112-a457-90a5655068f1.png", "cost": 0.00195, "deliveryMethod": "sync"},
+    {"slug": "canon_shackles", "seed": 204121, "taskUUID": "c1cd3401-551b-4c12-9056-111111111121", "url": "https://im.runware.ai/image/os/a06dlim3/ws/3/ii/a0cb045f-ae45-49ab-8c86-e45991798e67.png", "cost": 0.00221},
+    {"slug": "seal_of_oblivion", "seed": 204123, "taskUUID": "c1cd3401-551b-4c12-9056-111111111123", "url": "https://im.runware.ai/image/os/a06dlim3/ws/3/ii/eb637d4f-c290-47e6-95fc-f7770b1c91c8.png", "cost": 0.00195},
+    {"slug": "book_of_damned_names", "seed": 204124, "taskUUID": "c1cd3401-551b-4c12-9056-111111111124", "url": "https://im.runware.ai/image/os/a06dlim3/ws/3/ii/6d53915e-3ba3-4fb4-b89a-d8282e7c236b.png", "cost": 0.00195}
+  ],
+  "new_delivery_method": "sync",
+  "style": "Classic Warcraft III inventory equipment icon, gritty low-resolution hand-painted texture, angular muted materials, small hard pale highlights, deep hard shadows, upper-left directional lighting, nearly black irregular charcoal painted background. Large tightly framed readable silhouette. No lettering, border, frame, neon, glow, smooth cartoon outlines or scenery.",
+  "prompt_note": "Original requests for every image, including full positivePrompt, can be audited by taskUUID using getTaskDetails. Subject descriptions below summarize the object-specific prompt; all share the style above.",
+  "new_images": [
+    {"slug": "gravedigger_fang", "seed": 304005, "taskUUID": "ea380312-b616-45cb-bd3e-555555555505", "url": "https://im.runware.ai/image/os/a02d21/ws/3/ii/26b35df7-3fca-4a64-ab0a-46a460f7b866.png", "cost": 0.00195, "subject": "Broad curved ivory fang dagger, jagged spine, black leather grip, dirt-stained cracks."},
+    {"slug": "ash_shroud", "seed": 304010, "taskUUID": "ea380312-b616-45cb-bd3e-555555555510", "url": "https://im.runware.ai/image/os/a09dlim3/ws/3/ii/fdc2e069-c434-4344-90fe-699a31f69b1a.png", "cost": 0.00117, "subject": "Heavy ash-grey burial mantle, broad ragged cloth folds, scorched hem, black iron clasp."},
+    {"slug": "martyr_ribs", "seed": 304111, "taskUUID": "ea380312-b616-45cb-bd3e-555555555611", "url": "https://im.runware.ai/image/os/a09dlim3/ws/3/ii/ee854a49-7bd7-4c10-bc2b-5ae167ef1f97.png", "cost": 0.00117, "subject": "Wearable ribcage breastplate of six large ivory ribs and central sternum, brown leather straps."},
+    {"slug": "lamp_of_penance", "seed": 304019, "taskUUID": "ea380312-b616-45cb-bd3e-555555555519", "url": "https://im.runware.ai/image/os/a09dlim3/ws/3/ii/6ea14e7b-9d32-4cff-ad3b-cc1d6242446a.png", "cost": 0.00117, "subject": "Squat iron lantern, arched handle, four black ribs, dirty amber glass and a small candle."},
+    {"slug": "crimson_mass_chalice", "seed": 304025, "taskUUID": "ea380312-b616-45cb-bd3e-555555555525", "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/aaa81ba6-d063-4cf7-adbe-d5197c360e19.png", "cost": 0.00117, "subject": "Heavy tarnished silver chalice, broad foot, angular cup of crimson liquid and dull red gemstone."},
+    {"slug": "plague_doctor_mask", "seed": 304026, "taskUUID": "ea380312-b616-45cb-bd3e-555555555526", "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/3cc716b9-51c4-4c34-bcc0-2e6b48302fa5.png", "cost": 0.00117, "subject": "Dark brown beaked leather mask, long angular beak, two round dirty lenses and short iron studs."},
+    {"slug": "black_bile_flask", "seed": 304027, "taskUUID": "ea380312-b616-45cb-bd3e-555555555527", "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/35d2931b-cb26-4c8b-9d39-aacff28603bc.png", "cost": 0.00117, "subject": "Broad smoky green glass flask, thick cork, iron collar, leather belt loop, opaque black olive liquid."},
+    {"slug": "horn_of_besieged", "seed": 304028, "taskUUID": "ea380312-b616-45cb-bd3e-555555555528", "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/937ee3c5-2e6c-4dca-936d-f0d6da460cc2.png", "cost": 0.00195, "subject": "Curved ivory war horn, broad dark bell, two dull bronze bands and dark leather grip."},
+    {"slug": "banner_of_fallen", "seed": 304029, "taskUUID": "ea380312-b616-45cb-bd3e-555555555529", "url": "https://im.runware.ai/image/os/a07dlim3/ws/3/ii/5bceeb34-428a-4566-b820-a96f2c053c1e.png", "cost": 0.00117, "subject": "Torn faded burgundy banner on iron crossbar, pale skull emblem, three ragged fabric ends."},
+    {"slug": "necromagister_skull", "seed": 304030, "taskUUID": "ea380312-b616-45cb-bd3e-555555555530", "url": "https://im.runware.ai/image/os/a07dlim3/ws/3/ii/2b446fd9-fa24-4c8c-9873-9f9b242e6845.png", "cost": 0.00117, "subject": "Weathered human skull, thick iron brow band, dull violet gemstone, deep eye sockets and chipped teeth."},
+    {"slug": "bell_of_last_night", "seed": 304031, "taskUUID": "ea380312-b616-45cb-bd3e-555555555531", "url": "https://im.runware.ai/image/os/a07dlim3/ws/3/ii/4a6978d4-0ffb-4146-9b25-7e0f121d6632.png", "cost": 0.00117, "subject": "Heavy black church handbell, chipped silver rim, ornate loop handle and dull violet inset."},
+    {"slug": "rusted_talisman", "seed": 304032, "taskUUID": "ea380312-b616-45cb-bd3e-555555555532", "url": "https://im.runware.ai/image/os/a07dlim3/ws/3/ii/dafa9599-f44e-4c82-acd1-997ab5e1937b.png", "cost": 0.00117, "subject": "Teardrop-shaped rusty iron pendant, broken chain, hollow center and three bottom notches."},
+    {"slug": "recruiter_signet", "seed": 304033, "taskUUID": "ea380312-b616-45cb-bd3e-555555555533", "url": "https://im.runware.ai/image/os/a05d22/ws/3/ii/c4dac9d9-0ba3-4678-9427-a8739ecf7c0a.png", "cost": 0.00117, "subject": "Aged silver signet ring, broad square face with raised clenched gauntlet emblem, open ring band."},
+    {"slug": "executor_seal", "seed": 304034, "taskUUID": "ea380312-b616-45cb-bd3e-555555555534", "url": "https://im.runware.ai/image/os/a05d22/ws/3/ii/4c82b820-41cc-42de-b9c5-cc7edf2a0e4b.png", "cost": 0.00117, "subject": "Heavy bronze seal stamp, thick wooden handle, square base and dull red wax."},
+    {"slug": "bone_shepherd_staff", "seed": 304035, "taskUUID": "ea380312-b616-45cb-bd3e-555555555535", "url": "https://im.runware.ai/image/os/a05d22/ws/3/ii/9bd3222f-d99e-4c80-a8b2-7f7975df0d1a.png", "cost": 0.00117, "subject": "Crooked wooden shepherd staff, thick hooked ivory top, leather bindings and hanging jawbone."},
+    {"slug": "pride_crown", "seed": 304036, "taskUUID": "ea380312-b616-45cb-bd3e-555555555536", "url": "https://im.runware.ai/image/os/a05d22/ws/3/ii/692ccfc8-cc80-49dc-a20d-e20e009f1454.png", "cost": 0.00117, "subject": "Heavy gold crown with five tall pointed tines, dark silver lower band and central purple gemstone."},
+    {"slug": "envy_mask", "seed": 304037, "taskUUID": "ea380312-b616-45cb-bd3e-555555555537", "url": "https://im.runware.ai/image/os/a06dlim3/ws/3/ii/c1636bce-17b7-4ce0-a399-fe155278ff86.png", "cost": 0.00117, "subject": "Angular dark silver theatrical half-mask, asymmetric sly smile and dull emerald inset."},
+    {"slug": "wrath_axe", "seed": 304038, "taskUUID": "ea380312-b616-45cb-bd3e-555555555538", "url": "https://im.runware.ai/image/os/a06dlim3/ws/3/ii/e7834566-45bd-4666-83b5-1d5bb12f27bb.png", "cost": 0.00117, "subject": "Massive brutal crimson single-bladed axe, chipped steel head, pale edge, thick black leather handle."},
+    {"slug": "despair_chains", "seed": 304039, "taskUUID": "ea380312-b616-45cb-bd3e-555555555539", "url": "https://im.runware.ai/image/os/a06dlim3/ws/3/ii/15f52b67-d446-4f35-b618-5da8ac3b07b6.png", "cost": 0.00117, "subject": "Coil of five oversized dark iron chain links and a closed wrist shackle inset with dull blue stone."},
+    {"slug": "greed_idol", "seed": 304140, "taskUUID": "ea380312-b616-45cb-bd3e-555555555640", "url": "https://im.runware.ai/image/os/a04d20/ws/3/ii/8da4e46f-5a3e-4147-8bab-e6a4a60903f2.png", "cost": 0.00117, "subject": "Squat blocky ancient golden idol, crowned skull face, broad body and two arms clasping a coin."},
+    {"slug": "gluttony_maw", "seed": 304041, "taskUUID": "ea380312-b616-45cb-bd3e-555555555541", "url": "https://im.runware.ai/image/os/a05d22/ws/3/ii/41457313-ee56-44fc-b2c7-4f0b134966fb.png", "cost": 0.00117, "subject": "Monstrous jawbone relic, two broad curved jaws framing six thick irregular fangs and dark mouth."},
+    {"slug": "lust_veil", "seed": 304042, "taskUUID": "ea380312-b616-45cb-bd3e-555555555542", "url": "https://im.runware.ai/image/os/a05d22/ws/3/ii/bcd5c733-6f7d-4909-a4a0-e5fa85db3a3f.png", "cost": 0.00117, "subject": "Folded dark scarlet silk veil, broad triangular cloth folds, silver clasp and three dark beads."}
+  ],
+  "historical_failed_or_unresolved_tasks": [
+    {"slug": "spinner_needle", "status": "MCP timeout twice, task UUID not returned"},
+    {"slug": "hangman_bow", "status": "MCP timeout, task UUID not returned"},
+    {"slug": "gravedigger_fang", "status": "MCP timeout, task UUID not returned"},
+    {"slug": "cathedral_hammer", "status": "MCP timeout, task UUID not returned"},
+    {"slug": "ash_shroud", "status": "MCP timeout, task UUID not returned"},
+    {"slug": "martyr_ribs", "status": "unknown imageInference error, task UUID not returned"},
+    {"slug": "shadow_monk_cloak", "status": "MCP timeout, task UUID not returned"},
+    {"slug": "thorn_crown", "taskUUID": "a4c49101-f2a7-4b12-8301-111111111113", "status": "failedModelLoad"},
+    {"slug": "bone_bell", "taskUUID": "a4c49101-f2a7-4b12-8301-111111111114", "status": "internalError"},
+    {"slug": "plague_hound_hide", "taskUUID": "a4c49101-f2a7-4b12-8301-111111111115", "status": "response null after MCP timeout; query before retry"},
+    {"slug": "spiked_cuirassier", "taskUUID": "a4c49101-f2a7-4b12-8301-111111111116", "status": "failedModelLoad"}
+  ]
+}

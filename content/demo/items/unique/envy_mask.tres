@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/envy_mask.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+
+[sub_resource type="Resource" id="Stat0"]
+script = ExtResource("3")
+stat = "max_hp"
+operation = 0
+value = 450.0
+
+[sub_resource type="Resource" id="Stat1"]
+script = ExtResource("3")
+stat = "attack_speed"
+operation = 2
+value = 60.0
+
+[sub_resource type="Resource" id="Stat2"]
+script = ExtResource("3")
+stat = "dodge"
+operation = 0
+value = 25.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+category = 4
+passive_effects = Array[ExtResource("3")]([SubResource("Stat0"), SubResource("Stat1"), SubResource("Stat2")])
+ability_ids = Array[StringName]([&"ability.item_envy_mask"])
+allowed_hero_ids = Array[StringName]([&"hero.army_support"])
+price = 700
+sell_price = 350
+id = &"item.envy_mask"
+display_name = "Mask of Stolen Joy"
+description = "Forged for a single Sin."
+tags = Array[StringName]([&"item", &"hero", &"unique", &"unique"])

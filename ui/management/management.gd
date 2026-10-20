@@ -20,6 +20,8 @@ var field_view := false
 
 
 func _ready() -> void:
+	%SelectedPortrait.resized.connect(_update_portrait_shader_size)
+	_update_portrait_shader_size()
 	%TargetClosestButton.pressed.connect(_set_targeting_behavior.bind(&"closest"))
 	%TargetFarthestButton.pressed.connect(_set_targeting_behavior.bind(&"farthest"))
 	%AvoidDamageButton.pressed.connect(_set_damage_avoidance.bind(true))
@@ -146,7 +148,7 @@ func _refresh_roster() -> void:
 		var definition := _registry().get_definition(hero.definition_id) as HeroDefinition
 		var state_suffix := "" if hero.life_state == HeroState.ALIVE else "  [%s]" % String(hero.life_state).to_upper()
 		var hero_label := definition.display_name + state_suffix
-		_add_roster_row("H", definition.placeholder_color, hero_label, definition.id, "hero", index)
+		_add_roster_row(hero_label, definition.id, "hero", index)
 	for job_id in roster_job_ids:
 		var job := _registry().get_definition(job_id, false) as JobDefinition
 		if job == null:
@@ -158,6 +160,9 @@ func _refresh_roster() -> void:
 		heading.theme_type_variation = &"LedgerButton"
 		heading.custom_minimum_size.y = 42.0
 		heading.content_id = job.id
+		heading.icon = _market_icon_texture(job, &"job_capacity")
+		heading.expand_icon = true
+		heading.add_theme_constant_override("icon_max_width", 28)
 		heading.accepted_sources = [&"soldier"]
 		heading.target_payload = {"target": &"job", "job_id": job_id}
 		heading.payload_dropped.connect(_on_management_drop)
@@ -167,12 +172,10 @@ func _refresh_roster() -> void:
 			var soldier := run_state.soldiers[index]
 			if soldier.current_job_id == job_id:
 				var soldier_label := soldier.display_name(job.display_name)
-				_add_roster_row(job.display_name.left(1).to_upper(), job.placeholder_color, soldier_label, job.id, "soldier", index)
+				_add_roster_row(soldier_label, job.id, "soldier", index)
 
 
 func _add_roster_row(
-	letter: String,
-	color: Color,
 	label: String,
 	content_id: StringName,
 	kind: String,
@@ -189,13 +192,12 @@ func _add_roster_row(
 		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(badge)
 	else:
-		var icon := Label.new()
+		var icon := TextureRect.new()
 		icon.custom_minimum_size = Vector2(34, 34)
-		icon.text = letter
-		icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		icon.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		icon.add_theme_color_override("font_color", color.lightened(0.45))
-		icon.add_theme_stylebox_override("normal", UiStyle.chamfer_box(Color(color.r * 0.2, color.g * 0.2, color.b * 0.22, 0.95), Color(color.r, color.g, color.b, 0.8), 2, 8, Color(0, 0, 0, 0), 0, Vector4(0, 0, 0, 0)))
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon.texture = _market_icon_texture(_registry().get_definition(content_id, false), &"job_capacity")
 		row.add_child(icon)
 	var button: ContentButton
 	if kind == "soldier":
@@ -256,7 +258,7 @@ func _refresh_selected() -> void:
 		var definition := registry.get_definition(hero.definition_id) as HeroDefinition
 		var snapshot := CombatSnapshotBuilder.build_hero(hero, run_state.inventory, registry)
 		snapshot = _army_snapshot(hero.unique_id, snapshot)
-		_set_selected_portrait(definition.portrait, definition.placeholder_color, definition.display_name.left(1))
+		_set_selected_portrait(definition.portrait, definition.placeholder_color, definition.display_name.left(1), definition, hero.life_state == HeroState.DEAD)
 		%SelectedTitle.text = definition.display_name.to_upper()
 		%DetailsLabel.text = "HERO  -  LEVEL %d  -  XP %d  -  STATE: %s" % [hero.level, hero.xp, String(hero.life_state).to_upper()]
 		_set_stat_values(snapshot.stats)
@@ -274,8 +276,7 @@ func _refresh_selected() -> void:
 	elif selected_kind == "soldier" and selected_index < run_state.soldiers.size():
 		var soldier := run_state.soldiers[selected_index]
 		var job := registry.get_definition(soldier.current_job_id) as JobDefinition
-		var professionalism_id := CombatSnapshotBuilder.professionalism_ability_id(job, _assigned_count(job.id))
-		var snapshot := CombatSnapshotBuilder.build_soldier(soldier, _job_build(soldier.current_job_id), registry, professionalism_id)
+		var snapshot := CombatSnapshotBuilder.build_soldier(soldier, _job_build(soldier.current_job_id), registry)
 		snapshot = _army_snapshot(soldier.unique_id, snapshot)
 		_set_selected_portrait(null, job.placeholder_color, job.display_name.left(1))
 		%SelectedTitle.text = soldier.display_name(job.display_name).to_upper()
@@ -303,6 +304,8 @@ func _refresh_selected() -> void:
 			_assigned_count(job.id), "unlimited" if job.id == &"job.militia" else str(_capacity(job.id)),
 		]
 		%StatsGrid.visible = false
+		if %StatsGrid.get_parent().has_node("SecondaryStats"):
+			%StatsGrid.get_parent().get_node("SecondaryStats").visible = false
 		%ResurrectionButton.visible = false
 		%JobBuildControls.visible = true
 		%BehaviorControls.visible = false
@@ -334,13 +337,40 @@ func _set_portrait_veterancy(level: int) -> void:
 	insignia.visible = level >= 0
 
 
-func _set_selected_portrait(texture: Texture2D, color: Color, glyph: String) -> void:
+func _set_selected_portrait(texture: Texture2D, color: Color, glyph: String, hero: HeroDefinition = null, is_dead := false) -> void:
 	_set_portrait_veterancy(-1)
-	%SelectedPortrait.texture = texture
+	%SelectedPortrait.texture = _management_portrait_crop(texture)
 	%SelectedPortrait.visible = texture != null
 	%PortraitFallback.visible = texture == null
 	%PortraitFallback.text = glyph.to_upper()
 	%PortraitFallback.add_theme_color_override("font_color", color.lightened(0.25))
+	%SelectedHeroCrest.visible = hero != null
+	if hero != null:
+		%SelectedHeroCrest.texture = HeroSelectionCard.atlas_texture(HeroSelectionCard.BADGE_REGIONS[HeroSelectionCard.identity_index_of(hero)])
+		%SelectedHeroCrest.modulate = Color(0.55, 0.55, 0.55) if is_dead else Color.WHITE
+	var material := %SelectedPortrait.material as ShaderMaterial
+	material.set_shader_parameter("dead_amount", 1.0 if is_dead else 0.0)
+	_update_portrait_shader_size()
+
+
+func _management_portrait_crop(texture: Texture2D) -> Texture2D:
+	if texture == null:
+		return null
+	var source := texture.get_size()
+	if source.x <= 0.0 or source.y <= 0.0:
+		return texture
+	var crop := AtlasTexture.new()
+	crop.atlas = texture
+	crop.region = Rect2(source.x * 0.18, 0.0, source.x * 0.64, minf(source.y, source.x * 0.72))
+	crop.filter_clip = true
+	return crop
+
+
+func _update_portrait_shader_size() -> void:
+	var portrait := %SelectedPortrait as TextureRect
+	var material := portrait.material as ShaderMaterial
+	if material != null:
+		material.set_shader_parameter("portrait_size", portrait.size.max(Vector2.ONE))
 
 
 func _set_stat_values(stats: CombatStats) -> void:
@@ -353,6 +383,17 @@ func _set_stat_values(stats: CombatStats) -> void:
 	_set_control_tooltip(%StatsGrid.get_node("DamageStat"), StatBreakdownFormatter.from_stats(stats, &"damage"))
 	_set_control_tooltip(%StatsGrid.get_node("ArmorStat"), StatBreakdownFormatter.from_stats(stats, &"armor"))
 	_set_control_tooltip(%StatsGrid.get_node("RangeStat"), StatBreakdownFormatter.from_stats(stats, &"attack_range"))
+	var extra_label := %StatsGrid.get_parent().get_node_or_null("SecondaryStats") as Label
+	if extra_label == null:
+		extra_label = Label.new()
+		extra_label.name = "SecondaryStats"
+		extra_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		extra_label.add_theme_font_size_override("font_size", 14)
+		extra_label.add_theme_color_override("font_color", Color(0.85, 0.76, 0.6))
+		%StatsGrid.get_parent().add_child(extra_label)
+		%StatsGrid.get_parent().move_child(extra_label, %StatsGrid.get_index() + 1)
+	extra_label.text = SelectedUnitPanel.secondary_stats_text(func(stat: StringName) -> float: return float(stats.get(stat)))
+	extra_label.visible = not extra_label.text.is_empty()
 
 
 func _army_snapshot(runtime_id: String, fallback: CombatUnitSnapshot) -> CombatUnitSnapshot:
@@ -488,12 +529,12 @@ func _refresh_readonly_abilities(abilities: Array[AbilityDefinition]) -> void:
 		%AbilityRows.add_child(button)
 
 
-## Soldier abilities: the shared Job build, then innate and professionalism slots.
+## Soldier abilities include previews of every purchasable Job skill level.
 func _refresh_soldier_abilities(job: JobDefinition, abilities: Array[AbilityDefinition]) -> void:
 	_clear(%AbilityRows)
 	var trait_ids: Array[StringName] = []
 	trait_ids.append_array(job.innate_ability_ids)
-	trait_ids.append_array(job.professionalism_ability_ids)
+	trait_ids.append_array(job.available_ability_ids)
 	var shown := 0
 	for ability in abilities:
 		if ability == null or trait_ids.has(ability.id):
@@ -504,7 +545,7 @@ func _refresh_soldier_abilities(job: JobDefinition, abilities: Array[AbilityDefi
 		button.custom_minimum_size = ICON_SIZE
 		%AbilityRows.add_child(button)
 		shown += 1
-	_append_job_trait_slots(job)
+	_append_job_skill_previews(job)
 	while %AbilityRows.get_child_count() < HeroState.MAX_ABILITY_SLOTS:
 		var empty := ContentIconButton.new()
 		empty.configure(null, &"ability", "")
@@ -513,9 +554,8 @@ func _refresh_soldier_abilities(job: JobDefinition, abilities: Array[AbilityDefi
 		%AbilityRows.add_child(empty)
 
 
-## Innate abilities and every professionalism rank of a Job. Ranks that are not
-## reached yet stay visible but locked, so players see what they work towards.
-func _append_job_trait_slots(job: JobDefinition) -> void:
+## Preview unpurchased levels even before their prerequisites have been bought.
+func _append_job_skill_previews(job: JobDefinition, skip_equipped := false) -> void:
 	for ability_id in job.innate_ability_ids:
 		var innate := _registry().get_definition(ability_id, false) as AbilityDefinition
 		if innate == null:
@@ -526,28 +566,35 @@ func _append_job_trait_slots(job: JobDefinition) -> void:
 		_apply_atlas_slot(button, false)
 		button.custom_minimum_size = ICON_SIZE
 		%AbilityRows.add_child(button)
-	var assigned := _assigned_count(job.id)
-	var active_tier := CombatSnapshotBuilder.professionalism_tier(job, assigned)
-	for tier in job.professionalism_thresholds.size():
-		if tier >= job.professionalism_ability_ids.size():
-			break
-		var ability := _registry().get_definition(job.professionalism_ability_ids[tier], false) as AbilityDefinition
+	var build := _job_build(job.id)
+	for ability_id in job.available_ability_ids:
+		var ability := _registry().get_definition(ability_id, false) as AbilityDefinition
 		if ability == null:
 			continue
-		var threshold := job.professionalism_thresholds[tier]
+		var equipped := build.active_ability_id == ability_id or build.passive_ability_ids.has(ability_id)
+		if skip_equipped and equipped:
+			continue
+		var owned := build.owned_ability_ids.has(ability_id)
+		var replaced := build.has_owned_upgrade(ability_id, _registry())
+		var level := ability.job_skill_level(_registry())
 		var lines: Array[String] = [""]
-		if tier == active_tier:
-			lines.append("[color=%s]PROFESSIONALISM  -  active (%d / %d %ss)[/color]" % [AbilityText.TAG_STYLES.heal.color, assigned, threshold, job.display_name])
-		elif tier < active_tier:
-			lines.append("[color=%s]PROFESSIONALISM  -  replaced by the next rank[/color]" % AbilityText.MUTED)
+		var badge := "LV %d" % level
+		if replaced:
+			badge = "REPLACED"
+			lines.append("[color=%s]PURCHASED  -  replaced by a purchased upgrade[/color]" % AbilityText.MUTED)
+		elif owned:
+			lines.append("[color=%s]PURCHASED  -  %s for every %s[/color]" % [AbilityText.TAG_STYLES.heal.color, "equipped" if equipped else "not equipped", job.display_name])
 		else:
-			lines.append("[color=%s]LOCKED  -  assign %d %ss to unlock (%d / %d)[/color]" % [AbilityText.TAG_STYLES.debuff.color, threshold, job.display_name, assigned, threshold])
+			badge = "NOT BOUGHT"
+			lines.append("[color=%s]NOT PURCHASED  -  buy in the Market for %d Gold[/color]" % [AbilityText.TAG_STYLES.debuff.color, ability.price])
+			if not ability.upgrades_ability_id.is_empty():
+				lines.append("Requires purchase of %s first." % _display_name(ability.upgrades_ability_id))
 		var button := ContentIconButton.new()
-		button.configure(ability, &"ability", "%d+" % threshold, tier == active_tier, ContentButton.describe_ability_definition(ability, 0, lines))
-		_apply_atlas_slot(button, tier == active_tier)
+		button.configure(ability, &"ability", badge, equipped, ContentButton.describe_ability_definition(ability, 0, lines))
+		_apply_atlas_slot(button, equipped)
 		button.custom_minimum_size = ICON_SIZE
-		button.locked = tier > active_tier
-		if tier < active_tier:
+		button.locked = not owned
+		if replaced:
 			button.modulate = Color(0.7, 0.66, 0.6)
 		%AbilityRows.add_child(button)
 
@@ -590,7 +637,7 @@ func _refresh_job_ability_slots(job_id: StringName) -> void:
 		%AbilityRows.add_child(slot)
 	var job := _registry().get_definition(job_id, false) as JobDefinition
 	if job != null:
-		_append_job_trait_slots(job)
+		_append_job_skill_previews(job, true)
 
 
 func _job_ability_drop_slot(job_id: StringName, slot_kind: StringName, slot_index: int, ability: AbilityDefinition) -> ManagementDropSlot:
@@ -635,8 +682,8 @@ func _refresh_inventory() -> void:
 		button.focus_mode = Control.FOCUS_NONE
 		var item_name: String = definition.display_name if definition != null else item.definition_id
 		var restriction := ""
-		if definition != null and definition.hero_eligibility != ItemDefinition.HeroEligibility.ANY:
-			restriction = "  /  %s" % definition.eligibility_text()
+		if definition != null and not definition.restriction_text(_registry()).is_empty():
+			restriction = "  /  %s" % definition.restriction_text(_registry())
 		button.text = "[I] %s%s  /  %s" % [item_name, restriction, instance_id]
 		if definition != null:
 			button.content_id = definition.id
@@ -673,7 +720,7 @@ func _refresh_market() -> void:
 		row.add_theme_constant_override("separation", 8)
 		var icon := TextureRect.new()
 		icon.custom_minimum_size = Vector2(34, 34)
-		icon.texture = definition.icon if definition.icon != null else OrnateFrame.gem_texture(_market_offer_gem(offer.offer_type))
+		icon.texture = _market_icon_texture(definition, offer.offer_type)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.tooltip_text = _market_offer_type_name(offer.offer_type)
@@ -826,14 +873,14 @@ func _buy_market_offer(offer_id: String) -> void:
 	if offer == null:
 		_set_feedback("That Market offer is no longer available.", true)
 		return
-	if offer.offer_type not in [&"job_ability", &"hero_item"]:
+	if offer.offer_type != &"hero_item":
 		var purchase := MarketService.buy_offer(run_state, offer_id, _registry())
 		if not purchase.ok:
 			_set_feedback(purchase.error, true)
 			return
 		call_deferred("_refresh_all")
 		_set_feedback("", false)
-		run_state_changed.emit(&"market_purchase")
+		run_state_changed.emit(&"job_build_changed" if offer.offer_type == &"job_ability" else &"market_purchase")
 		return
 	var target := _automatic_market_target(offer)
 	if not target.ok:
@@ -892,6 +939,9 @@ func _automatic_job_ability_target(offer: MarketOffer, job_id: StringName) -> Di
 	var passive_count := 0
 	for build in run_state.job_builds:
 		if build.job_id == job_id:
+			var previous_slot := build.passive_ability_ids.find(ability.upgrades_ability_id)
+			if previous_slot >= 0:
+				return {"ok": true, "target": {"target": &"ability", "owner_kind": &"job", "owner_id": String(job_id), "slot_kind": &"passive", "slot_index": previous_slot}}
 			passive_count = build.passive_ability_ids.size()
 			break
 	if passive_count >= 3:
@@ -1016,6 +1066,14 @@ func _display_name(content_id: StringName) -> String:
 	return definition.display_name if definition != null else String(content_id)
 
 
+func _market_icon_texture(definition: ContentDefinition, offer_type: StringName) -> Texture2D:
+	if definition is AbilityDefinition and definition.presentation_icon != null:
+		return definition.presentation_icon
+	if definition != null and definition.icon != null:
+		return definition.icon
+	return OrnateFrame.gem_texture(_market_offer_gem(offer_type))
+
+
 func _market_offer_icon(offer_type: StringName) -> String:
 	match offer_type:
 		&"hero_item": return "HI"
@@ -1039,10 +1097,14 @@ func _market_offer_type_name(offer_type: StringName) -> String:
 
 
 func _market_offer_target(offer: MarketOffer) -> String:
+	if offer.offer_type == &"job_ability":
+		var ability := _registry().get_definition(offer.content_id, false) as AbilityDefinition
+		if ability != null:
+			return "%s  /  LEVEL %d%s" % [_display_name(StringName(offer.target_id)), ability.job_skill_level(_registry()), "  /  UPGRADE" if not ability.upgrades_ability_id.is_empty() else ""]
 	if offer.target_type == &"hero":
 		var item := _registry().get_definition(offer.content_id, false) as ItemDefinition
-		if item != null and item.hero_eligibility != ItemDefinition.HeroEligibility.ANY:
-			return "For %s" % item.eligibility_text()
+		if item != null and not item.restriction_text(_registry()).is_empty():
+			return "For %s" % item.restriction_text(_registry())
 	return ""
 
 

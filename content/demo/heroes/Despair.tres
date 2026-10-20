@@ -6,8 +6,8 @@
 
 [sub_resource type="Resource" id="Stats"]
 script = ExtResource("1_oq5mk")
-max_hp = 260.0
-damage = 9.5
+max_hp = 520.0
+damage = 14.0
 attack_speed = 0.8
 movement_speed = 96.0
 attack_range = 245.0
@@ -18,9 +18,10 @@ script = ExtResource("2_26i2r")
 base_stats = SubResource("Stats")
 placeholder_color = Color(0.24, 0.48, 0.88, 1)
 portrait = ExtResource("3_portrait")
+role_title = "RANGED CONTROLLER  -  WARDEN OF SORROW"
 available_in_new_game = true
 selection_order = 6
 id = &"hero.iron_oracle"
 display_name = "Despair"
-description = "A resilient ranged tactician who holds ground and directs the army through enemy pressure."
+description = "Lulls foes to sleep, roots them in vines and shelters the dying. Grows heavier with every second."
 tags = Array[StringName]([&"hero", &"ranged", &"durable", &"tactician"])

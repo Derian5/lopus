@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/ash_shroud.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/low_health_shield_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_ash_shroud_0"
+health_threshold = 0.4
+shield_amount = 600.0
+duration = 6.0
+regen_bonus = 30.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_ash_shroud"
+display_name = "Ashen Veil"
+description = "Once per battle, below {e0.health_threshold:pct}% HP gain a [shield]shield of {e0.shield_amount}[/shield] for {e0.duration}s and [heal]+{e0.regen_bonus} HP regeneration per second[/heal] while it holds."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Ashen Veil"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/ability_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/gluttony_maw.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/items/kill_growth_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Effect0"]
+script = ExtResource("3")
+effect_id = &"effect.item_gluttony_maw_0"
+max_hp_per_kill = 15.0
+max_total = 500.0
+heal_percent = 20.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+presentation_icon = ExtResource("2")
+id = &"ability.item_gluttony_maw"
+display_name = "Insatiable"
+description = "Each enemy this Hero kills grants [heal]+{e0.max_hp_per_kill} Max HP for the rest of the run[/heal] (up to +{e0.max_total}) and [heal]heals {e0.heal_percent}% Max HP[/heal]."
+kind = 1
+targeting_policy = 0
+delivery_method = 0
+effects = Array[Resource]([SubResource("Effect0")])
+presentation_text = "Insatiable"
+available_to_heroes = false
+tags = Array[StringName]([&"ability", &"item", &"passive"])

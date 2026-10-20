@@ -118,9 +118,10 @@ func _test_melee_attack_range() -> void:
 
 	var exact_reach := attacker.basic_attack_reach(target)
 	var hp_before := target.current_hp
-	target.position = attacker.position + Vector2(exact_reach + 0.02, 0.0)
+	var strike_position := attacker.position
+	target.position = attacker.position + Vector2(exact_reach + 200.0, 0.0)
 	attacker._update_attack_windup(attacker.windup_duration)
-	_check(attacker.state == Combatant.State.MOVE_INTO_RANGE and target.current_hp == hp_before, "A melee target just beyond exact reach takes no damage after windup.")
+	_check(attacker.state == Combatant.State.ATTACK_RECOVERY and target.current_hp < hp_before and attacker.position == strike_position, "A committed melee strike lands from its original position even after the target leaves reach.")
 	target.position = attacker.position + Vector2(exact_reach, 0.0)
 	attacker.target = target
 	attacker._start_attack()
@@ -146,11 +147,12 @@ func _test_melee_avoidance() -> void:
 	avoiding.take_damage(5.0, attacker, &"attack.basic", &"attack.basic", true)
 	var configured_retreat_duration := avoiding.melee_retreat_remaining
 	_check(configured_retreat_duration > 0.0 and avoiding.melee_retreat_counterattack_pending, "An avoiding melee unit starts its configured retreat with a ready counterattack.")
-	avoiding._update_melee_retreat(0.1)
-	avoiding._update_melee_retreat(1.0)
+	avoiding.set_simulation_active(true)
+	avoiding._physics_process(0.1)
+	avoiding._physics_process(1.0)
 	_check(attacker.current_hp < attacker_hp, "The retreating melee unit attacks its melee attacker once when its attack is ready.")
 	var retreat_position := avoiding.position
-	avoiding._update_melee_retreat(0.4)
+	avoiding._physics_process(0.1)
 	_check(avoiding.position.x < retreat_position.x, "After counterattacking, the melee unit continues moving away from its attacker.")
 	avoiding.take_damage(5.0, attacker, &"attack.basic", &"attack.basic", true)
 	_check(avoiding.melee_retreat_remaining == configured_retreat_duration, "Another melee hit restarts the retreat timer.")
@@ -217,20 +219,28 @@ func _test_facing_while_retreating() -> void:
 	archer.velocity = Vector2(-120.0, 0.0)
 	sprite.flip_h = true
 	archer._update_sprite_facing(true)
-	_check(not sprite.flip_h, "A ranged unit kiting away during attack recovery keeps facing its target.")
+	_check(sprite.flip_h, "A retreating ranged unit faces its travel direction away from its target.")
 	brute.position = Vector2(403.0, 360.0)
 	archer.velocity = Vector2(120.0, 0.0)
 	archer._update_sprite_facing(true)
-	_check(not sprite.flip_h, "An enemy almost straight above or below does not flip the sprite back and forth.")
+	_check(not sprite.flip_h, "Movement direction determines facing even when the target is almost directly above or below.")
 	archer.state = Combatant.State.MOVE_INTO_RANGE
 	archer.melee_retreat_remaining = 0.2
 	archer.melee_retreat_source = brute
 	brute.position = Vector2(340.0, 300.0)
 	archer.velocity = Vector2(120.0, 0.0)
 	archer._update_sprite_facing(false)
-	_check(sprite.flip_h, "A unit backing away from a melee attacker keeps facing the attacker.")
+	_check(not sprite.flip_h, "A unit fleeing a melee attacker turns away and walks forward.")
+	archer.velocity = Vector2(0.0, -120.0)
+	archer._update_sprite_facing(false)
+	_check(not sprite.flip_h, "Vertical travel preserves the current horizontal facing instead of turning back toward the threat.")
+	archer.velocity = Vector2.ZERO
+	archer.state = Combatant.State.ATTACK_WINDUP
+	archer._update_sprite_facing(true)
+	_check(sprite.flip_h, "A stationary ranged strike turns back toward the enemy.")
 	archer.melee_retreat_remaining = 0.0
 	archer.target = null
+	archer.velocity = Vector2(120.0, 0.0)
 	archer._update_sprite_facing(false)
 	_check(not sprite.flip_h, "Free movement still faces the walking direction.")
 	session.free()

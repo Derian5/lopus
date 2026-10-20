@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://graphics/ui/item_icons/warcraft/shadow_monk_cloak.png" id="2"]
+[ext_resource type="Script" path="res://content/definitions/effects/stat_modifier.gd" id="3"]
+
+[sub_resource type="Resource" id="Stat0"]
+script = ExtResource("3")
+stat = "dodge"
+operation = 0
+value = 45.0
+
+[sub_resource type="Resource" id="Stat1"]
+script = ExtResource("3")
+stat = "movement_speed"
+operation = 2
+value = 30.0
+
+[sub_resource type="Resource" id="Stat2"]
+script = ExtResource("3")
+stat = "max_hp"
+operation = 0
+value = 250.0
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+category = 1
+passive_effects = Array[ExtResource("3")]([SubResource("Stat0"), SubResource("Stat1"), SubResource("Stat2")])
+ability_ids = Array[StringName]([&"ability.item_shadow_monk_cloak"])
+price = 325
+sell_price = 162
+id = &"item.shadow_monk_cloak"
+display_name = "Shadow Monk's Cloak"
+description = "Protection paid for in blood and bone."
+tags = Array[StringName]([&"item", &"hero", &"tank"])

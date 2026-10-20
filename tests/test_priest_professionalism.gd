@@ -29,20 +29,15 @@ func _test_content_and_thresholds() -> void:
 	var tier_2 := registry.get_definition(&"ability.priest_professionalism_cleansing_flame_tier_2") as AbilityDefinition
 	var status_1 := ((tier_1.effects[0] as ApplyStatusEffect).status)
 	var status_2 := ((tier_2.effects[0] as ApplyStatusEffect).status)
-	_check(job.professionalism_thresholds == [3, 6], "Priest professionalism unlocks at three and six assignments.")
+	_check(job.available_ability_ids == [tier_1.id, tier_2.id] and tier_2.upgrades_ability_id == tier_1.id, "Priest skill levels are sequential Market purchases.")
 	_check(tier_1.cooldown_seconds == 6.0 and status_1.default_duration == 4.0 and status_1.stat_modifiers[0].value == 40.0, "Cleansing Flame I has +40 armor for four seconds and a six-second cooldown.")
 	_check(tier_2.cooldown_seconds == 4.0 and status_2.default_duration == 6.0 and status_2.stat_modifiers[0].value == 80.0, "Cleansing Flame II has +80 armor for six seconds and a four-second cooldown.")
 	_check(status_1.grants_negative_status_immunity and status_2.grants_negative_status_immunity and status_1.polarity == StatusDefinition.Polarity.POSITIVE, "Both Cleansing Flame tiers are positive statuses granting negative-status immunity.")
 	for count in [2, 3, 5, 6]:
 		var snapshots := CombatSnapshotBuilder.build_player_army(_priest_run(count), registry)
-		var expected: StringName
-		if count >= 6:
-			expected = tier_2.id
-		elif count >= 3:
-			expected = tier_1.id
 		for snapshot in snapshots:
 			var tiers := snapshot.abilities.filter(func(ability: AbilityDefinition) -> bool: return String(ability.id).begins_with("ability.priest_professionalism_"))
-			_check(tiers.size() == (0 if expected.is_empty() else 1) and (expected.is_empty() or tiers[0].id == expected), "%d Priests receive only the highest Cleansing Flame tier." % count)
+			_check(tiers.is_empty(), "%d Priests do not unlock unpurchased Cleansing Flame levels." % count)
 
 
 func _test_targeting_and_immunity() -> void:

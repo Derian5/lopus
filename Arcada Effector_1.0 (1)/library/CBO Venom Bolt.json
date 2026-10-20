@@ -1,0 +1,697 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_venom",
+  "name": "CBO Venom Bolt",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_venom_glint",
+    "name": "Edge Glint",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.55,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.55,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 1,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "spark",
+      "p": {}
+     },
+     "size": 18,
+     "x": 68,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      235,
+      255,
+      220
+     ],
+     "glow": 0.35,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_poison",
+    "name": "Poison Sheen",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.45,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.3,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0.45,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.3,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0.45,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 34,
+     "x": 58,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.1,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.95,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.6,
+     "rot": 0,
+     "color": [
+      70,
+      230,
+      60
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_head",
+    "name": "Broadhead",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "poly",
+      "p": {
+       "n": 3
+      }
+     },
+     "size": 30,
+     "x": 56,
+     "y": 0,
+     "scale": 1,
+     "aspect": 0.85,
+     "rot": 90,
+     "color": [
+      150,
+      160,
+      156
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_edge",
+    "name": "Poisoned Edge",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 0.75,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "poly",
+      "p": {
+       "n": 3
+      }
+     },
+     "size": 20,
+     "x": 58,
+     "y": 0,
+     "scale": 1,
+     "aspect": 0.6,
+     "rot": 90,
+     "color": [
+      120,
+      220,
+      80
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_shaft",
+    "name": "Bolt Shaft",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "square",
+      "p": {}
+     },
+     "size": 9,
+     "x": 12,
+     "y": 0,
+     "scale": 1,
+     "aspect": 13,
+     "rot": 0,
+     "color": [
+      84,
+      64,
+      46
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_band",
+    "name": "Poison Band",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 0.9,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "square",
+      "p": {}
+     },
+     "size": 10,
+     "x": 36,
+     "y": 0,
+     "scale": 1,
+     "aspect": 1.6,
+     "rot": 0,
+     "color": [
+      110,
+      200,
+      60
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_vane_a",
+    "name": "Vane A",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {
+       "var": 2
+      }
+     },
+     "size": 18,
+     "x": -32,
+     "y": -4,
+     "scale": 1,
+     "aspect": 1.4,
+     "rot": -70,
+     "color": [
+      40,
+      70,
+      36
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_vane_b",
+    "name": "Vane B",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {
+       "var": 3
+      }
+     },
+     "size": 18,
+     "x": -32,
+     "y": 4,
+     "scale": 1,
+     "aspect": 1.4,
+     "rot": -110,
+     "color": [
+      30,
+      54,
+      28
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_venom_drops",
+    "name": "Venom Drops",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 56,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 40,
+     "speed": 90,
+     "speedRnd": 0.3,
+     "rate": 40,
+     "seed": 9,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.45,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 10,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.9
+       },
+       {
+        "t": 0.4,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         200,
+         255,
+         120
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         40,
+         150,
+         40
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.35,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 320
+    }
+   },
+   {
+    "id": "lr_venom_mist",
+    "name": "Venom Mist",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 54,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 12,
+     "speed": 160,
+     "speedRnd": 0.3,
+     "rate": 40,
+     "seed": 10,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.35,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 26,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.15
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.35
+       },
+       {
+        "t": 0.5,
+        "v": 0.2
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         120,
+         230,
+         90
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         30,
+         110,
+         40
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.5,
+     "glow": 0.1,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 0,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_venom_blur",
+    "name": "Motion Blur",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": 0.25,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 140,
+     "x": -6,
+     "y": 0,
+     "scale": 1,
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      200,
+      255,
+      190
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

@@ -31,6 +31,8 @@ status = SubResource("CleansingFlame")
 
 [resource]
 script = ExtResource("1")
+price = 250
+upgrades_ability_id = &"ability.priest_professionalism_cleansing_flame_tier_1"
 presentation_icon = ExtResource("generated_icon")
 id = &"ability.priest_professionalism_cleansing_flame_tier_2"
 display_name = "Cleansing Flame II"
