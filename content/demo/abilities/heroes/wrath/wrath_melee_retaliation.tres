@@ -63,6 +63,7 @@ delivery_method = 0
 effects = Array[AbilityEffect]([SubResource("Base")])
 priority = 100
 presentation_color = Color(0.9, 0.24, 0.18, 1)
+presentation_style = &"impact"
 allowed_hero_ids = Array[StringName]([&"hero.ashen_duelist"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
 tags = Array[StringName]([&"ability", &"passive", &"wrath", &"retaliation"])

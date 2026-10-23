@@ -106,6 +106,7 @@ static func build_soldier(
 	snapshot.unit_kind = CombatUnitSnapshot.UnitKind.SOLDIER
 	snapshot.job_id = job.id
 	snapshot.veterancy_level = soldier.veterancy_level
+	snapshot.veterancy_xp = soldier.veterancy_xp
 	snapshot.attack_type = job.attack_type
 	snapshot.targeting_mode = soldier.targeting_mode
 	snapshot.damage_avoidance_override = soldier.damage_avoidance_override

@@ -73,7 +73,15 @@ theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
 theme_override_font_sizes/font_size = 26
 text = "BATTLE"
 theme_type_variation = &"HeaderLabel"
-self_modulate = Color(1, 1, 1, 0)
+text_overrun_behavior = 3
+
+[node name="BattleClock" type="Label" parent="Page/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.72, 0.62, 1)
+text = "00:00"
+horizontal_alignment = 1
 
 [node name="SpeedDownButton" type="Button" parent="Page/VBox/Header" unique_id=1161878527]
 custom_minimum_size = Vector2(42, 42)

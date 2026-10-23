@@ -1,0 +1,211 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_blood_burst",
+  "name": "CBO Blood Burst",
+  "comp": {
+   "w": 256,
+   "h": 192,
+   "dur": 0.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 144,
+   "t0": 0.0,
+   "t1": 0.58,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_bburst_spray",
+    "name": "Spray",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "y": -20,
+     "shape": "circle",
+     "sx": 10,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 150,
+     "speed": 300,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 26
+      }
+     ],
+     "seed": 44
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 22,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.4
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.8,
+        "v": 0.9
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         168,
+         14,
+         16
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         128,
+         6,
+         10
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         78,
+         0,
+         6
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.4,
+     "drag": 1.2,
+     "gravY": 1200
+    }
+   },
+   {
+    "id": "lr_bburst_drops",
+    "name": "Drops",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "y": -20,
+     "shape": "circle",
+     "sx": 14,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 120,
+     "speed": 200,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 10
+      }
+     ],
+     "seed": 45
+    },
+    "pt": {
+     "life": 0.55,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 13,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.6
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.85,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         120,
+         8,
+         10
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         60,
+         0,
+         4
+        ]
+       }
+      ]
+     },
+     "drag": 0.8,
+     "gravY": 1200
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

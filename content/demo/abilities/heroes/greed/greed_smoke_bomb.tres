@@ -82,6 +82,7 @@ effects = Array[AbilityEffect]([SubResource("Base")])
 priority = 90
 area_radius = 200.0
 presentation_color = Color(0.48, 0.5, 0.56, 1)
+presentation_style = &"smoke"
 presentation_text = "Smoke Bomb"
 allowed_hero_ids = Array[StringName]([&"hero.test_vanguard"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])

@@ -1,0 +1,1067 @@
+{
+  "app": "arcadia-effects",
+  "v": 2,
+  "doc": {
+    "v": 2,
+    "id": "fx_cbo_burning_veil",
+    "name": "CBO Burning Veil",
+    "comp": {
+      "w": 320,
+      "h": 448,
+      "dur": 4.5,
+      "fps": 60
+    },
+    "cam": {
+      "comp": 0
+    },
+    "exp": {
+      "cols": 8,
+      "rows": 4,
+      "frames": 32,
+      "cellW": 160,
+      "cellH": 224,
+      "t0": 2.5,
+      "t1": 3.5,
+      "mode": "rgba",
+      "ss": 2
+    },
+    "layers": [
+      {
+        "id": "lr_burn_embers",
+        "name": "Sharp Rising Embers",
+        "type": "emitter",
+        "blend": "add",
+        "start": 0,
+        "end": 4.5,
+        "opacity": 1,
+        "em": {
+          "bursts": [],
+          "rate": 15,
+          "seed": 181,
+          "x": 0,
+          "y": 112,
+          "shape": "box",
+          "sx": 100,
+          "sy": 65,
+          "dir": "dir",
+          "angle": -90,
+          "spread": 42,
+          "speed": 138,
+          "speedRnd": 0.5
+        },
+        "pt": {
+          "life": 1.2,
+          "lifeRnd": 0.4,
+          "sprite": {
+            "kind": "shape",
+            "id": "ember",
+            "p": {}
+          },
+          "size": 5,
+          "sizeRnd": 0.55,
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  255,
+                  218,
+                  100
+                ]
+              },
+              {
+                "t": 0.22,
+                "c": [
+                  255,
+                  151,
+                  35
+                ]
+              },
+              {
+                "t": 0.55,
+                "c": [
+                  225,
+                  65,
+                  12
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  99,
+                  22,
+                  10
+                ]
+              }
+            ]
+          },
+          "gravY": -26,
+          "drag": 0.6,
+          "turbAmp": 30,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.7
+              },
+              {
+                "t": 1,
+                "v": 0.1
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0
+              },
+              {
+                "t": 0.1,
+                "v": 0.7
+              },
+              {
+                "t": 0.7,
+                "v": 0.45
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "glow": 0.2
+        }
+      },
+      {
+        "id": "lr_burn_distortion",
+        "name": "Rising Torn Flame Contours",
+        "type": "postfx",
+        "start": 0,
+        "end": 4.5,
+        "opacity": 1,
+        "fx": {
+          "effect": "displace",
+          "field": "swirl",
+          "scale": 28,
+          "amount": 45,
+          "aspect": 2.7,
+          "oct": 2,
+          "evo": 1.8,
+          "rise": 145,
+          "ramp": 0.85,
+          "y0": 132,
+          "soft": 70,
+          "seed": 73
+        }
+      },
+      {
+        "id": "lr_burn_tips",
+        "name": "Detached Flame Ribbons",
+        "type": "emitter",
+        "blend": "add",
+        "start": 0,
+        "end": 4.5,
+        "opacity": 1,
+        "em": {
+          "bursts": [],
+          "rate": 48,
+          "seed": 103,
+          "x": 0,
+          "y": 23,
+          "shape": "box",
+          "sx": 70,
+          "sy": 50,
+          "dir": "dir",
+          "angle": -90,
+          "spread": 27,
+          "speed": 110,
+          "speedRnd": 0.4,
+          "path": {
+            "on": true,
+            "mode": "guide",
+            "nodes": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 0,
+                "y": -260
+              }
+            ],
+            "smooth": false,
+            "aim": "none",
+            "attract": 2.6,
+            "flow": 90,
+            "lock": 0
+          }
+        },
+        "pt": {
+          "turbMode": "curl",
+          "turbScale": 46,
+          "turbOct": 2,
+          "turbRise": 100,
+          "turbWind": 90,
+          "turbRamp": 0.85,
+          "drag": 1.7,
+          "gravY": -24,
+          "turbAmp": 80,
+          "turbSeed": 91,
+          "spin": 10,
+          "spinRnd": 0.7,
+          "rotRnd": 1,
+          "life": 0.55,
+          "lifeRnd": 0.45,
+          "sprite": {
+            "kind": "shape",
+            "id": "smoke",
+            "p": {}
+          },
+          "size": 70,
+          "sizeRnd": 0.5,
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  255,
+                  218,
+                  100
+                ]
+              },
+              {
+                "t": 0.22,
+                "c": [
+                  255,
+                  151,
+                  35
+                ]
+              },
+              {
+                "t": 0.55,
+                "c": [
+                  225,
+                  65,
+                  12
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  99,
+                  22,
+                  10
+                ]
+              }
+            ]
+          },
+          "glow": 0,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.4
+              },
+              {
+                "t": 0.25,
+                "v": 0.8
+              },
+              {
+                "t": 1,
+                "v": 0.04
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0
+              },
+              {
+                "t": 0.25,
+                "v": 0.075
+              },
+              {
+                "t": 0.6,
+                "v": 0.055
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "lr_burn_core",
+        "name": "Low Amber Core",
+        "type": "emitter",
+        "blend": "add",
+        "start": 0,
+        "end": 4.5,
+        "opacity": 1,
+        "em": {
+          "bursts": [],
+          "rate": 72,
+          "seed": 67,
+          "x": 0,
+          "y": 142,
+          "shape": "box",
+          "sx": 52,
+          "sy": 18,
+          "dir": "dir",
+          "angle": -90,
+          "spread": 16,
+          "speed": 125,
+          "speedRnd": 0.35,
+          "path": {
+            "on": true,
+            "mode": "guide",
+            "nodes": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 0,
+                "y": -260
+              }
+            ],
+            "smooth": false,
+            "aim": "none",
+            "attract": 2.6,
+            "flow": 90,
+            "lock": 0
+          }
+        },
+        "pt": {
+          "turbMode": "curl",
+          "turbScale": 46,
+          "turbOct": 2,
+          "turbRise": 100,
+          "turbWind": 90,
+          "turbRamp": 0.85,
+          "drag": 1.7,
+          "gravY": -24,
+          "turbAmp": 80,
+          "turbSeed": 31,
+          "spin": 10,
+          "spinRnd": 0.7,
+          "rotRnd": 1,
+          "life": 0.44,
+          "lifeRnd": 0.3,
+          "sprite": {
+            "kind": "shape",
+            "id": "smoke",
+            "p": {}
+          },
+          "size": 64,
+          "sizeRnd": 0.35,
+          "glow": 0.1,
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  255,
+                  230,
+                  145
+                ]
+              },
+              {
+                "t": 0.4,
+                "c": [
+                  255,
+                  181,
+                  55
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  240,
+                  89,
+                  15
+                ]
+              }
+            ]
+          },
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.35
+              },
+              {
+                "t": 0.3,
+                "v": 0.8
+              },
+              {
+                "t": 1,
+                "v": 0.08
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0
+              },
+              {
+                "t": 0.2,
+                "v": 0.07
+              },
+              {
+                "t": 0.6,
+                "v": 0.055
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "lr_burn_body",
+        "name": "Curling Flame Mass",
+        "type": "emitter",
+        "blend": "add",
+        "start": 0,
+        "end": 4.5,
+        "opacity": 1,
+        "em": {
+          "bursts": [],
+          "rate": {
+            "keys": [
+              {
+                "t": 0.0,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 0.125,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 0.25,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 0.375,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 0.5,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 0.625,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 0.75,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 0.875,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.0,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.125,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.25,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.375,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.5,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.625,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.75,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 1.875,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.0,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.125,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.25,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.375,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.5,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.625,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.75,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 2.875,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.0,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.125,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.25,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.375,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.5,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.625,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.75,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 3.875,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 4.0,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 4.125,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 4.25,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 4.375,
+                "v": 54,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              },
+              {
+                "t": 4.5,
+                "v": 120,
+                "i": {
+                  "m": "lin"
+                },
+                "o": {
+                  "m": "hold"
+                }
+              }
+            ]
+          },
+          "seed": 41,
+          "x": 0,
+          "y": 130,
+          "shape": "box",
+          "sx": 112,
+          "sy": 54,
+          "dir": "dir",
+          "angle": -90,
+          "spread": 22,
+          "speed": 148,
+          "speedRnd": 0.4,
+          "path": {
+            "on": true,
+            "mode": "guide",
+            "nodes": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 0,
+                "y": -260
+              }
+            ],
+            "smooth": false,
+            "aim": "none",
+            "attract": 2.6,
+            "flow": 90,
+            "lock": 0
+          }
+        },
+        "pt": {
+          "turbMode": "curl",
+          "turbScale": 46,
+          "turbOct": 2,
+          "turbRise": 100,
+          "turbWind": 90,
+          "turbRamp": 0.85,
+          "drag": 1.7,
+          "gravY": -24,
+          "turbAmp": 80,
+          "turbSeed": 31,
+          "spin": 10,
+          "spinRnd": 0.7,
+          "rotRnd": 1,
+          "life": 1.05,
+          "lifeRnd": 0.35,
+          "sprite": {
+            "kind": "shape",
+            "id": "smoke",
+            "p": {}
+          },
+          "size": 104,
+          "sizeRnd": 0.4,
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  255,
+                  218,
+                  100
+                ]
+              },
+              {
+                "t": 0.22,
+                "c": [
+                  255,
+                  151,
+                  35
+                ]
+              },
+              {
+                "t": 0.55,
+                "c": [
+                  225,
+                  65,
+                  12
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  99,
+                  22,
+                  10
+                ]
+              }
+            ]
+          },
+          "glow": 0,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.42
+              },
+              {
+                "t": 0.25,
+                "v": 1
+              },
+              {
+                "t": 0.66,
+                "v": 0.65
+              },
+              {
+                "t": 1,
+                "v": 0.08
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0
+              },
+              {
+                "t": 0.12,
+                "v": 0.025
+              },
+              {
+                "t": 0.32,
+                "v": 0.075
+              },
+              {
+                "t": 0.68,
+                "v": 0.055
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "lr_burn_smoke",
+        "name": "Charcoal Smoke Behind Fire",
+        "type": "emitter",
+        "blend": "normal",
+        "start": 0,
+        "end": 4.5,
+        "opacity": 1,
+        "em": {
+          "bursts": [],
+          "rate": 26,
+          "seed": 139,
+          "x": 0,
+          "y": 108,
+          "shape": "box",
+          "sx": 82,
+          "sy": 60,
+          "dir": "dir",
+          "angle": -90,
+          "spread": 28,
+          "speed": 78,
+          "speedRnd": 0.4
+        },
+        "pt": {
+          "turbMode": "curl",
+          "turbScale": 70,
+          "turbOct": 2,
+          "turbRise": 100,
+          "turbWind": 65,
+          "turbRamp": 0.85,
+          "drag": 1.7,
+          "gravY": -24,
+          "turbAmp": 80,
+          "turbSeed": 31,
+          "spin": 10,
+          "spinRnd": 0.7,
+          "rotRnd": 1,
+          "life": 1.65,
+          "lifeRnd": 0.3,
+          "sprite": {
+            "kind": "shape",
+            "id": "smoke",
+            "p": {}
+          },
+          "size": 115,
+          "sizeRnd": 0.45,
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  43,
+                  29,
+                  25
+                ]
+              },
+              {
+                "t": 0.5,
+                "c": [
+                  49,
+                  45,
+                  44
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  76,
+                  72,
+                  68
+                ]
+              }
+            ]
+          },
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.35
+              },
+              {
+                "t": 0.6,
+                "v": 1.1
+              },
+              {
+                "t": 1,
+                "v": 1.4
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0
+              },
+              {
+                "t": 0.22,
+                "v": 0.08
+              },
+              {
+                "t": 0.65,
+                "v": 0.065
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "glow": 0
+        }
+      }
+    ]
+  },
+  "tex": {}
+}

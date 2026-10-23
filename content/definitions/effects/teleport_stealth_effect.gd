@@ -7,7 +7,7 @@ extends AbilityEffect
 
 func apply(source, _target, ability: AbilityDefinition) -> void:
 	if is_instance_valid(source):
-		source.session.teleport_to_farthest_enemy(source)
+		source.session.teleport_to_farthest_enemy(source, ability.id)
 		source.apply_stealth(duration, ability.id, effect_id)
 
 

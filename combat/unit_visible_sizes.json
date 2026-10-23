@@ -1,4 +1,45 @@
 {
+	"res://graphics/units/enemies/berserker": {
+		"attack": 338.0,
+		"death": 266.0,
+		"move": 267.0
+	},
+	"res://graphics/units/enemies/bog spawn": {
+		"attack": 224.0,
+		"death": 222.0,
+		"move": 228.0
+	},
+	"res://graphics/units/enemies/bonebreaker": {
+		"attack": 334.0,
+		"death": 277.0,
+		"move": 294.0
+	},
+	"res://graphics/units/enemies/brute": {
+		"attack": 269.0,
+		"death": 265.0,
+		"move": 270.0
+	},
+	"res://graphics/units/enemies/hexer": {
+		"attack": 388.0,
+		"death": 276.0,
+		"move": 283.0
+	},
+	"res://graphics/units/enemies/iron_warden": {
+		"attack": 304.0,
+		"death": 308.0,
+		"move": 308.0,
+		"skill": 307.0
+	},
+	"res://graphics/units/enemies/mugrot": {
+		"attack": 269.0,
+		"death": 269.0,
+		"move": 280.0
+	},
+	"res://graphics/units/enemies/witch doctor": {
+		"attack": 434.0,
+		"death": 312.0,
+		"move": 315.0
+	},
 	"res://graphics/units/player/hero/Despair": {
 		"attack": 457.0,
 		"death": 452.0,

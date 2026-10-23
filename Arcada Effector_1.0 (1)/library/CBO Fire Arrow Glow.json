@@ -1,0 +1,884 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_fire_arrow_glow",
+  "name": "CBO Fire Arrow Glow",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_farrow_halo",
+    "name": "Fire Halo",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.16,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.16,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 78,
+     "x": 42,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.12,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.12,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.7,
+     "rot": 0,
+     "color": [
+      255,
+      110,
+      30
+     ],
+     "glow": 0.2,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_farrow_tail",
+    "name": "Flame Tail",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 56,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 9,
+     "speed": 330,
+     "speedRnd": 0.3,
+     "rate": 95,
+     "seed": 52,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.6,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {}
+     },
+     "size": 32,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0.2
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.85
+       },
+       {
+        "t": 0.55,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         196,
+         104
+        ]
+       },
+       {
+        "t": 0.22,
+        "c": [
+         255,
+         146,
+         48
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         238,
+         92,
+         24
+        ]
+       },
+       {
+        "t": 0.8,
+        "c": [
+         176,
+         40,
+         12
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         15,
+         8
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 0.6,
+     "glow": 0.15,
+     "alignVel": true,
+     "stretch": 0,
+     "turbAmp": 150,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_farrow_tongues",
+    "name": "Head Tongues",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 62,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 22,
+     "speed": 240,
+     "speedRnd": 0.3,
+     "rate": 70,
+     "seed": 53,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.24,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {}
+     },
+     "size": 38,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.7
+       },
+       {
+        "t": 0.3,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.3
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.62
+       },
+       {
+        "t": 0.6,
+        "v": 0.42
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         196,
+         104
+        ]
+       },
+       {
+        "t": 0.22,
+        "c": [
+         255,
+         146,
+         48
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         238,
+         92,
+         24
+        ]
+       },
+       {
+        "t": 0.8,
+        "c": [
+         176,
+         40,
+         12
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         15,
+         8
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.0,
+     "glow": 0.12,
+     "alignVel": true,
+     "stretch": 0,
+     "turbAmp": 220,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_farrow_licks",
+    "name": "Flames on the Shaft",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 22,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 35,
+     "speed": 120,
+     "speedRnd": 0.3,
+     "rate": 50,
+     "seed": 55,
+     "shape": "box",
+     "sx": 10,
+     "sy": 10,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.3,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {}
+     },
+     "size": 24,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 0.3,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.2
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.2,
+        "v": 0.6
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         196,
+         104
+        ]
+       },
+       {
+        "t": 0.22,
+        "c": [
+         255,
+         146,
+         48
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         238,
+         92,
+         24
+        ]
+       },
+       {
+        "t": 0.8,
+        "c": [
+         176,
+         40,
+         12
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         15,
+         8
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.2,
+     "glow": 0.3,
+     "alignVel": true,
+     "stretch": 0,
+     "turbAmp": 200,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_farrow_embers",
+    "name": "Embers",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 44,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 45,
+     "speed": 170,
+     "speedRnd": 0.3,
+     "rate": 55,
+     "seed": 54,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.65,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 7,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.25
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         250,
+         210
+        ]
+       },
+       {
+        "t": 0.4,
+        "c": [
+         255,
+         190,
+         80
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         230,
+         80,
+         20
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 0.8,
+     "glow": 0.9,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 180,
+     "turbFreq": 3,
+     "gravY": 240
+    }
+   },
+   {
+    "id": "lr_farrow_core",
+    "name": "White-hot Core",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.85,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.65,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0.85,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.65,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0.85,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 24,
+     "x": 62,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1.0,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.4,
+     "rot": 0,
+     "color": [
+      255,
+      236,
+      190
+     ],
+     "glow": 0.6,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_farrow_spark",
+    "name": "Head Spark",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.1,
+       "v": 0.5,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.30000000000000004,
+       "v": 0.5,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0.9,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "spark",
+      "p": {}
+     },
+     "size": 30,
+     "x": 66,
+     "y": 0,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.1,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.2,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.30000000000000004,
+        "v": 1.2,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 0.9,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      250,
+      230
+     ],
+     "glow": 0.4,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

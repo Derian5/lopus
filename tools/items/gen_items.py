@@ -47,7 +47,7 @@ for name in ["OnHitStackTriggerEffect", "NthHitStatusEffect", "ExecuteOnHitEffec
 # polarity: 1 positive, 2 negative. mods: list of (stat, operation, value); op 0 add, 2 add%.
 STATUSES = {
     "bleed": dict(name="Bleeding", desc="Takes damage every second.", duration=5, max_stacks=3, stacking=True,
-                  polarity=2, periodic=(1.0, ("DamageEffect", {"amount": 15.0}))),
+                  polarity=2, presentation_style="bleed", periodic=(1.0, ("DamageEffect", {"amount": 15.0}))),
     "thread": dict(name="Thread", desc="At 3 Threads the unit is bound in place.", duration=4, max_stacks=3,
                    stacking=True, polarity=2),
     "bound": dict(name="Bound", desc="Cannot move.", duration=2, polarity=2, prevents_movement=True),
@@ -273,6 +273,8 @@ def status_sub(res, key):
         if spec.get(flag):
             lines.append("%s = true" % field)
     lines.append("polarity = %d" % spec["polarity"])
+    if spec.get("presentation_style"):
+        lines.append('presentation_style = &"%s"' % spec["presentation_style"])
     res.sub(sub_id, lines)
     return sub_id
 

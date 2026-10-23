@@ -475,6 +475,195 @@ reg("CBO Summon Portal", effect("summon", "CBO Summon Portal", 256, 256, 0.75, 4
            K((0, 0.8), (0.7, 1.1)), y=30, end=0.72, squash=1),
 ], cam=37, t1=0.72))
 
+# Veterancy blessing: a shaft of golden light falls on the unit, a shower of sparks
+# pours down it, a burst and a ground ring at the feet, then motes rise and a halo fades.
+# 256x448 composition, the unit's feet at y = +150 (cells 192x336).
+GOLD = G((0, [255, 255, 245]), (0.35, [255, 236, 160]), (0.75, [255, 190, 80]), (1, [220, 120, 40]))
+HOLY = G((0, [255, 255, 255]), (0.5, [255, 244, 200]), (1, [255, 214, 120]))
+reg("CBO Veterancy Blessing", effect("veterancy_blessing", "CBO Veterancy Blessing", 256, 448, 1.3, 4, 4, 16, 192, 336, [
+    sprite("lr_bless_shaft", "Light Shaft", "soft", 520, [255, 230, 160], K((0, 0), (0.1, 0.75), (0.45, 0.55), (1.0, 0)),
+           K((0, 0.6), (0.12, 1.0), (1.0, 1.05)), y=-60, aspect=0.22, glow=0.4, end=1.02),
+    sprite("lr_bless_core", "Shaft Core", "soft", 480, [255, 255, 240], K((0, 0), (0.1, 0.9), (0.3, 0.6), (0.7, 0)),
+           K((0, 0.5), (0.12, 1.0), (0.7, 1.0)), y=-60, aspect=0.07, glow=0.3, end=0.72),
+    emitter("lr_bless_rain", "Spark Rain",
+            {"x": 0, "y": -220, "shape": "box", "sx": 70, "sy": 10, "dir": "dir", "angle": 90, "spread": 3,
+             "speed": 720, "speedRnd": 0.25, "rate": 110, "seed": 21},
+            {"life": 0.48, "lifeRnd": 0.2, "sprite": {"kind": "shape", "id": "streak", "p": {}}, "size": 30,
+             "sizeRnd": 0.5, "sizeOL": C((0, 0.7), (0.8, 1), (1, 0.3)), "opacityOL": FADE_LATE, "grad": GOLD,
+             "alignVel": True, "stretch": 2.2, "drag": 0.2, "glow": 0.5},
+            end=0.42),
+    flash("lr_bless_flash", 180, [255, 246, 210], peak=1.0, fade=0.35, start=0.3, y=110, aspect=1.2),
+    ring("lr_bless_ground", 180, [255, 214, 120], th=0.07, peak=1.0, grow=(0.2, 1.2), dur=0.55, start=0.3,
+         squash=1, y=150),
+    ring("lr_bless_ground2", 140, [255, 245, 210], th=0.04, peak=0.8, grow=(0.1, 1.5), dur=0.45, start=0.36,
+         squash=1, y=150),
+    sparks("lr_bless_burst", 34, 560, 0.55, GOLD, size=26, spread=170, angle=-90, dirmode='dir', gravY=900,
+           drag=1.2, seed=22, start=0.3, y=140, stretch=1.8),
+    sparks("lr_bless_stars", 12, 300, 0.7, HOLY, size=30, spread=150, angle=-90, dirmode='dir', gravY=500,
+           drag=1.8, seed=23, start=0.32, y=120, shape='spark'),
+    emitter("lr_bless_motes", "Rising Motes",
+            {"y": 140, "shape": "box", "sx": 90, "sy": 14, "dir": "dir", "angle": -90, "spread": 8, "speed": 240,
+             "rate": 46, "seed": 24},
+            {"life": 0.75, "sprite": {"kind": "shape", "id": "dot", "p": {}}, "size": 10, "sizeRnd": 0.5,
+             "sizeOL": C((0, 0.4), (0.3, 1), (1, 0.2)), "opacityOL": FADE_LATE, "grad": HOLY, "drag": 0.6,
+             "turbAmp": 90, "turbFreq": 2, "glow": 0.6},
+            start=0.34, end=1.0),
+    sprite("lr_bless_halo", "Halo", "ring", 76, [255, 232, 150], K((0, 0), (0.12, 1.0), (0.5, 0.8), (0.84, 0)),
+           K((0, 1.6), (0.15, 1.0), (0.4, 0.95)), y=-10, glow=0.7, squash=0.8, p={"th": 0.12}, start=0.42, end=1.28),
+    sprite("lr_bless_floor", "Floor Glow", "soft", 280, [255, 210, 120], K((0, 0), (0.15, 0.6), (0.9, 0)),
+           K((0, 0.7), (0.9, 1.1)), y=150, squash=1, start=0.3, end=1.22),
+], cam=37, t1=1.28))
+
+# ---------------------------------------------------------------- fire and blood
+FIRE = G((0, [255, 238, 170]), (0.15, [255, 205, 95]), (0.45, [255, 140, 40]), (0.75, [210, 60, 20]), (1, [90, 20, 10]))
+EMBER = G((0, [255, 250, 210]), (0.4, [255, 190, 80]), (1, [230, 80, 20]))
+BLOOD = G((0, [168, 14, 16]), (0.5, [128, 6, 10]), (1, [78, 0, 6]))
+BLOOD_DARK = G((0, [120, 8, 10]), (1, [60, 0, 4]))
+
+# Burning (looping, additive): flames clinging to the whole body, taller tongues rising
+# from the legs, embers flying off and a dim ember glow. 256x320 composition, feet at
+# y = +120 (cells 192x240, feet 90 px below the cell centre). Sampled one second after
+# the start so the fire is fully grown.
+FIRE_BODY = G((0, [255, 228, 150]), (0.22, [255, 168, 62]), (0.5, [236, 92, 26]), (0.78, [160, 36, 14]), (1, [60, 10, 8]))
+reg("CBO Burn Loop", effect("burn_loop", "CBO Burn Loop", 256, 320, 2.2, 4, 4, 16, 192, 240, [
+    sprite("lr_burn_core", "Ember Glow", "soft", 120, [230, 90, 25],
+           K((0, 0.22), (0.17, 0.3), (0.33, 0.2), (0.5, 0.28), (0.71, 0.22), (0.88, 0.3), (1.0, 0.22),
+             (1.17, 0.3), (1.33, 0.2), (1.5, 0.28), (1.71, 0.22), (1.88, 0.3), (2.2, 0.22)),
+           1, y=78, aspect=0.8, glow=0.2),
+    emitter("lr_burn_cling", "Clinging Flames",
+            {"y": 72, "shape": "box", "sx": 58, "sy": 72, "dir": "dir", "angle": -90, "spread": 12, "speed": 75,
+             "speedRnd": 0.4, "rate": 58, "seed": 31},
+            {"life": 0.42, "lifeRnd": 0.35, "sprite": {"kind": "shape", "id": "flame", "p": {"taper": 0.75, "var": 3}},
+             "size": 40, "sizeRnd": 0.45, "sizeOL": C((0, 0.4), (0.3, 1), (1, 0.1)),
+             "opacityOL": C((0, 0), (0.15, 0.85), (0.6, 0.55), (1, 0)), "grad": FIRE_BODY, "alignVel": True,
+             "drag": 0.5, "turbAmp": 150, "turbFreq": 3, "glow": 0.3}),
+    emitter("lr_burn_tongues", "Rising Tongues",
+            {"y": 96, "shape": "box", "sx": 52, "sy": 18, "dir": "dir", "angle": -90, "spread": 8, "speed": 165,
+             "speedRnd": 0.4, "rate": 26, "seed": 32},
+            {"life": 0.6, "lifeRnd": 0.35, "sprite": {"kind": "shape", "id": "flame", "p": {"taper": 0.7, "var": 5}},
+             "size": 54, "sizeRnd": 0.4, "sizeOL": C((0, 0.5), (0.25, 1), (1, 0.12)),
+             "opacityOL": C((0, 0), (0.12, 0.8), (0.6, 0.5), (1, 0)), "grad": FIRE_BODY, "alignVel": True,
+             "drag": 0.6, "turbAmp": 170, "turbFreq": 2.5, "glow": 0.35}),
+    emitter("lr_burn_embers", "Embers",
+            {"y": 50, "shape": "box", "sx": 70, "sy": 60, "dir": "dir", "angle": -90, "spread": 30, "speed": 190,
+             "speedRnd": 0.5, "rate": 24, "seed": 33},
+            {"life": 0.85, "lifeRnd": 0.4, "sprite": {"kind": "shape", "id": "dot", "p": {}}, "size": 6, "sizeRnd": 0.5,
+             "sizeOL": C((0, 1), (1, 0.2)), "opacityOL": C((0, 1), (0.7, 0.8), (1, 0)), "grad": EMBER,
+             "drag": 0.8, "turbAmp": 260, "turbFreq": 2, "glow": 0.8}),
+], t0=1.0, t1=2.0))
+
+# Smoke over a burning body (looping, normal blend).
+reg("CBO Burn Smoke", effect("burn_smoke", "CBO Burn Smoke", 256, 320, 2.6, 4, 4, 16, 192, 240, [
+    emitter("lr_bsmoke", "Smoke",
+            {"y": 10, "shape": "box", "sx": 50, "sy": 20, "dir": "dir", "angle": -90, "spread": 12, "speed": 95,
+             "speedRnd": 0.3, "rate": 16, "seed": 34},
+            {"life": 1.25, "lifeRnd": 0.25, "sprite": {"kind": "shape", "id": "smoke", "p": {}}, "size": 74,
+             "sizeRnd": 0.35, "sizeOL": C((0, 0.45), (1, 1.8)), "opacityOL": C((0, 0), (0.25, 0.32), (1, 0)),
+             "grad": G((0, [70, 58, 52]), (1, [36, 32, 32])), "drag": 0.6, "turbAmp": 70, "turbFreq": 1.5,
+             "spin": 40},
+            blend='normal'),
+], t0=1.4, t1=2.4))
+
+# Fire burst (one shot, additive): burn ticks (small) and fire impacts (large): a puff of
+# flame tongues, a hot flash, embers thrown out and a scorching ring on the ground.
+reg("CBO Fire Burst", effect("fire_burst", "CBO Fire Burst", 256, 256, 0.8, 4, 3, 12, 192, 192, [
+    flash("lr_fburst_flash", 130, [255, 170, 80], peak=0.55, fade=0.2, y=30),
+    emitter("lr_fburst_tongues", "Flame Puff",
+            {"y": 40, "shape": "circle", "sx": 34, "dir": "dir", "angle": -90, "spread": 70, "speed": 260,
+             "speedRnd": 0.4, "bursts": [{"t": 0, "n": 22}, {"t": 0.06, "n": 12}], "seed": 35},
+            {"life": 0.5, "lifeRnd": 0.35, "sprite": {"kind": "shape", "id": "flame", "p": {"taper": 0.7, "var": 4}},
+             "size": 52, "sizeRnd": 0.4, "sizeOL": C((0, 0.6), (0.2, 1), (1, 0.2)),
+             "opacityOL": C((0, 0.7), (0.5, 0.55), (1, 0)), "grad": FIRE, "alignVel": True, "drag": 3.2,
+             "gravY": -260, "turbAmp": 140, "glow": 0.6}),
+    sparks("lr_fburst_embers", 22, 380, 0.6, EMBER, size=9, shape='dot', gravY=380, drag=1.6, seed=36, y=30,
+           glow=0.8),
+    ring("lr_fburst_ring", 190, [255, 150, 60], th=0.09, peak=0.7, grow=(0.25, 1.15), dur=0.4, squash=1, y=80),
+], cam=37, t1=0.76))
+
+# Blood spurt (one shot, normal blend): a spray of drops thrown toward +X that falls to
+# the ground, a few heavy chunks and a fine mist at the wound. The game flips it toward
+# the side the blow came from (never rotates it, so drops always fall down).
+reg("CBO Blood Spurt", effect("blood_spurt", "CBO Blood Spurt", 256, 192, 0.6, 4, 3, 12, 192, 144, [
+    emitter("lr_bspurt_spray", "Spray",
+            {"x": -50, "y": -20, "dir": "dir", "angle": -18, "spread": 34, "speed": 430, "speedRnd": 0.45,
+             "bursts": [{"t": 0, "n": 30}, {"t": 0.04, "n": 12}], "seed": 41},
+            {"life": 0.5, "lifeRnd": 0.3, "sprite": {"kind": "shape", "id": "streak", "p": {}}, "size": 26,
+             "sizeRnd": 0.5, "sizeOL": C((0, 1), (0.7, 0.8), (1, 0.3)), "opacityOL": C((0, 1), (0.75, 0.9), (1, 0)),
+             "grad": BLOOD, "alignVel": True, "stretch": 1.6, "drag": 1.4, "gravY": 1300},
+            blend='normal'),
+    emitter("lr_bspurt_chunks", "Drops",
+            {"x": -50, "y": -20, "dir": "dir", "angle": -30, "spread": 50, "speed": 300, "speedRnd": 0.5,
+             "bursts": [{"t": 0, "n": 12}], "seed": 42},
+            {"life": 0.55, "lifeRnd": 0.25, "sprite": {"kind": "shape", "id": "dot", "p": {}}, "size": 14,
+             "sizeRnd": 0.5, "sizeOL": C((0, 1), (1, 0.6)), "opacityOL": C((0, 1), (0.8, 1), (1, 0)),
+             "grad": BLOOD_DARK, "drag": 1.0, "gravY": 1300},
+            blend='normal'),
+    emitter("lr_bspurt_mist", "Mist",
+            {"x": -44, "y": -20, "dir": "dir", "angle": -10, "spread": 40, "speed": 120,
+             "bursts": [{"t": 0, "n": 7}], "seed": 43},
+            {"life": 0.35, "sprite": {"kind": "shape", "id": "soft", "p": {}}, "size": 50, "sizeRnd": 0.4,
+             "sizeOL": C((0, 0.5), (1, 1.4)), "opacityOL": C((0, 0.55), (1, 0)), "grad": BLOOD, "drag": 3},
+            blend='normal'),
+], t1=0.58))
+
+# Blood burst (one shot, normal blend): bleeding ticks and deaths: drops thrown up and
+# to both sides, falling back.
+reg("CBO Blood Burst", effect("blood_burst", "CBO Blood Burst", 256, 192, 0.6, 4, 3, 12, 192, 144, [
+    emitter("lr_bburst_spray", "Spray",
+            {"y": -20, "shape": "circle", "sx": 10, "dir": "dir", "angle": -90, "spread": 150, "speed": 300,
+             "speedRnd": 0.5, "bursts": [{"t": 0, "n": 26}], "seed": 44},
+            {"life": 0.5, "lifeRnd": 0.3, "sprite": {"kind": "shape", "id": "streak", "p": {}}, "size": 22,
+             "sizeRnd": 0.5, "sizeOL": C((0, 1), (1, 0.4)), "opacityOL": C((0, 1), (0.8, 0.9), (1, 0)),
+             "grad": BLOOD, "alignVel": True, "stretch": 1.4, "drag": 1.2, "gravY": 1200},
+            blend='normal'),
+    emitter("lr_bburst_drops", "Drops",
+            {"y": -20, "shape": "circle", "sx": 14, "dir": "dir", "angle": -90, "spread": 120, "speed": 200,
+             "bursts": [{"t": 0, "n": 10}], "seed": 45},
+            {"life": 0.55, "sprite": {"kind": "shape", "id": "dot", "p": {}}, "size": 13, "sizeRnd": 0.5,
+             "sizeOL": C((0, 1), (1, 0.6)), "opacityOL": C((0, 1), (0.85, 1), (1, 0)), "grad": BLOOD_DARK,
+             "drag": 0.8, "gravY": 1200},
+            blend='normal'),
+], t1=0.58))
+
+# Fire Arrow (Archer skill): a comet of fire. Two atlases that play together: the solid
+# arrow with a charred shaft and dark smoke (normal blend) and the fire itself, drawn
+# additively: a white-hot blaze on the head, flame tongues streaming back along the
+# shaft, a long glowing tail and embers falling off it. Head at x = +64 like every shot.
+FIRE_TAIL = G((0, [255, 196, 104]), (0.22, [255, 146, 48]), (0.5, [238, 92, 24]), (0.8, [176, 40, 12]), (1, [90, 15, 8]))
+projectile("fire_arrow", "CBO Fire Arrow", [
+    stream("lr_farrow_smoke", "Smoke", G((0, [96, 82, 74]), (1, [40, 34, 34])), 34, 0.55, speed=150, rate=40,
+           sprite_id='smoke', glow=0, spread=16, x=H - 30, seed=51, blend='normal', drag=1.2, turb=60,
+           sizeOL=C((0, 0.5), (1, 1.6)), opacityOL=C((0, 0), (0.25, 0.45), (1, 0))),
+    sprite("lr_farrow_head", "Arrow Head", "poly", 22, [150, 140, 132], 1, 1, x=H - 4, aspect=0.62, rot=90,
+           blend='normal', p={"n": 3}),
+    sprite("lr_farrow_shaft", "Charred Shaft", "square", 6, [82, 56, 38], 1, 1, x=H - 60, aspect=27, blend='normal'),
+    sprite("lr_farrow_shaft_hot", "Smouldering Shaft", "square", 3, [200, 110, 50], 0.8, 1, x=H - 44, y=-1,
+           aspect=40, blend='normal'),
+    sprite("lr_farrow_fletch_a", "Fletching A", "shard", 20, [150, 44, 32], 1, 1, x=H - 114, y=-4, aspect=1.5,
+           rot=-70, blend='normal', p={"var": 2}),
+    sprite("lr_farrow_fletch_b", "Fletching B", "shard", 20, [118, 32, 26], 1, 1, x=H - 114, y=4, aspect=1.5,
+           rot=-110, blend='normal', p={"var": 3}),
+])
+projectile("fire_arrow_glow", "CBO Fire Arrow Glow", [
+    sprite("lr_farrow_halo", "Fire Halo", "soft", 78, [255, 110, 30], pulse(0.22, 0.16), pulse(1.0, 1.12),
+           x=H - 22, aspect=1.7, glow=0.2),
+    stream("lr_farrow_tail", "Flame Tail", FIRE_TAIL, 32, 0.6, speed=330, rate=95, sprite_id='flame', glow=0.15,
+           spread=9, align=True, x=H - 8, seed=52, turb=150, drag=0.6,
+           sizeOL=C((0, 1), (0.4, 0.8), (1, 0.2)), opacityOL=C((0, 0.85), (0.55, 0.5), (1, 0))),
+    stream("lr_farrow_tongues", "Head Tongues", FIRE_TAIL, 38, 0.24, speed=240, rate=70, sprite_id='flame',
+           glow=0.12, spread=22, align=True, x=H - 2, seed=53, turb=220, drag=1.0,
+           sizeOL=C((0, 0.7), (0.3, 1), (1, 0.3)), opacityOL=C((0, 0.62), (0.6, 0.42), (1, 0))),
+    stream("lr_farrow_licks", "Flames on the Shaft", FIRE_TAIL, 24, 0.3, speed=120, rate=50, sprite_id='flame',
+           glow=0.3, spread=35, align=True, x=H - 42, seed=55, turb=200, drag=1.2, shape='box', sy=10,
+           sizeOL=C((0, 0.5), (0.3, 1), (1, 0.2)), opacityOL=C((0, 0), (0.2, 0.6), (1, 0))),
+    stream("lr_farrow_embers", "Embers", EMBER, 7, 0.65, speed=170, rate=55, sprite_id='dot', glow=0.9, spread=45,
+           x=H - 20, seed=54, gravY=240, turb=180, drag=0.8,
+           sizeOL=C((0, 1), (1, 0.25)), opacityOL=C((0, 1), (0.7, 0.8), (1, 0))),
+    sprite("lr_farrow_core", "White-hot Core", "soft", 24, [255, 236, 190], pulse(0.85, 0.65), pulse(1.0, 1.15),
+           x=H - 2, aspect=1.4, glow=0.6),
+    sprite("lr_farrow_spark", "Head Spark", "spark", 30, [255, 250, 230], pulse(0.9, 0.5), pulse(0.9, 1.2),
+           x=H + 2, glow=0.4),
+])
 
 def main():
     os.makedirs(OUT, exist_ok=True)

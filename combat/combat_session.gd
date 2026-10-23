@@ -37,6 +37,7 @@ const TARGET_SWITCH_ADVANTAGE := 32.0
 ## Preloaded rather than used by class name, so headless runs work before the editor scans new classes.
 const VFX := preload("res://combat/vfx/combat_vfx.gd")
 const VFX_DIRECTOR := preload("res://combat/vfx/combat_vfx_director.gd")
+const ARENA_GEOMETRY := preload("res://combat/arena_geometry.gd")
 
 var combatants: Array[Combatant] = []
 var player_snapshots: Array[CombatUnitSnapshot] = []
@@ -52,6 +53,9 @@ var last_winner: StringName
 var last_battle_timed_out := false
 var events: Array[CombatEvent] = []
 var statistics := CombatStatistics.new()
+## Player Soldiers that can rank up during this battle: runtime_id -> {xp, level}.
+var veterancy_watch: Dictionary = {}
+var _progression: ProgressionDefinition
 var selected_combatant: Combatant
 var combat_rng := RandomNumberGenerator.new()
 var summon_serial := 0
@@ -74,14 +78,24 @@ var vignette: TextureRect
 var parallax_offset := Vector2.ZERO
 ## Short light flashes of effects (kept apart from the Effects layer).
 var light_layer: Node2D
+## Blood and scorch marks on the ground; they stay for the whole battle (global z 1,
+## under the unit shadows, which come later in the tree).
+var decal_layer: Node2D
 
 
 func _ready() -> void:
 	resized.connect(queue_redraw)
 	resized.connect(_layout_scenery)
+	resized.connect(_update_unit_arena_bounds)
 	light_layer = Node2D.new()
 	light_layer.name = "VfxLights"
 	add_child(light_layer)
+	decal_layer = Node2D.new()
+	decal_layer.name = "GroundDecals"
+	decal_layer.z_as_relative = false
+	decal_layer.z_index = 1
+	add_child(decal_layer)
+	move_child(decal_layer, $Units.get_index())
 	vfx_director = VFX_DIRECTOR.new(self)
 	add_child(vfx_director)
 	_setup_scenery()
@@ -207,9 +221,8 @@ func _stable_basic_target(requester: Combatant, candidate: Combatant, back_line_
 func melee_approach_position(requester: Combatant, target: Combatant, preferred_slot := -1) -> Dictionary:
 	var reach := requester.basic_attack_reach(target)
 	var radius := maxf(requester.body_radius + target.body_radius, reach - Combatant.APPROACH_INSET)
-	var inset := requester.arena_bounds.grow(-requester.body_radius)
 	var away := Vector2.LEFT if requester.position.x < target.position.x else Vector2.RIGHT
-	var fallback := (target.position + away * radius).clamp(inset.position, inset.end)
+	var fallback := ARENA_GEOMETRY.clamp_point(target.position + away * radius, requester.arena_bounds, requester.body_radius)
 	var best := {"slot": -1, "position": fallback}
 	var best_score := INF
 	for slot in MELEE_APPROACH_SLOTS:
@@ -219,7 +232,7 @@ func melee_approach_position(requester: Combatant, target: Combatant, preferred_
 		if slot >= side_slots:
 			angle += PI
 		var point := target.position + Vector2.RIGHT.rotated(angle) * radius
-		point = point.clamp(inset.position, inset.end)
+		point = ARENA_GEOMETRY.clamp_point(point, requester.arena_bounds, requester.body_radius)
 		var target_distance := point.distance_to(target.position)
 		if target_distance < requester.body_radius + target.body_radius - 0.1 or target_distance > reach + 0.01 or not requester.is_basic_attack_side_position(target, point):
 			continue
@@ -285,10 +298,11 @@ func find_frenzy_attack_target(requester: Combatant) -> Combatant:
 
 func random_arena_point(requester: Combatant) -> Vector2:
 	var bounds := get_arena_bounds().grow(-requester.body_radius)
-	return Vector2(
+	var point := Vector2(
 		combat_rng.randf_range(bounds.position.x, bounds.end.x),
 		combat_rng.randf_range(bounds.position.y, bounds.end.y)
 	)
+	return ARENA_GEOMETRY.clamp_point(point, get_arena_bounds(), requester.body_radius)
 
 
 func resolve_ability_target(requester: Combatant, ability: AbilityDefinition) -> Combatant:
@@ -817,8 +831,7 @@ func apply_lust_basic_knockback(
 	var direction := (target.position - source.position).normalized()
 	if direction.is_zero_approx():
 		direction = Vector2.RIGHT if target.snapshot.runtime_id > source.snapshot.runtime_id else Vector2.LEFT
-	target.position += direction * distance
-	_clamp_combatant_to_arena(target)
+	target.position = ARENA_GEOMETRY.move_point(target.position, target.position + direction * distance, get_arena_bounds(), target.body_radius)
 	var stun_template := get_node("/root/ContentRegistry").get_definition(&"status.stun") as StatusDefinition
 	if stun_template != null and stun_duration > 0.0:
 		var stun := stun_template.duplicate() as StatusDefinition
@@ -873,7 +886,7 @@ func has_enemy_target(source: Combatant) -> bool:
 	return is_instance_valid(_farthest_enemy(source))
 
 
-func teleport_to_farthest_enemy(source: Combatant) -> void:
+func teleport_to_farthest_enemy(source: Combatant, ability_id: StringName = &"") -> void:
 	var enemy := _farthest_enemy(source)
 	if not is_instance_valid(enemy):
 		return
@@ -881,11 +894,20 @@ func teleport_to_farthest_enemy(source: Combatant) -> void:
 	if direction == Vector2.ZERO:
 		direction = Vector2.LEFT if source.snapshot.team == CombatUnitSnapshot.Team.PLAYER else Vector2.RIGHT
 	var distance := source.body_radius + enemy.body_radius + minf(source.get_effective_stat(&"attack_range"), 24.0)
+	var previous_feet := source.feet_position()
 	source.position = enemy.position + direction * distance
-	var bounds := get_arena_bounds()
-	source.position.x = clampf(source.position.x, bounds.position.x + source.body_radius, bounds.end.x - source.body_radius)
-	source.position.y = clampf(source.position.y, bounds.position.y + source.body_radius, bounds.end.y - source.body_radius)
+	_clamp_combatant_to_arena(source)
+	spawn_blink_vfx(source, previous_feet, ability_id)
 	source.target = enemy
+
+
+func spawn_blink_vfx(source: Combatant, previous_feet: Vector2, ability_id: StringName) -> void:
+	if not vfx_enabled or previous_feet.distance_squared_to(source.feet_position()) < 1.0:
+		return
+	var tint := _ability_vfx_color(ability_id) if not ability_id.is_empty() else Color(0.65, 0.5, 0.9)
+	VFX.spawn_spell($Effects, &"blink", previous_feet, tint, 28.0, 0.35)
+	VFX.spawn_spell($Effects, &"blink", source.feet_position(), tint, 32.0, 0.4)
+	VFX.flash_light(light_layer, source.position, tint, 0.6, 1.0, 0.2)
 
 
 func _farthest_enemy(source: Combatant) -> Combatant:
@@ -1104,8 +1126,7 @@ func perform_leap_slam(
 		var direction := (candidate.position - impact_position).normalized()
 		if direction.is_zero_approx():
 			direction = Vector2.RIGHT if candidate.snapshot.runtime_id > primary_target.snapshot.runtime_id else Vector2.LEFT
-		candidate.position += direction * knockback_distance
-		_clamp_combatant_to_arena(candidate)
+		candidate.position = ARENA_GEOMETRY.move_point(candidate.position, candidate.position + direction * knockback_distance, get_arena_bounds(), candidate.body_radius)
 		if stun_template != null and stun_duration > 0.0:
 			var stun := stun_template.duplicate() as StatusDefinition
 			stun.default_duration = stun_duration
@@ -1127,11 +1148,7 @@ func apply_ground_slam(
 
 
 func _clamp_combatant_to_arena(combatant: Combatant) -> void:
-	var bounds := get_arena_bounds().grow(-combatant.body_radius)
-	combatant.position = Vector2(
-		clampf(combatant.position.x, bounds.position.x, bounds.end.x),
-		clampf(combatant.position.y, bounds.position.y, bounds.end.y)
-	)
+	combatant.position = ARENA_GEOMETRY.clamp_point(combatant.position, get_arena_bounds(), combatant.body_radius)
 
 
 func create_smoke_zone(source: Combatant, radius: float, duration: float, dodge_chance: float, ability_id: StringName, effect_id: StringName) -> void:
@@ -1144,6 +1161,8 @@ func create_smoke_zone(source: Combatant, radius: float, duration: float, dodge_
 		"ability_id": ability_id,
 		"effect_id": effect_id,
 	})
+	if vfx_enabled:
+		VFX.spawn_spell($Effects, &"smoke", source.feet_position(), Color(0.4, 0.42, 0.46), radius, duration)
 	queue_redraw()
 
 
@@ -1239,11 +1258,9 @@ func _resolve_combatant_overlaps(delta: float) -> void:
 			else:
 				first.position -= correction
 				second.position += correction
-	var bounds := get_arena_bounds()
 	for combatant in combatants:
 		if combatant.is_alive() and not combatant.temporarily_removed:
-			combatant.position.x = clampf(combatant.position.x, bounds.position.x + combatant.body_radius, bounds.end.x - combatant.body_radius)
-			combatant.position.y = clampf(combatant.position.y, bounds.position.y + combatant.body_radius, bounds.end.y - combatant.body_radius)
+			_clamp_combatant_to_arena(combatant)
 
 
 func spawn_projectile(source: Combatant, target: Combatant, damage: float) -> void:
@@ -1284,19 +1301,25 @@ func spawn_projectile_hit_vfx(projectile_effect: StringName, impact_position: Ve
 		return
 	var at := impact_position + Vector2(0.0, -16.0)
 	if projectile_effect == &"arrow":
-		VFX.spawn($Effects, &"hit_slash", at, 0.4, Color(1.0, 0.92, 0.8), direction.angle(), VFX.IMPACT_Z, true)
+		VFX.spawn($Effects, &"hit_slash", at, 0.28, Color(1.0, 0.86, 0.65), direction.angle(), VFX.IMPACT_Z, true)
 		return
-	var color: Color = VFX.PROJECTILE_COLORS.get(projectile_effect, Color.WHITE) * tint
-	if projectile_effect == &"venom_bolt":
-		# A crossbow bolt: a piercing hit plus a splash of poison.
-		VFX.spawn($Effects, &"hit_slash", at, 0.48, Color(0.85, 1.0, 0.75), direction.angle(), VFX.IMPACT_Z)
-		VFX.spawn($Effects, &"magic_burst", at, 0.42, color, 0.0, VFX.IMPACT_Z, true)
+	var color: Color = VFX.PROJECTILE_COLORS.get(projectile_effect, Color.WHITE) if tint.is_equal_approx(Color.WHITE) else tint
+	if projectile_effect in [&"fire_arrow", &"ember_bolt"]:
+		VFX.spawn_spell($Effects, &"fire", impact_position + Vector2(0, 20), Color(1, 0.45, 0.07), 28.0, 0.32)
+		VFX.flash_light(light_layer, at, Color(1, 0.4, 0.07), 0.9, 1.2, 0.25)
 		return
-	# Magic shots land with a big burst and a flash of light; Hero spells also shake the ground.
-	VFX.spawn($Effects, &"magic_burst", at, 0.72, color, 0.0, VFX.IMPACT_Z)
-	VFX.flash_light(light_layer, at, color, 1.8, 2.4, 0.4)
-	if projectile_effect in [&"arcane_lance", &"gloom_orb"]:
-		VFX.spawn($Effects, &"slam_ring", impact_position, 0.32, color, 0.0, VFX.GROUND_Z + 1, true)
+	var style: StringName = &"arcane"
+	if projectile_effect in [&"venom_bolt", &"hex_orb"]:
+		style = &"poison"
+	elif projectile_effect == &"holy_bolt":
+		style = &"holy"
+	elif projectile_effect == &"spirit_wisp":
+		style = &"drain"
+	elif projectile_effect == &"gloom_orb":
+		style = &"shadow"
+	VFX.spawn_spell($Effects, style, impact_position + Vector2(0, 15), color, 26.0, 0.38)
+	VFX.spawn($Effects, &"magic_burst", at, 0.28, color, 0.0, VFX.IMPACT_Z, true)
+	VFX.flash_light(light_layer, at, color, 0.65, 1.1, 0.22)
 
 
 ## Area abilities: an isometric shockwave as wide as the ability radius.
@@ -1308,6 +1331,93 @@ func spawn_area_vfx(impact_position: Vector2, radius: float, tint := Color.WHITE
 	VFX.spawn($Effects, &"slam_dust", impact_position, scale, Color.WHITE, 0.0, VFX.GROUND_Z)
 	VFX.spawn($Effects, &"slam_ring", impact_position, scale, tint, 0.0, VFX.GROUND_Z + 1)
 	VFX.flash_light(light_layer, impact_position, Color(1.0, 0.8, 0.55) * tint, 1.4, 2.0 * scale + 1.0, 0.45)
+
+
+# --- blood, fire and ground decals (presentation only) ------------------------------
+
+## Leaves a decal on the ground for the rest of the battle. kind: &"blood" or
+## &"scorch"; size in pixels across; the decal appears after delay and grows in over
+## grow seconds (blood pools); fresh blood darkens as it dries.
+func add_ground_decal(at: Vector2, kind: StringName, size: float, delay := 0.0, grow := 0.12) -> void:
+	if not vfx_enabled or decal_layer == null:
+		return
+	var decal := VFX.make_decal(kind)
+	if decal == null:
+		return
+	while decal_layer.get_child_count() >= VFX.MAX_DECALS:
+		decal_layer.get_child(0).free()
+	decal_layer.add_child(decal)
+	decal.position = at
+	# The cells hold a ~60 px splat; the ground is seen at an angle, so decals are flat.
+	var target_scale := Vector2(size / 60.0, size / 60.0 * 0.52)
+	decal.scale = target_scale * 0.25
+	var alpha := randf_range(0.78, 0.95) if kind == &"blood" else randf_range(0.55, 0.75)
+	decal.modulate = Color(1.3, 1.15, 1.15, 0.0) if kind == &"blood" else Color(1.0, 1.0, 1.0, 0.0)
+	var tween := decal.create_tween()
+	if delay > 0.0:
+		tween.tween_interval(delay)
+	tween.set_parallel(true)
+	tween.tween_property(decal, "scale", target_scale, maxf(grow, 0.05)).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(decal, "modulate:a", alpha, 0.08)
+	if kind == &"blood":
+		tween.chain().tween_property(decal, "modulate", Color(0.82, 0.78, 0.78, alpha), 5.0)
+
+
+## A drop of blood falling from a badly hurt (or bleeding) unit; it splats on the ground
+## beside the feet (in front of the shadow, so it stays visible).
+func spawn_blood_drip(unit: Combatant) -> void:
+	if not vfx_enabled or not is_instance_valid(unit) or $Effects.get_child_count() >= VFX.MAX_ACTIVE * 0.6:
+		return
+	var drop := Sprite2D.new()
+	drop.name = "BloodDrop"
+	drop.texture = VFX.get_drop_texture()
+	drop.z_index = VFX.IMPACT_Z - 2
+	var size := unit.vfx_size()
+	drop.scale = Vector2.ONE * randf_range(1.3, 1.9) * size
+	$Effects.add_child(drop)
+	var height := unit.visual_height()
+	var feet := unit.feet_position()
+	var side := 1.0 if randf() < 0.5 else -1.0
+	var start := feet + Vector2(side * randf_range(0.35, 0.75) * unit.visual_radius, -height * randf_range(0.3, 0.65))
+	var ground := Vector2(start.x, feet.y + randf_range(5.0, 13.0))
+	drop.position = start
+	var fall := clampf((ground.y - start.y) / 260.0, 0.18, 0.4)
+	var tween := drop.create_tween()
+	tween.tween_property(drop, "position", ground, fall).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	tween.tween_callback(drop.queue_free)
+	add_ground_decal(ground, &"blood", randf_range(14.0, 22.0) * size, fall, 0.06)
+
+
+## A pool of blood spreading under a fallen unit.
+func spawn_blood_pool(unit: Combatant) -> void:
+	if not vfx_enabled or not is_instance_valid(unit) or not VFX.bleeds(unit):
+		return
+	var size := unit.vfx_size()
+	add_ground_decal(unit.feet_position() + Vector2(randf_range(-6.0, 6.0), 2.0), &"blood", randf_range(62.0, 78.0) * size, 0.45, 2.6)
+	add_ground_decal(unit.feet_position() + Vector2(randf_range(-26.0, 26.0), randf_range(-6.0, 6.0)), &"blood", randf_range(26.0, 36.0) * size, 0.3, 1.2)
+
+
+## A burn tick: a small flare of flame on the body and a flash of firelight.
+func spawn_fire_tick(target: Combatant) -> void:
+	if not vfx_enabled or not is_instance_valid(target):
+		return
+	var size := target.vfx_size()
+	var body := target.feet_position() - Vector2(0.0, target.visual_height() * 0.38)
+	VFX.spawn($Effects, &"fire_burst", body, 0.34 * size, Color.WHITE, 0.0, VFX.IMPACT_Z, true)
+	VFX.flash_light(light_layer, target.feet_position() - Vector2(0.0, 10.0), VFX.FIRE_LIGHT, 0.7, 0.8 * size, 0.3)
+
+
+## Fire area (Fire Arrow): flames bursting over the area, dark smoke, a pool of
+## firelight and a scorched patch of ground that stays.
+func _spawn_fire_area_vfx(impact_position: Vector2, radius: float) -> void:
+	var scale := clampf(radius * 2.0 / 230.0, 0.35, 2.5)
+	VFX.spawn($Effects, &"slam_dust", impact_position, scale * 0.9, Color(0.55, 0.45, 0.4), 0.0, VFX.GROUND_Z)
+	VFX.spawn($Effects, &"fire_burst", impact_position - Vector2(0.0, 22.0 * scale), scale * 0.8, Color.WHITE, 0.0, VFX.IMPACT_Z)
+	for index in 2:
+		var offset := Vector2(randf_range(-0.6, 0.6) * radius, randf_range(-0.25, 0.25) * radius)
+		VFX.spawn($Effects, &"fire_burst", impact_position + offset - Vector2(0.0, 12.0), scale * 0.38, Color.WHITE, 0.0, VFX.IMPACT_Z, true)
+	VFX.flash_light(light_layer, impact_position, VFX.FIRE_LIGHT, 1.5, 1.0 + scale * 1.2, 0.7)
+	add_ground_decal(impact_position, &"scorch", radius * 1.25, 0.05, 0.25)
 
 
 ## Footstep dust, kicked up behind a walking unit (low priority).
@@ -1331,7 +1441,10 @@ func apply_projectile_impact(source: Combatant, target: Combatant, ability: Abil
 	if ability.area_radius <= 0.0:
 		_apply_ability_effects(source, target, ability)
 		return
-	spawn_area_vfx(impact_position, ability.area_radius, _ability_vfx_color(ability.id))
+	if vfx_enabled and VFX.ability_style(ability) == &"fire":
+		_spawn_fire_area_vfx(target.feet_position(), ability.area_radius)
+	else:
+		spawn_area_vfx(impact_position, ability.area_radius, _ability_vfx_color(ability.id))
 	for candidate in combatants:
 		if (
 			candidate.is_targetable()
@@ -1361,6 +1474,8 @@ func record_event(
 	events.append(event)
 	statistics.consume(event)
 	combat_event_emitted.emit(event)
+	if event.event_type == CombatEvent.DAMAGE_APPLIED or event.event_type == CombatEvent.HEALING_APPLIED:
+		_check_veterancy_after(event)
 	return event
 
 
@@ -1437,9 +1552,68 @@ func get_arena_bounds() -> Rect2:
 	return Rect2(Vector2(margin.x, top), Vector2(maxf(size.x - margin.x * 2.0, 200.0), maxf(size.y - top - margin.y, 200.0)))
 
 
+func _update_unit_arena_bounds() -> void:
+	var bounds := get_arena_bounds()
+	for combatant in combatants:
+		combatant.arena_bounds = bounds
+		combatant.approach_target = null
+		combatant.approach_committed = false
+		if combatant.is_alive() and not combatant.temporarily_removed:
+			_clamp_combatant_to_arena(combatant)
+
+
 func _ability_vfx_color(ability_id: StringName) -> Color:
 	var ability := get_ability_definition(ability_id) if not String(ability_id).is_empty() else null
 	return ability.presentation_color.lerp(Color.WHITE, 0.35) if ability != null else Color.WHITE
+
+
+## Veterancy XP is the same contribution formula the post-battle screen uses
+## (damage dealt, effective healing, damage tanked; summons credit their summoner).
+## When a Soldier's XP before the battle plus its contribution so far reaches the next
+## rank, it ranks up on the spot. The post-battle result recomputes the same total.
+func _check_veterancy_after(event: CombatEvent) -> void:
+	if veterancy_watch.is_empty():
+		return
+	_check_veterancy(event.source_id)
+	_check_veterancy(_summoner_of(event.source_id))
+	if event.event_type == CombatEvent.DAMAGE_APPLIED:
+		_check_veterancy(event.target_id)
+
+
+func _summoner_of(runtime_id: String) -> String:
+	var data: Dictionary = statistics.unit_stats.get(runtime_id, {})
+	return String(data.get("summoner_runtime_id", ""))
+
+
+func _check_veterancy(runtime_id: String) -> void:
+	if runtime_id.is_empty() or not veterancy_watch.has(runtime_id) or not statistics.unit_stats.has(runtime_id):
+		return
+	var progression := _veterancy_progression()
+	if progression == null:
+		return
+	var watch: Dictionary = veterancy_watch[runtime_id]
+	var data: Dictionary = statistics.unit_stats[runtime_id]
+	if not bool(data.get("alive", true)):
+		return
+	var xp := int(watch.xp) + int(progression.contribution_breakdown(data).total_xp)
+	var level := progression.veterancy_level_for_xp(xp)
+	if level <= int(watch.level):
+		return
+	var unit := get_combatant_by_runtime_id(runtime_id)
+	if unit == null or not unit.is_alive():
+		return
+	watch.level = level
+	while unit.snapshot.veterancy_level < level:
+		unit.gain_veterancy_level(progression)
+	record_event(CombatEvent.VETERANCY_GAINED, runtime_id, runtime_id, &"", &"", float(level))
+
+
+func _veterancy_progression() -> ProgressionDefinition:
+	if _progression == null:
+		var registry := get_node_or_null("/root/ContentRegistry")
+		if registry != null:
+			_progression = registry.get_definition(&"progression.demo", false) as ProgressionDefinition
+	return _progression
 
 
 func get_combatant_by_runtime_id(runtime_id: String) -> Combatant:
@@ -1466,8 +1640,11 @@ func _spawn_combatant(snapshot: CombatUnitSnapshot, spawn_position: Vector2, bou
 	$Units.add_child(combatant)
 	combatant.position = spawn_position
 	statistics.register_unit(snapshot)
+	if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.SOLDIER and snapshot.team == CombatUnitSnapshot.Team.PLAYER and snapshot.summoner_runtime_id.is_empty():
+		veterancy_watch[snapshot.runtime_id] = {"xp": snapshot.veterancy_xp, "level": snapshot.veterancy_level}
 	var walk_delay_frames := _initial_walk_delay_frames(snapshot.runtime_id) if initial_battle_spawn else 0
 	combatant.setup(snapshot, self, bounds, walk_delay_frames)
+	_clamp_combatant_to_arena(combatant)
 	combatants.append(combatant)
 	for taunt in active_global_taunts:
 		if snapshot.team != int(taunt.source_team) and is_instance_valid(taunt.target) and taunt.target.is_targetable():
@@ -1663,11 +1840,7 @@ func _finish_summon_merge(owner_runtime_id: String, merged_died: bool, killer: C
 func _summon_position(source_position: Vector2, serial: int, bounds: Rect2) -> Vector2:
 	var angle := TAU * float((serial - 1) % 8) / 8.0
 	var desired := source_position + Vector2.from_angle(angle) * SUMMON_SPAWN_DISTANCE
-	var inset_bounds := bounds.grow(-Combatant.UNIT_RADIUS)
-	return Vector2(
-		clampf(desired.x, inset_bounds.position.x, inset_bounds.end.x),
-		clampf(desired.y, inset_bounds.position.y, inset_bounds.end.y)
-	)
+	return ARENA_GEOMETRY.clamp_point(desired, bounds, Combatant.UNIT_RADIUS)
 
 
 func _spawn_reinforcements(bounds: Rect2) -> void:
@@ -1678,21 +1851,24 @@ func _spawn_reinforcements(bounds: Rect2) -> void:
 
 func _reinforcement_position(index: int, count: int, bounds: Rect2) -> Vector2:
 	if reinforcement_entry_direction == EncounterDefinition.ReinforcementEntryDirection.RIGHT_SIDE:
-		var ratio := float(index + 1) / float(count + 1)
-		return Vector2(bounds.end.x - REINFORCEMENT_EDGE_INSET, lerpf(bounds.position.y, bounds.end.y, ratio))
+		return _edge_reinforcement_position(index, count, 0, bounds)
 	var side := index % 4
 	var side_slot := index / 4
 	var side_count := ceili(float(count - side) / 4.0)
-	var ratio := float(side_slot + 1) / float(side_count + 1)
-	match side:
-		0:
-			return Vector2(bounds.end.x - REINFORCEMENT_EDGE_INSET, lerpf(bounds.position.y, bounds.end.y, ratio))
-		1:
-			return Vector2(lerpf(bounds.position.x, bounds.end.x, ratio), bounds.end.y - REINFORCEMENT_EDGE_INSET)
-		2:
-			return Vector2(bounds.position.x + REINFORCEMENT_EDGE_INSET, lerpf(bounds.position.y, bounds.end.y, ratio))
-		_:
-			return Vector2(lerpf(bounds.position.x, bounds.end.x, ratio), bounds.position.y + REINFORCEMENT_EDGE_INSET)
+	return _edge_reinforcement_position(side_slot, side_count, side, bounds)
+
+
+func _edge_reinforcement_position(index: int, count: int, side: int, bounds: Rect2) -> Vector2:
+	var radius := Combatant.UNIT_RADIUS
+	var spacing := radius * 2.0 + 6.0
+	var segment := ARENA_GEOMETRY.entry_segment(bounds, side, REINFORCEMENT_EDGE_INSET, radius)
+	# Use a new inward column when the open entry lane cannot fit the wave.
+	var capacity := maxi(1, floori(segment[0].distance_to(segment[1]) / spacing))
+	var column := index / capacity
+	var slots := mini(capacity, count - column * capacity)
+	if column > 0:
+		segment = ARENA_GEOMETRY.entry_segment(bounds, side, REINFORCEMENT_EDGE_INSET + column * spacing, radius)
+	return segment[0].lerp(segment[1], (float(index % capacity) + 0.5) / float(slots))
 
 
 func _check_battle_end() -> void:
@@ -1762,6 +1938,7 @@ func _get_timeout_winner() -> StringName:
 
 func _clear_battle() -> void:
 	battle_active = false
+	veterancy_watch.clear()
 	smoke_zones.clear()
 	active_global_taunts.clear()
 	active_summon_merges.clear()
@@ -1772,6 +1949,9 @@ func _clear_battle() -> void:
 	if light_layer != null:
 		for light in light_layer.get_children():
 			light.free()
+	if decal_layer != null:
+		for decal in decal_layer.get_children():
+			decal.free()
 	for unit in $Units.get_children():
 		unit.free()
 	for projectile in $Projectiles.get_children():
@@ -1805,19 +1985,9 @@ func _draw() -> void:
 	if backdrop == null:
 		draw_rect(Rect2(Vector2.ZERO, size), Color(0.125, 0.11, 0.09))
 		_draw_battleground(Rect2(Vector2.ZERO, size))
-	var bounds := get_arena_bounds()
-	draw_rect(bounds, Color(0.12, 0.08, 0.04, 0.08), true)
-	draw_rect(bounds, Color(0.37, 0.31, 0.22), false, 2.0)
 	for zone in smoke_zones:
-		draw_circle(Vector2(zone.position), float(zone.radius), Color(0.28, 0.3, 0.34, 0.24))
-		draw_arc(Vector2(zone.position), float(zone.radius), 0.0, TAU, 64, Color(0.62, 0.66, 0.72, 0.45), 2.0)
-	draw_dashed_line(
-		Vector2(bounds.get_center().x, bounds.position.y),
-		Vector2(bounds.get_center().x, bounds.end.y),
-		Color(0.55, 0.48, 0.36, 0.45),
-		2.0,
-		16.0
-	)
+		if not vfx_enabled:
+			draw_circle(Vector2(zone.position), float(zone.radius), Color(0.28, 0.3, 0.34, 0.16))
 
 
 func _draw_battleground(target_rect: Rect2) -> void:

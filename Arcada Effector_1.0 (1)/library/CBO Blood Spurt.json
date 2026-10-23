@@ -1,0 +1,304 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_blood_spurt",
+  "name": "CBO Blood Spurt",
+  "comp": {
+   "w": 256,
+   "h": 192,
+   "dur": 0.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 144,
+   "t0": 0.0,
+   "t1": 0.58,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_bspurt_spray",
+    "name": "Spray",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "x": -50,
+     "y": -20,
+     "dir": "dir",
+     "angle": -18,
+     "spread": 34,
+     "speed": 430,
+     "speedRnd": 0.45,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 30
+      },
+      {
+       "t": 0.04,
+       "n": 12
+      }
+     ],
+     "seed": 41
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "streak",
+      "p": {}
+     },
+     "size": 26,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0.3
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.75,
+        "v": 0.9
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         168,
+         14,
+         16
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         128,
+         6,
+         10
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         78,
+         0,
+         6
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "stretch": 1.6,
+     "drag": 1.4,
+     "gravY": 1300
+    }
+   },
+   {
+    "id": "lr_bspurt_chunks",
+    "name": "Drops",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "x": -50,
+     "y": -20,
+     "dir": "dir",
+     "angle": -30,
+     "spread": 50,
+     "speed": 300,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 12
+      }
+     ],
+     "seed": 42
+    },
+    "pt": {
+     "life": 0.55,
+     "lifeRnd": 0.25,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 14,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.6
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.8,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         120,
+         8,
+         10
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         60,
+         0,
+         4
+        ]
+       }
+      ]
+     },
+     "drag": 1.0,
+     "gravY": 1300
+    }
+   },
+   {
+    "id": "lr_bspurt_mist",
+    "name": "Mist",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "x": -44,
+     "y": -20,
+     "dir": "dir",
+     "angle": -10,
+     "spread": 40,
+     "speed": 120,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 7
+      }
+     ],
+     "seed": 43
+    },
+    "pt": {
+     "life": 0.35,
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 50,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 1.4
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.55
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         168,
+         14,
+         16
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         128,
+         6,
+         10
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         78,
+         0,
+         6
+        ]
+       }
+      ]
+     },
+     "drag": 3
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

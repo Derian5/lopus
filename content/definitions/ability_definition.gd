@@ -52,6 +52,10 @@ enum ActivationMode {
 @export var presentation_icon: Texture2D
 @export var presentation_color := Color.WHITE
 @export var presentation_text := ""
+## Visual profile; empty selects a profile from the effects. No gameplay changes.
+@export var presentation_style: StringName
+## Optional CombatVfx projectile profile, e.g. fire_arrow.
+@export var projectile_vfx: StringName
 @export_range(0, 1000000, 1, "or_greater") var price := 0
 ## A purchasable Job upgrade requires ownership of this preceding level.
 @export var upgrades_ability_id: StringName

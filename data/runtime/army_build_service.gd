@@ -12,6 +12,10 @@ static func perform_drop(run_state: RunState, source: Dictionary, target: Dictio
 		if not purchase.ok:
 			return purchase
 		prepared_source = purchase.source
+		if StringName(target.get("target", "")) == &"equipment":
+			# Bought gear always lands in a free slot, so nothing is pushed out of the build.
+			target = target.duplicate(true)
+			target["slot_index"] = -1
 	var result := _apply(staged, prepared_source, target, registry)
 	if not result.ok:
 		return result
@@ -59,11 +63,14 @@ static func _apply(staged: RunState, source: Dictionary, target: Dictionary, reg
 	if source_type == &"soldier" and target_type == &"job":
 		return _assign_job(staged, int(source.get("soldier_index", -1)), StringName(target.get("job_id", "")), registry)
 	if source_type == &"inventory_item" and target_type == &"equipment":
+		var slot_index := _resolve_slot(staged, target)
+		if slot_index < 0:
+			return _failure("That Hero has no free item slot. Sell an item by dragging it onto the Market.")
 		var equipment_result := EquipmentService.equip_or_swap(
 			staged,
 			StringName(target.get("owner_kind", "")),
 			int(target.get("owner_index", -1)),
-			int(target.get("slot_index", -1)),
+			slot_index,
 			StringName(source.get("instance_id", "")),
 			registry
 		)
@@ -72,9 +79,93 @@ static func _apply(staged: RunState, source: Dictionary, target: Dictionary, reg
 		return equipment_result
 	if source_type == &"equipped_item" and target_type == &"inventory":
 		return _return_item_to_inventory(staged, source)
+	if source_type == &"equipped_item" and target_type == &"equipment":
+		return _move_equipped_item(staged, source, target, registry)
+	if source_type in [&"equipped_item", &"inventory_item"] and target_type == &"sell":
+		return _sell_item(staged, source, registry)
 	if source_type == &"owned_ability" and target_type == &"ability":
 		return _equip_ability(staged, source, target, registry)
 	return _failure("This source cannot be dropped into that slot.")
+
+
+## Target slot for an item drop: slot_index -1 (or past the end) means the first free slot.
+## Returns -1 when the Hero is full and no occupied slot was named.
+static func _resolve_slot(staged: RunState, target: Dictionary) -> int:
+	var owner_index := int(target.get("owner_index", -1))
+	if StringName(target.get("owner_kind", "")) != &"hero" or owner_index < 0 or owner_index >= staged.heroes.size():
+		return int(target.get("slot_index", -1))
+	var count := staged.heroes[owner_index].item_ids.size()
+	var slot_index := int(target.get("slot_index", -1))
+	if slot_index >= 0 and slot_index < count:
+		return slot_index
+	return count if count < HeroState.MAX_ITEM_SLOTS else -1
+
+
+## Moves gear between Heroes (or slots of one Hero). Dropping onto an occupied slot
+## swaps the two items; both Heroes must be able to use what they receive.
+static func _move_equipped_item(staged: RunState, source: Dictionary, target: Dictionary, registry: Node) -> Dictionary:
+	var checked := _equipped_source(staged, source)
+	if not checked.ok:
+		return checked
+	var from_index := int(source.get("owner_index", -1))
+	var from_slot := int(source.get("slot_index", -1))
+	var to_index := int(target.get("owner_index", -1))
+	if StringName(target.get("owner_kind", "")) != &"hero" or to_index < 0 or to_index >= staged.heroes.size():
+		return _failure("Select a valid Hero.")
+	var instance_id := StringName(source.get("instance_id", ""))
+	var from_ids := staged.heroes[from_index].item_ids
+	var to_ids := staged.heroes[to_index].item_ids
+	var to_slot := int(target.get("slot_index", -1))
+	if from_index == to_index:
+		if to_slot < 0 or to_slot >= from_ids.size() or to_slot == from_slot:
+			return _failure("")
+		from_ids[from_slot] = from_ids[to_slot]
+		from_ids[to_slot] = instance_id
+		return {"ok": true, "error": "", "action": &"equipment_changed"}
+	var replaced: StringName = to_ids[to_slot] if to_slot >= 0 and to_slot < to_ids.size() else &""
+	if replaced.is_empty():
+		if to_ids.size() >= HeroState.MAX_ITEM_SLOTS:
+			return _failure("%s has no free item slot. Drop the item onto one of its items to swap them." % _hero_name(staged, to_index, registry))
+		to_slot = to_ids.size()
+	EquipmentService.unequip(staged, &"hero", from_index, from_slot)
+	var placed := EquipmentService.equip_or_swap(staged, &"hero", to_index, to_slot, instance_id, registry)
+	if not placed.ok:
+		return placed
+	if not replaced.is_empty():
+		var back := EquipmentService.equip_or_swap(staged, &"hero", from_index, from_ids.size(), replaced, registry)
+		if not back.ok:
+			return back
+		from_ids.remove_at(from_ids.size() - 1)
+		from_ids.insert(mini(from_slot, from_ids.size()), replaced)
+	return {"ok": true, "error": "", "action": &"equipment_changed"}
+
+
+static func _sell_item(staged: RunState, source: Dictionary, registry: Node) -> Dictionary:
+	var instance_id := StringName(source.get("instance_id", ""))
+	if StringName(source.get("source", "")) == &"equipped_item":
+		var checked := _equipped_source(staged, source)
+		if not checked.ok:
+			return checked
+		EquipmentService.unequip(staged, &"hero", int(source.get("owner_index", -1)), int(source.get("slot_index", -1)))
+	var result := MarketService.sell_item(staged, instance_id, registry)
+	if result.ok:
+		result["action"] = &"market_sale"
+	return result
+
+
+static func _equipped_source(staged: RunState, source: Dictionary) -> Dictionary:
+	var owner_index := int(source.get("owner_index", -1))
+	var slot_index := int(source.get("slot_index", -1))
+	if StringName(source.get("owner_kind", "")) != &"hero" or owner_index < 0 or owner_index >= staged.heroes.size():
+		return _failure("That equipment owner is no longer available.")
+	var item_ids := staged.heroes[owner_index].item_ids
+	if slot_index < 0 or slot_index >= item_ids.size() or item_ids[slot_index] != StringName(source.get("instance_id", "")):
+		return _failure("That equipped item is no longer in this slot.")
+	return {"ok": true, "error": ""}
+
+
+static func _hero_name(staged: RunState, index: int, registry: Node) -> String:
+	return _display_name(registry, staged.heroes[index].definition_id)
 
 
 static func _return_item_to_inventory(staged: RunState, source: Dictionary) -> Dictionary:

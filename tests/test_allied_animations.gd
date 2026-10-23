@@ -16,6 +16,7 @@ func _run() -> void:
 	registry = root.get_node("ContentRegistry")
 	_test_frame_sequences_and_anchors()
 	_test_visual_size_consistency()
+	_test_hero_attack_size_transitions()
 	_test_priest_cast()
 	_test_summoner_cast()
 	if failures == 0:
@@ -56,11 +57,15 @@ func _test_frame_sequences_and_anchors() -> void:
 		unit._start_attack()
 		unit._process(0.0)
 		var sprite_duration := float(sprite.sprite_frames.get_frame_count(&"attack")) / (sprite.sprite_frames.get_animation_speed(&"attack") * sprite.speed_scale)
-		_check(is_equal_approx(sprite_duration, unit.attack_animation_duration / Combatant.ANIMATION_SPEED), "%s plays all attack frames within its attack cycle (ANIMATION_SPEED faster)." % snapshot.runtime_id)
+		if unit.unit_sprite_attack_impact_frame >= 0:
+			var release_duration := float(unit.unit_sprite_attack_impact_frame + 1) / (sprite.sprite_frames.get_animation_speed(&"attack") * sprite.speed_scale)
+			_check(is_equal_approx(release_duration, unit.windup_duration), "%s reaches its firing pose at the simulation release time." % snapshot.runtime_id)
+		else:
+			_check(is_equal_approx(sprite_duration, unit.attack_animation_duration / Combatant.ANIMATION_SPEED), "%s plays all attack frames within its attack cycle (ANIMATION_SPEED faster)." % snapshot.runtime_id)
 		unit.state = Combatant.State.DEAD
 		unit._process(0.0)
 		_check(sprite.animation == &"death" and sprite.is_playing(), "%s starts its death animation." % snapshot.runtime_id)
-	_check(is_equal_approx(session.get_combatant_by_runtime_id("enemy.summoned_amalgam").unit_sprite_base_scale, session.get_combatant_by_runtime_id("enemy.summoned_brawler").unit_sprite_base_scale), "All summoned variants share the same 64px visual scale.")
+	_check(is_equal_approx(session.get_combatant_by_runtime_id("enemy.summoned_amalgam").unit_sprite_base_scale, session.get_combatant_by_runtime_id("enemy.summoned_brawler").unit_sprite_base_scale), "All summoned variants share the same 83.2px visual scale.")
 	session.free()
 
 
@@ -88,7 +93,7 @@ func _test_visual_size_consistency() -> void:
 		var is_summon := snapshot.unit_kind == CombatUnitSnapshot.UnitKind.SUMMON
 		_check(is_equal_approx(unit.body_radius, 20.16), "Visual resizing does not alter combat collision radii.")
 		if not unit.unit_sprite.visible:
-			_check(is_summon and is_equal_approx(unit.visual_radius * 2.0, 64.0), "Summons without art also receive 64px placeholder visuals.")
+			_check(is_summon and is_equal_approx(unit.visual_radius * 2.0, 83.2), "Summons without art also receive 83.2px placeholder visuals.")
 			continue
 		var heights: Array[float] = []
 		for frame in unit.unit_sprite.sprite_frames.get_frame_count(&"move"):
@@ -96,10 +101,58 @@ func _test_visual_size_consistency() -> void:
 			heights.append(_visible_height(texture, unit.unit_sprite_uses_chroma_key) * unit.unit_sprite_base_scale)
 		heights.sort()
 		var median := heights[heights.size() / 2]
-		var expected := 64.0 if is_summon else (156.0 if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO else 128.0)
+		var expected := 83.2 if is_summon else (156.0 if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO else 128.0)
 		_check(absf(median - expected) < 2.0, "%s visible height is %.1f px, expected approximately %.0f." % [snapshot.runtime_id, median, expected])
 		_check(is_equal_approx(unit.body_anchor_offset().y, expected * (52.0 / 96.0)), "Normalized sprites retain their size-adjusted ground anchor.")
 	_check(is_equal_approx(session.get_combatant_by_runtime_id("enemy").visual_radius * 2.0, 128.0), "Enemies without animated artwork also use a 128px visible body.")
+	session.free()
+
+
+func _test_hero_attack_size_transitions() -> void:
+	var army: Array[CombatUnitSnapshot] = []
+	for id in [&"hero.thorn_warden", &"hero.glass_arcanist"]:
+		var hero := HeroState.new()
+		hero.unique_id = String(id)
+		hero.definition_id = id
+		army.append(CombatSnapshotBuilder.build_hero(hero, InventoryState.new(), registry))
+	var session := _session(army)
+	var target := session.get_combatant_by_runtime_id("enemy")
+	for snapshot in army:
+		var unit := session.get_combatant_by_runtime_id(snapshot.runtime_id)
+		var sprite := unit.unit_sprite
+		unit.position = Vector2(400, 350)
+		target.position = Vector2(460, 350)
+		unit.target = target
+		unit.velocity = Vector2.RIGHT * 50.0
+		unit._process(0.0)
+		var walk_scale := sprite.scale
+		var walk_anchor := unit.body_anchor_offset()
+		var walk_height := _visible_height(sprite.sprite_frames.get_frame_texture(&"move", 0), unit.unit_sprite_uses_chroma_key) * walk_scale.y
+		unit.velocity = Vector2.ZERO
+		unit._start_attack()
+		unit._process(0.0)
+		var attack_scale := sprite.scale
+		_check(sprite.animation == &"attack" and unit.attack_committed, "The size regression exercises a real committed attack transition.")
+		# These poses have a lowered weapon: a raised whip must not masquerade as
+		# character height and make a smaller body pass a whole-animation median.
+		for frame in [0, 1, 14, 15]:
+			sprite.frame = frame
+			unit._process(0.0)
+			var attack_height := _visible_height(sprite.sprite_frames.get_frame_texture(&"attack", frame), unit.unit_sprite_uses_chroma_key) * sprite.scale.y
+			_check(absf(attack_height - walk_height) <= walk_height * 0.05, "%s keeps its body size in neutral attack frame %d: walk %.1f px, attack %.1f px." % [snapshot.definition_id, frame, walk_height, attack_height])
+			_check(sprite.scale.is_equal_approx(attack_scale), "Attack scale stays constant instead of pumping with every pose.")
+			for left in [false, true]:
+				sprite.flip_h = left
+				unit._update_unit_sprite_offset()
+				var expected_anchor := Vector2(-walk_anchor.x if left else walk_anchor.x, walk_anchor.y)
+				_check(unit.body_anchor_offset().distance_to(expected_anchor) < 0.5, "Rescaled attacks retain their standing ground anchor in both facings.")
+		unit.attack_committed = false
+		unit.committed_attack_target = null
+		unit.committed_attack_ability = null
+		unit.attack_motion_lock_remaining = 0.0
+		unit.state = Combatant.State.IDLE
+		unit._process(0.0)
+		_check(sprite.animation == &"move" and sprite.scale.is_equal_approx(walk_scale), "Finishing an attack restores the original standing/walking scale.")
 	session.free()
 
 

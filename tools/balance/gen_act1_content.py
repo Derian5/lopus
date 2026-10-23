@@ -147,6 +147,16 @@ def ability(path, ability_id, name, description, icon, color_value, effects_buil
     base.update(props)
     base["effects"] = "Array[AbilityEffect]([%s])" % ", ".join(effects)
     base.setdefault("presentation_color", color_value)
+    visual_styles = {
+        "ability.ogre_skull_crack": "impact", "ability.troll_hex_of_rot": "shadow",
+        "ability.enemy_summon": "summon", "ability.bog_rotten_burst": "poison",
+        "ability.ogre_bone_leap": "impact", "ability.troll_blood": "holy",
+        "ability.bog_king_troll_blood": "holy", "ability.troll_berserk": "fury",
+        "ability.bog_king_slam": "impact", "ability.bog_king_call": "summon",
+        "ability.warden_iron_resolve": "ward",
+    }
+    if ability_id in visual_styles:
+        base.setdefault("presentation_style", sname(visual_styles[ability_id]))
     base["presentation_text"] = name
     base["available_to_heroes"] = False
     base.setdefault("tags", snames(["ability", "enemy"]))

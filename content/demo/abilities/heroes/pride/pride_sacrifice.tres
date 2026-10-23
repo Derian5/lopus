@@ -67,5 +67,6 @@ delivery_method = 0
 effects = Array[AbilityEffect]([SubResource("EffectBase")])
 priority = 110
 presentation_color = Color(0.76, 0.18, 0.58, 1)
+presentation_style = &"arcane"
 allowed_hero_ids = Array[StringName]([&"hero.control_savant"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])

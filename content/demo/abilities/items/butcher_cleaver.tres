@@ -15,6 +15,7 @@ amount = 15.0
 script = ExtResource("4")
 id = &"status.item_bleed"
 display_name = "Bleeding"
+presentation_style = &"bleed"
 description = "Takes damage every second."
 default_duration = 5.0
 max_stacks = 3

@@ -44,3 +44,4 @@ effects = Array[AbilityEffect]([SubResource("ApplyFlame")])
 priority = 110
 presentation_color = Color(1, 0.78, 0.28, 1)
 available_to_heroes = false
+presentation_style = &"holy"

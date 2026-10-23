@@ -62,6 +62,7 @@ delivery_method = 0
 effects = Array[AbilityEffect]([SubResource("Base")])
 priority = 120
 presentation_color = Color(0.42, 0.4, 0.5, 1)
+presentation_style = &"blink"
 presentation_text = "Shadowstep"
 allowed_hero_ids = Array[StringName]([&"hero.test_vanguard"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])

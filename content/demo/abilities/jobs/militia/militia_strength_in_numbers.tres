@@ -25,4 +25,5 @@ effects = Array[AbilityEffect]([SubResource("Numbers")])
 presentation_color = Color(0.62, 0.66, 0.74, 1)
 presentation_text = "Strength in Numbers"
 available_to_heroes = false
+presentation_style = &"boon"
 tags = Array[StringName]([&"ability", &"passive", &"job", &"militia", &"armor"])

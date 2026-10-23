@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="Can Be Only One Hero"
-run/main_scene="res://main.tscn"
+config/version="0.02"
+run/main_scene="res://ui/loading/startup.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -19,6 +20,7 @@ config/icon="res://icon.svg"
 
 DevMode="*res://autoload/dev_mode.gd"
 ContentRegistry="*res://autoload/content_registry.gd"
+StartupAssets="*res://autoload/startup_assets.gd"
 UiPolish="*res://autoload/ui_polish.gd"
 
 [display]

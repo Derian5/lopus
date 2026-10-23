@@ -12,6 +12,8 @@ const BATTLE_FINISHED := &"battle_finished"
 const BOSS_PHASE_CHANGED := &"boss_phase_changed"
 const REINFORCEMENTS_SPAWNED := &"reinforcements_spawned"
 const UNIT_SUMMONED := &"unit_summoned"
+## A Soldier reached the next Veterancy rank during the battle (value = new rank).
+const VETERANCY_GAINED := &"veterancy_gained"
 
 var timestamp := 0.0
 var event_type: StringName

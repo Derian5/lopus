@@ -17,6 +17,7 @@ func _run() -> void:
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	root.add_child(viewport)
 	var session: CombatSession = SESSION_SCENE.instantiate()
+	session.vfx_enabled = false
 	viewport.add_child(session)
 	session.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	session.size = Vector2(180, 180)
@@ -26,6 +27,9 @@ func _run() -> void:
 	session.set_physics_process(false)
 	for unit in session.combatants:
 		unit.set_simulation_active(false)
+		# Small opaque probes isolate layering from the actual artwork dimensions.
+		unit.visual_radius = 28.8
+		unit.health_bar_offset = 38.0
 	var near := session.get_combatant_by_runtime_id("near")
 	var far := session.get_combatant_by_runtime_id("far")
 	near.position = Vector2(90, 100)
@@ -41,7 +45,7 @@ func _run() -> void:
 	if rendered:
 		await _draw_frame()
 		_check_pixel(viewport, Vector2i(90, 95), Color.RED, "The lower unit covers the upper unit despite spawning first.")
-		_check_pixel(viewport, Vector2i(85, 62), Color(0.28, 0.86, 0.38), "A health bar remains visible over another unit's body.")
+		_check_pixel(viewport, Vector2i(85, 64), Color(0.28, 0.86, 0.38), "A health bar remains visible over another unit's body.")
 		far.position.y = 110
 		await _draw_frame()
 		_check_pixel(viewport, Vector2i(90, 100), Color.BLUE, "Crossing on the vertical axis immediately updates visual depth.")
@@ -118,6 +122,13 @@ func _test_combat_ui_layers(rendered: bool) -> void:
 		summary.hide_summary()
 		await _draw_frame()
 		_check_pixel(viewport, point, Color.BLUE, "The battlefield remains visible when the results window is hidden.")
+	session._select_combatant(body)
+	_check(selected.visible and body.selected, "Selecting a battlefield unit opens its details and ground selection.")
+	selected.get_node("%CloseButton").pressed.emit()
+	_check(not selected.visible and not body.selected and session.selected_combatant == null, "Closing details also clears the battlefield selection.")
+	session.elapsed_time = 65.0
+	combat._process(0.1)
+	_check(combat.get_node("%BattleClock").text == "01:05", "The battle header formats simulation time in minutes and seconds.")
 	viewport.free()
 
 

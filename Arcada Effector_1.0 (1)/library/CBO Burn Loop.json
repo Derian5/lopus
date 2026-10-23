@@ -1,0 +1,528 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_burn_loop",
+  "name": "CBO Burn Loop",
+  "comp": {
+   "w": 256,
+   "h": 320,
+   "dur": 2.2,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 4,
+   "frames": 16,
+   "cellW": 192,
+   "cellH": 240,
+   "t0": 1.0,
+   "t1": 2.0,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_burn_core",
+    "name": "Ember Glow",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.17,
+       "v": 0.3,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.33,
+       "v": 0.2,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.5,
+       "v": 0.28,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.71,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.88,
+       "v": 0.3,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 1.0,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 1.17,
+       "v": 0.3,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 1.33,
+       "v": 0.2,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 1.5,
+       "v": 0.28,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 1.71,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 1.88,
+       "v": 0.3,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 2.2,
+       "v": 0.22,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 120,
+     "x": 0,
+     "y": 78,
+     "scale": 1,
+     "aspect": 0.8,
+     "rot": 0,
+     "color": [
+      230,
+      90,
+      25
+     ],
+     "glow": 0.2,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_burn_cling",
+    "name": "Clinging Flames",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 72,
+     "shape": "box",
+     "sx": 58,
+     "sy": 72,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 12,
+     "speed": 75,
+     "speedRnd": 0.4,
+     "rate": 58,
+     "seed": 31,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.42,
+     "lifeRnd": 0.35,
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {
+       "taper": 0.75,
+       "var": 3
+      }
+     },
+     "size": 40,
+     "sizeRnd": 0.45,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.4
+       },
+       {
+        "t": 0.3,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.15,
+        "v": 0.85
+       },
+       {
+        "t": 0.6,
+        "v": 0.55
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         228,
+         150
+        ]
+       },
+       {
+        "t": 0.22,
+        "c": [
+         255,
+         168,
+         62
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         236,
+         92,
+         26
+        ]
+       },
+       {
+        "t": 0.78,
+        "c": [
+         160,
+         36,
+         14
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         60,
+         10,
+         8
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "drag": 0.5,
+     "turbAmp": 150,
+     "turbFreq": 3,
+     "glow": 0.3
+    }
+   },
+   {
+    "id": "lr_burn_tongues",
+    "name": "Rising Tongues",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 96,
+     "shape": "box",
+     "sx": 52,
+     "sy": 18,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 8,
+     "speed": 165,
+     "speedRnd": 0.4,
+     "rate": 26,
+     "seed": 32,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.6,
+     "lifeRnd": 0.35,
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {
+       "taper": 0.7,
+       "var": 5
+      }
+     },
+     "size": 54,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 0.25,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.12
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.12,
+        "v": 0.8
+       },
+       {
+        "t": 0.6,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         228,
+         150
+        ]
+       },
+       {
+        "t": 0.22,
+        "c": [
+         255,
+         168,
+         62
+        ]
+       },
+       {
+        "t": 0.5,
+        "c": [
+         236,
+         92,
+         26
+        ]
+       },
+       {
+        "t": 0.78,
+        "c": [
+         160,
+         36,
+         14
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         60,
+         10,
+         8
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "drag": 0.6,
+     "turbAmp": 170,
+     "turbFreq": 2.5,
+     "glow": 0.35
+    }
+   },
+   {
+    "id": "lr_burn_embers",
+    "name": "Embers",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 50,
+     "shape": "box",
+     "sx": 70,
+     "sy": 60,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 30,
+     "speed": 190,
+     "speedRnd": 0.5,
+     "rate": 24,
+     "seed": 33,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.85,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 6,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.2
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.7,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         250,
+         210
+        ]
+       },
+       {
+        "t": 0.4,
+        "c": [
+         255,
+         190,
+         80
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         230,
+         80,
+         20
+        ]
+       }
+      ]
+     },
+     "drag": 0.8,
+     "turbAmp": 260,
+     "turbFreq": 2,
+     "glow": 0.8
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

@@ -44,3 +44,4 @@ effects = Array[AbilityEffect]([SubResource("CrackDamage"), SubResource("CrackSt
 presentation_color = Color(0.78, 0.52, 0.3, 1)
 presentation_text = "Skull Crack"
 available_to_heroes = false
+presentation_style = &"impact"

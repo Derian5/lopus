@@ -52,6 +52,7 @@ kind = 1
 targeting_policy = 0
 effects = Array[ExtResource("1_kurad")]([SubResource("Base")])
 presentation_color = Color(0.92, 0.36, 0.66, 1)
+presentation_style = &"ward"
 allowed_hero_ids = Array[StringName]([&"hero.glass_arcanist"])
 hero_levels = Array[ExtResource("2")]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
 id = &"ability.lust_fallen_devotion"

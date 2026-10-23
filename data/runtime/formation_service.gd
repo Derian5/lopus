@@ -16,6 +16,7 @@ const REFERENCE_ARENA := Vector2(1748.0, 798.0)
 const GRID_STEP := Vector2(1.0 / 48.0, 1.0 / 22.0)
 const MIN_SPACING := 0.028
 const AUTOMATIC_SPACING := 96.0
+const ARENA_GEOMETRY := preload("res://combat/arena_geometry.gd")
 
 
 ## Automatic layout in arena pixels, front to back: melee units (Soldiers, summons,
@@ -63,12 +64,51 @@ static func formation_group(snapshot: CombatUnitSnapshot) -> int:
 ## Spawn positions in arena pixels (aligned with snapshots): custom where set, automatic otherwise.
 static func spawn_positions(snapshots: Array[CombatUnitSnapshot], bounds: Rect2, player_team: bool) -> Array[Vector2]:
 	var result := automatic_positions(snapshots, bounds, player_team)
-	if not player_team:
-		return result
 	for index in snapshots.size():
-		if has_custom(snapshots[index].formation_position):
+		if player_team and has_custom(snapshots[index].formation_position):
 			result[index] = bounds.position + clamp_to_zone(snapshots[index].formation_position) * bounds.size
+	# Reserve manual positions first, then spread projected automatic positions
+	# along the open lane rather than stacking them against one rock boundary.
+	var order: Array[int] = []
+	for custom in [true, false]:
+		for index in snapshots.size():
+			if (player_team and has_custom(snapshots[index].formation_position)) == custom:
+				order.append(index)
+	var placed: Array[int] = []
+	for index in order:
+		var radius := Combatant.BOSS_RADIUS if snapshots[index].is_boss else Combatant.UNIT_RADIUS
+		var desired := result[index]
+		var point := ARENA_GEOMETRY.clamp_point(desired, bounds, radius)
+		if not _spawn_has_space(point, radius, placed, result, snapshots):
+			var found := false
+			for ring in range(1, 13):
+				var best_score := INF
+				for direction in [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT, Vector2(-1, -1), Vector2(-1, 1), Vector2(1, -1), Vector2(1, 1)]:
+					var candidate := ARENA_GEOMETRY.clamp_point(point + direction * ring * (Combatant.UNIT_RADIUS * 2.0 + 6.0), bounds, radius)
+					var x := (candidate.x - bounds.position.x) / bounds.size.x
+					if (player_team and x > DEPLOY_ZONE.end.x) or (not player_team and x < 1.0 - DEPLOY_ZONE.end.x):
+						continue
+					var score := candidate.distance_squared_to(desired)
+					if score < best_score and _spawn_has_space(candidate, radius, placed, result, snapshots):
+						best_score = score
+						result[index] = candidate
+						found = true
+				if found:
+					break
+			if not found:
+				result[index] = point
+		else:
+			result[index] = point
+		placed.append(index)
 	return result
+
+
+static func _spawn_has_space(point: Vector2, radius: float, placed: Array[int], positions: Array[Vector2], snapshots: Array[CombatUnitSnapshot]) -> bool:
+	for index in placed:
+		var other_radius := Combatant.BOSS_RADIUS if snapshots[index].is_boss else Combatant.UNIT_RADIUS
+		if point.distance_squared_to(positions[index]) < pow(radius + other_radius + 2.0, 2):
+			return false
+	return true
 
 
 ## Normalized positions for every unit, using the reference arena for automatic ones.
@@ -86,10 +126,11 @@ static func has_custom(position: Vector2) -> bool:
 
 
 static func clamp_to_zone(position: Vector2) -> Vector2:
-	return Vector2(
+	var clamped := Vector2(
 		clampf(position.x, DEPLOY_ZONE.position.x, DEPLOY_ZONE.end.x),
 		clampf(position.y, DEPLOY_ZONE.position.y, DEPLOY_ZONE.end.y)
 	)
+	return ARENA_GEOMETRY.clamp_point(clamped * REFERENCE_ARENA, Rect2(Vector2.ZERO, REFERENCE_ARENA), Combatant.UNIT_RADIUS) / REFERENCE_ARENA
 
 
 static func snap(position: Vector2) -> Vector2:

@@ -1,0 +1,435 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_fire_burst",
+  "name": "CBO Fire Burst",
+  "comp": {
+   "w": 256,
+   "h": 256,
+   "dur": 0.8,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 37
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 3,
+   "frames": 12,
+   "cellW": 192,
+   "cellH": 192,
+   "t0": 0.0,
+   "t1": 0.76,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_fburst_flash",
+    "name": "Flash",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.55,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.04,
+       "v": 0.55,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.2,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "soft",
+      "p": {}
+     },
+     "size": 130,
+     "x": 0,
+     "y": 30,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.3,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.13999999999999999,
+        "v": 1.4,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      170,
+      80
+     ],
+     "glow": 0.6,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    },
+    "end": 0.22
+   },
+   {
+    "id": "lr_fburst_tongues",
+    "name": "Flame Puff",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "y": 40,
+     "shape": "circle",
+     "sx": 34,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 70,
+     "speed": 260,
+     "speedRnd": 0.4,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 22
+      },
+      {
+       "t": 0.06,
+       "n": 12
+      }
+     ],
+     "seed": 35
+    },
+    "pt": {
+     "life": 0.5,
+     "lifeRnd": 0.35,
+     "sprite": {
+      "kind": "shape",
+      "id": "flame",
+      "p": {
+       "taper": 0.7,
+       "var": 4
+      }
+     },
+     "size": 52,
+     "sizeRnd": 0.4,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.6
+       },
+       {
+        "t": 0.2,
+        "v": 1
+       },
+       {
+        "t": 1,
+        "v": 0.2
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.7
+       },
+       {
+        "t": 0.5,
+        "v": 0.55
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         238,
+         170
+        ]
+       },
+       {
+        "t": 0.15,
+        "c": [
+         255,
+         205,
+         95
+        ]
+       },
+       {
+        "t": 0.45,
+        "c": [
+         255,
+         140,
+         40
+        ]
+       },
+       {
+        "t": 0.75,
+        "c": [
+         210,
+         60,
+         20
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         90,
+         20,
+         10
+        ]
+       }
+      ]
+     },
+     "alignVel": true,
+     "drag": 3.2,
+     "gravY": -260,
+     "turbAmp": 140,
+     "glow": 0.6
+    }
+   },
+   {
+    "id": "lr_fburst_embers",
+    "name": "Sparks",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "add",
+    "em": {
+     "x": 0,
+     "y": 30,
+     "shape": "point",
+     "sx": 60,
+     "dir": "omni",
+     "angle": 0,
+     "spread": 360,
+     "speed": 380,
+     "speedRnd": 0.5,
+     "bursts": [
+      {
+       "t": 0,
+       "n": 22
+      }
+     ],
+     "seed": 36
+    },
+    "pt": {
+     "life": 0.6,
+     "lifeRnd": 0.4,
+     "sprite": {
+      "kind": "shape",
+      "id": "dot",
+      "p": {}
+     },
+     "size": 9,
+     "sizeRnd": 0.5,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.4,
+        "v": 0.7
+       },
+       {
+        "t": 1,
+        "v": 0.1
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 1
+       },
+       {
+        "t": 0.6,
+        "v": 0.8
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         255,
+         250,
+         210
+        ]
+       },
+       {
+        "t": 0.4,
+        "c": [
+         255,
+         190,
+         80
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         230,
+         80,
+         20
+        ]
+       }
+      ]
+     },
+     "alignVel": false,
+     "stretch": 0,
+     "gravY": 380,
+     "drag": 1.6,
+     "glow": 0.8,
+     "spin": 180
+    },
+    "end": 0.05
+   },
+   {
+    "id": "lr_fburst_ring",
+    "name": "Ring",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "add",
+    "opacity": {
+     "keys": [
+      {
+       "t": 0,
+       "v": 0.7,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.16000000000000003,
+       "v": 0.48999999999999994,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      },
+      {
+       "t": 0.4,
+       "v": 0,
+       "i": {
+        "m": "ease"
+       },
+       "o": {
+        "m": "ease"
+       }
+      }
+     ]
+    },
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "ring",
+      "p": {
+       "th": 0.09
+      }
+     },
+     "size": 190,
+     "x": 0,
+     "y": 80,
+     "scale": {
+      "keys": [
+       {
+        "t": 0,
+        "v": 0.25,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       },
+       {
+        "t": 0.4,
+        "v": 1.15,
+        "i": {
+         "m": "ease"
+        },
+        "o": {
+         "m": "ease"
+        }
+       }
+      ]
+     },
+     "aspect": 1.0,
+     "rot": 0,
+     "color": [
+      255,
+      150,
+      60
+     ],
+     "glow": 0.5,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 1
+    },
+    "end": 0.42000000000000004
+   }
+  ]
+ },
+ "tex": {}
+}

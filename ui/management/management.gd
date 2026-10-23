@@ -8,6 +8,36 @@ signal run_event_choice_requested(choice_id: StringName)
 signal hero_ability_reward_requested(offer_id: String)
 
 const ICON_SIZE := Vector2(92, 92)
+const HERO_SLOT_SIZE := Vector2(56, 56)
+const ATLAS := preload("res://graphics/ui/ui_atlas_v2.png")
+## Atlas regions of the inspector's stat icons, reused by the Market cards.
+const STAT_ATLAS_REGIONS := {
+	"max_hp": Rect2(1038, 203, 46, 43),
+	"damage": Rect2(1102, 149, 47, 47),
+	"armor": Rect2(1168, 149, 47, 47),
+	"attack_range": Rect2(1233, 149, 47, 47),
+}
+## Small ability icons (graphics/ui/ability_icons) for the other stats.
+const STAT_ICON_NAMES := {
+	"attack_speed": "buff", "movement_speed": "buff", "crit_chance": "damage", "crit_multiplier": "damage",
+	"lifesteal": "heal", "dodge": "shield", "hp_regen": "heal", "cooldown_reduction": "cooldown",
+	"damage_taken": "debuff", "armor_penetration": "damage",
+}
+const STAT_SHORT := {
+	"max_hp": "HP", "damage": "DMG", "attack_speed": "ATK SPD", "movement_speed": "MOVE", "attack_range": "RANGE",
+	"armor": "ARMOR", "crit_chance": "CRIT", "crit_multiplier": "CRIT DMG", "lifesteal": "LIFESTEAL", "dodge": "DODGE",
+	"hp_regen": "REGEN", "cooldown_reduction": "CDR", "damage_taken": "DMG TAKEN", "armor_penetration": "ARMOR PEN",
+}
+const OFFER_ACCENTS := {
+	&"job_unlock": Color(0.42, 0.8, 0.48),
+	&"job_capacity": Color(0.46, 0.68, 0.98),
+	&"job_ability": Color(0.72, 0.52, 1.0),
+}
+## Item accents by ItemDefinition.ItemCategory: damage, tank, support, command, unique.
+const ITEM_ACCENTS := [Color(0.95, 0.46, 0.32), Color(0.46, 0.68, 0.98), Color(0.45, 0.84, 0.52), Color(0.96, 0.76, 0.36), Color(0.8, 0.52, 1.0)]
+const CARD_TITLE := Color(0.96, 0.88, 0.7)
+const CARD_BODY := Color(0.78, 0.71, 0.6)
+const CARD_MUTED := Color(0.56, 0.5, 0.42)
 
 var run_state: RunState
 var selected_kind := ""
@@ -27,9 +57,6 @@ func _ready() -> void:
 	%AvoidDamageButton.pressed.connect(_set_damage_avoidance.bind(true))
 	%AcceptDamageButton.pressed.connect(_set_damage_avoidance.bind(false))
 	%ResurrectionButton.pressed.connect(_resurrect_selected_hero)
-	%InventoryDropSlot.accepted_sources.append(&"equipped_item")
-	%InventoryDropSlot.target_payload = {"target": &"inventory"}
-	%InventoryDropSlot.payload_dropped.connect(_on_management_drop)
 	%RunEventPopup.choice_selected.connect(_on_run_event_choice_selected)
 	%HeroAbilityRewardPopup.offer_selected.connect(_on_hero_ability_reward_selected)
 	var view_group := ButtonGroup.new()
@@ -122,10 +149,11 @@ func _selected_unit_id() -> String:
 func _refresh_all() -> void:
 	%GoldLabel.text = "GOLD  %d" % run_state.gold
 	%PhaseLabel.text = "PREPARATION"
+	if _auto_equip_spare_items():
+		run_state_changed.emit(&"equipment_changed")
 	_refresh_roster_job_ids()
 	_refresh_roster()
 	_refresh_job_build_panel()
-	_refresh_inventory()
 	_refresh_market()
 	_refresh_encounter()
 	_refresh_selected()
@@ -145,10 +173,8 @@ func _refresh_roster() -> void:
 		var hero := run_state.heroes[index]
 		if hero.life_state == HeroState.EXECUTED:
 			continue
-		var definition := _registry().get_definition(hero.definition_id) as HeroDefinition
-		var state_suffix := "" if hero.life_state == HeroState.ALIVE else "  [%s]" % String(hero.life_state).to_upper()
-		var hero_label := definition.display_name + state_suffix
-		_add_roster_row(hero_label, definition.id, "hero", index)
+		_add_hero_card(index)
+	_add_spare_items()
 	for job_id in roster_job_ids:
 		var job := _registry().get_definition(job_id, false) as JobDefinition
 		if job == null:
@@ -173,6 +199,189 @@ func _refresh_roster() -> void:
 			if soldier.current_job_id == job_id:
 				var soldier_label := soldier.display_name(job.display_name)
 				_add_roster_row(soldier_label, job.id, "soldier", index)
+
+
+## Hero card in the roster: identity, level and the six item slots. Items move
+## between Heroes by dragging them onto another Hero's slot or card.
+func _add_hero_card(index: int) -> void:
+	var hero := run_state.heroes[index]
+	var definition := _registry().get_definition(hero.definition_id) as HeroDefinition
+	var selected := selected_kind == "hero" and selected_index == index
+	var dead := hero.life_state == HeroState.DEAD
+	var card := PanelContainer.new()
+	card.name = "HeroCard%d" % index
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.add_theme_stylebox_override("panel", _hero_card_style(definition.placeholder_color, selected))
+	card.gui_input.connect(_on_hero_card_gui_input.bind(index))
+	card.set_drag_forwarding(Callable(), _hero_card_can_drop.bind(index), _hero_card_drop.bind(index))
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 7)
+	column.mouse_filter = Control.MOUSE_FILTER_PASS
+	card.add_child(column)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 10)
+	top.mouse_filter = Control.MOUSE_FILTER_PASS
+	column.add_child(top)
+	var badge := TextureRect.new()
+	badge.custom_minimum_size = Vector2(30, 36)
+	badge.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	badge.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	badge.texture = HeroSelectionCard.atlas_texture(HeroSelectionCard.BADGE_REGIONS[HeroSelectionCard.identity_index_of(definition)])
+	badge.modulate = Color(0.55, 0.55, 0.55) if dead else Color.WHITE
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_child(badge)
+	var names := VBoxContainer.new()
+	names.add_theme_constant_override("separation", 0)
+	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	names.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_child(names)
+	var title := Label.new()
+	title.name = "HeroName"
+	title.text = definition.display_name.to_upper()
+	title.theme_type_variation = &"EyebrowLabel"
+	title.add_theme_font_size_override("font_size", 19)
+	title.add_theme_color_override("font_color", CARD_MUTED if dead else (Color(1.0, 0.86, 0.56) if selected else CARD_TITLE))
+	names.add_child(title)
+	var sub := Label.new()
+	sub.text = "LEVEL %d   ·   %d / %d ITEMS" % [hero.level, hero.item_ids.size(), HeroState.MAX_ITEM_SLOTS]
+	sub.add_theme_font_size_override("font_size", 13)
+	sub.add_theme_color_override("font_color", CARD_MUTED)
+	names.add_child(sub)
+	if dead:
+		var fallen := Label.new()
+		fallen.text = "FALLEN"
+		fallen.add_theme_font_size_override("font_size", 14)
+		fallen.add_theme_color_override("font_color", Color(1.0, 0.45, 0.38))
+		fallen.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		top.add_child(fallen)
+	var slots := HBoxContainer.new()
+	slots.name = "ItemSlots"
+	slots.add_theme_constant_override("separation", 6)
+	slots.mouse_filter = Control.MOUSE_FILTER_PASS
+	column.add_child(slots)
+	for slot_index in HeroState.MAX_ITEM_SLOTS:
+		var occupied := slot_index < hero.item_ids.size()
+		var item := _item_definition(hero.item_ids[slot_index]) if occupied else null
+		var slot := ManagementDropSlot.new()
+		slot.configure(item, &"item", "", false)
+		_apply_atlas_slot(slot, selected and occupied and selected_equipment_slot == slot_index)
+		slot.custom_minimum_size = HERO_SLOT_SIZE
+		if occupied:
+			slot.drag_payload = {
+				"source": &"equipped_item",
+				"owner_kind": &"hero",
+				"owner_index": index,
+				"slot_index": slot_index,
+				"instance_id": hero.item_ids[slot_index],
+			}
+		slot.accepted_sources = [&"equipped_item", &"inventory_item", &"market"]
+		slot.target_payload = {"target": &"equipment", "owner_kind": &"hero", "owner_index": index, "slot_index": slot_index if occupied else -1}
+		slot.payload_dropped.connect(_on_management_drop)
+		slot.pressed.connect(_on_hero_slot_pressed.bind(index, slot_index))
+		slots.add_child(slot)
+	%Roster.add_child(card)
+
+
+func _hero_card_style(accent: Color, selected: bool) -> StyleBoxFlat:
+	var border := Color(0.98, 0.78, 0.42, 0.95) if selected else Color(accent.r, accent.g, accent.b, 0.45)
+	var bg := Color(0.12, 0.08, 0.05, 0.96) if selected else Color(0.065, 0.047, 0.035, 0.92)
+	var style := UiStyle.chamfer_box(bg, border, 2, 6, Color(0.98, 0.7, 0.3, 0.2) if selected else Color(0, 0, 0, 0), 8 if selected else 0, Vector4(12, 9, 12, 10))
+	style.border_width_left = 5
+	return style
+
+
+func _on_hero_card_gui_input(event: InputEvent, index: int) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		call_deferred("_select_hero_from_card", index)
+
+
+func _select_hero_from_card(index: int) -> void:
+	_select_unit("hero", index)
+
+
+func _on_hero_slot_pressed(index: int, slot_index: int) -> void:
+	if selected_kind != "hero" or selected_index != index:
+		_select_unit("hero", index)
+	selected_equipment_slot = slot_index
+	call_deferred("_refresh_roster")
+	call_deferred("_refresh_selected")
+
+
+func _hero_card_can_drop(_position: Vector2, data: Variant, _index: int) -> bool:
+	if not data is Dictionary:
+		return false
+	var source := StringName(data.get("source", ""))
+	if source == &"market":
+		return StringName(data.get("offer_type", "")) == &"hero_item"
+	return source in [&"equipped_item", &"inventory_item"]
+
+
+func _hero_card_drop(_position: Vector2, data: Variant, index: int) -> void:
+	_on_management_drop(Dictionary(data).duplicate(true), {"target": &"equipment", "owner_kind": &"hero", "owner_index": index, "slot_index": -1})
+
+
+## Gear that no Hero has room for (event rewards, old saves) waits here until it is
+## dragged onto a Hero or sold on the Market.
+func _add_spare_items() -> void:
+	var spare := EquipmentService.get_unequipped_items(run_state)
+	if spare.is_empty():
+		return
+	var heading := Label.new()
+	heading.name = "SpareHeading"
+	heading.text = "SPARE GEAR  -  DRAG TO A HERO OR SELL"
+	heading.add_theme_font_size_override("font_size", 13)
+	heading.add_theme_color_override("font_color", Color(1.0, 0.62, 0.42))
+	%Roster.add_child(heading)
+	var strip := HFlowContainer.new()
+	strip.name = "SpareItems"
+	strip.add_theme_constant_override("h_separation", 6)
+	strip.add_theme_constant_override("v_separation", 6)
+	for item in spare:
+		var definition := _registry().get_definition(StringName(item.definition_id), false) as ItemDefinition
+		var slot := ManagementDropSlot.new()
+		slot.configure(definition, &"item", "", false)
+		_apply_atlas_slot(slot, false)
+		slot.custom_minimum_size = HERO_SLOT_SIZE
+		slot.accepted_sources = [&"none"]
+		slot.drag_payload = {"source": &"inventory_item", "instance_id": StringName(item.instance_id)}
+		strip.add_child(slot)
+	%Roster.add_child(strip)
+
+
+## Puts every unequipped item on a Hero who can use it and has a free slot (the
+## selected Hero first). Returns true when something moved.
+func _auto_equip_spare_items() -> bool:
+	if run_state == null or run_state.run_phase != &"management":
+		return false
+	var changed := false
+	for item in EquipmentService.get_unequipped_items(run_state):
+		var target := _free_item_slot_hero(StringName(item.definition_id))
+		if target < 0:
+			continue
+		var result := EquipmentService.equip_or_swap(run_state, &"hero", target, run_state.heroes[target].item_ids.size(), StringName(item.instance_id), _registry())
+		changed = changed or result.ok
+	return changed
+
+
+## Index of the Hero who should receive a new item: the selected Hero if it fits,
+## otherwise the first compatible Hero with a free slot; -1 when nobody has room.
+func _free_item_slot_hero(item_id: StringName) -> int:
+	var item := _registry().get_definition(item_id, false) as ItemDefinition
+	if item == null:
+		return -1
+	var order: Array[int] = []
+	if selected_kind == "hero" and selected_index >= 0 and selected_index < run_state.heroes.size():
+		order.append(selected_index)
+	for index in run_state.heroes.size():
+		if not order.has(index):
+			order.append(index)
+	for index in order:
+		var hero := run_state.heroes[index]
+		if hero.life_state == HeroState.EXECUTED or hero.item_ids.size() >= HeroState.MAX_ITEM_SLOTS:
+			continue
+		if item.is_compatible_with_hero(_registry().get_definition(hero.definition_id, false) as HeroDefinition):
+			return index
+	return -1
 
 
 func _add_roster_row(
@@ -233,6 +442,7 @@ func _select_unit(kind: String, index: int) -> void:
 	selected_ability_slot = 0
 	selected_equipment_slot = 0
 	_refresh_selected()
+	call_deferred("_refresh_roster")
 	if field_view:
 		%BattlefieldPreview.highlight_unit(_selected_unit_id())
 
@@ -488,8 +698,8 @@ func _refresh_equipment(item_ids: Array[StringName], max_slots: int) -> void:
 				"slot_index": slot_index,
 				"instance_id": item_ids[slot_index],
 			}
-		button.accepted_sources = [&"inventory_item", &"market"]
-		button.target_payload = {"target": &"equipment", "owner_kind": StringName(selected_kind), "owner_index": selected_index, "slot_index": slot_index}
+		button.accepted_sources = [&"equipped_item", &"inventory_item", &"market"]
+		button.target_payload = {"target": &"equipment", "owner_kind": StringName(selected_kind), "owner_index": selected_index, "slot_index": slot_index if occupied else -1}
 		button.payload_dropped.connect(_on_management_drop)
 		button.pressed.connect(_select_equipment_slot.bind(slot_index))
 		%EquipmentRows.add_child(button)
@@ -662,104 +872,321 @@ func _slot_style(tint: Color) -> StyleBoxTexture:
 	return UiStyle.atlas_box(UiStyle.SLOT_REGION, Vector4(16, 16, 16, 16), Vector4(8, 8, 8, 8), tint)
 
 
-func _refresh_inventory() -> void:
-	_clear(%InventoryRows)
-	var unequipped := EquipmentService.get_unequipped_items(run_state)
-	if unequipped.is_empty():
-		var empty := Label.new()
-		empty.text = "Empty"
-		empty.theme_type_variation = &"MutedLabel"
-		empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		%InventoryRows.add_child(empty)
-		return
-	for item in unequipped:
-		var instance_id := StringName(item.instance_id)
-		var definition := _registry().get_definition(StringName(item.definition_id), false) as ItemDefinition
-		var row := HBoxContainer.new()
-		var button := ManagementDragButton.new()
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.focus_mode = Control.FOCUS_NONE
-		var item_name: String = definition.display_name if definition != null else item.definition_id
-		var restriction := ""
-		if definition != null and not definition.restriction_text(_registry()).is_empty():
-			restriction = "  /  %s" % definition.restriction_text(_registry())
-		button.text = "[I] %s%s  /  %s" % [item_name, restriction, instance_id]
-		if definition != null:
-			button.content_id = definition.id
-		button.gui_input.connect(_on_inventory_item_gui_input.bind(instance_id))
-		button.drag_payload = {"source": &"inventory_item", "instance_id": instance_id}
-		row.add_child(button)
-		var sell := Button.new()
-		sell.text = "SELL"
-		sell.pressed.connect(_sell_inventory_item.bind(instance_id))
-		row.add_child(sell)
-		%InventoryRows.add_child(row)
-
-
 func _refresh_market() -> void:
 	_clear(%MarketRows)
-	var title := Label.new()
-	title.text = ""
-	title.visible = false
-	title.theme_type_variation = &"MutedLabel"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	%MarketRows.add_child(title)
+	var toolbar := HBoxContainer.new()
+	toolbar.name = "MarketToolbar"
+	toolbar.add_theme_constant_override("separation", 8)
+	%MarketRows.add_child(toolbar)
 	var reroll := Button.new()
+	reroll.name = "RerollButton"
 	reroll.theme_type_variation = &"GoldButton"
-	reroll.custom_minimum_size.y = 50.0
-	reroll.text = "REROLL MARKET  -  %d G" % MarketService.reroll_price(run_state.market)
+	reroll.custom_minimum_size = Vector2(0.0, 50.0)
+	reroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	reroll.text = "REROLL   %d" % MarketService.reroll_price(run_state.market)
+	reroll.icon = _ability_icon("gold")
+	reroll.add_theme_constant_override("icon_max_width", 22)
+	reroll.add_theme_font_override("font", _number_font())
+	reroll.add_theme_font_size_override("font_size", 19)
 	reroll.pressed.connect(_on_market_reroll_pressed)
-	%MarketRows.add_child(reroll)
+	toolbar.add_child(reroll)
+	var sell := ManagementDropSlot.new()
+	sell.name = "SellDropSlot"
+	sell.text = "SELL  -  DROP GEAR HERE"
+	sell.custom_minimum_size = Vector2(0.0, 50.0)
+	sell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sell.theme_type_variation = &"LedgerButton"
+	sell.add_theme_font_size_override("font_size", 15)
+	sell.add_theme_color_override("font_color", Color(0.95, 0.72, 0.5))
+	sell.tooltip_override = "Drag an item from a Hero onto this slot to sell it for its sell price."
+	sell.accepted_sources = [&"equipped_item", &"inventory_item"]
+	sell.target_payload = {"target": &"sell"}
+	sell.payload_dropped.connect(_on_management_drop)
+	toolbar.add_child(sell)
+	var hint := Label.new()
+	hint.name = "MarketHint"
+	hint.text = "Drag an offer onto a Hero or Job slot, or press its price."
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 13)
+	hint.add_theme_color_override("font_color", CARD_MUTED)
+	%MarketRows.add_child(hint)
 	for offer in run_state.market.offers:
 		var definition: ContentDefinition = _registry().get_definition(offer.content_id, false)
-		if definition == null:
-			continue
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 8)
-		var icon := TextureRect.new()
-		icon.custom_minimum_size = Vector2(34, 34)
-		icon.texture = _market_icon_texture(definition, offer.offer_type)
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.tooltip_text = _market_offer_type_name(offer.offer_type)
-		row.add_child(icon)
-		var content := ManagementDragButton.new()
-		content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		content.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		content.theme_type_variation = &"RowButton"
-		content.custom_minimum_size.y = 44.0
-		content.focus_mode = Control.FOCUS_NONE
-		var target_text := _market_offer_target(offer)
-		content.text = "%s  /  %d G" % [definition.display_name, offer.price]
-		if not target_text.is_empty():
-			content.text += "\n%s" % target_text
-		content.content_id = definition.id
-		content.tooltip_override = "%s%s\nOffer price: %d Gold\n\n%s" % [
-			_market_offer_type_name(offer.offer_type),
-			"\n%s" % target_text if not target_text.is_empty() else "",
-			offer.price,
-			ContentButton.describe_content(definition.id),
-		]
-		content.gui_input.connect(_on_market_offer_gui_input.bind(offer.offer_id))
-		content.drag_payload = {
-			"source": &"market",
-			"offer_id": offer.offer_id,
-			"offer_type": offer.offer_type,
-			"content_id": offer.content_id,
-		}
-		row.add_child(content)
-		var pin := Button.new()
-		pin.theme_type_variation = &"TabButton"
-		pin.custom_minimum_size = Vector2(96.0, 44.0)
-		pin.toggle_mode = true
-		pin.button_pressed = offer.is_pinned
-		pin.text = "LOCKED" if offer.is_pinned else "LOCK"
-		pin.tooltip_text = "Keep this offer in the same position when the Market refreshes."
-		pin.toggled.connect(_on_market_pin_toggled.bind(offer.offer_id))
-		row.add_child(pin)
-		%MarketRows.add_child(row)
+		if definition != null:
+			%MarketRows.add_child(_market_card(offer, definition))
+
+
+## One Market offer: framed icon, name, kind, a short description, key numbers with
+## icons, the price button and the lock toggle. The whole card is a drag source.
+func _market_card(offer: MarketOffer, definition: ContentDefinition) -> PanelContainer:
+	var accent := _offer_accent(offer, definition)
+	var payload := {
+		"source": &"market",
+		"offer_id": offer.offer_id,
+		"offer_type": offer.offer_type,
+		"content_id": offer.content_id,
+	}
+	var tooltip := "%s\n\n%s" % [_offer_tag(offer, definition), ContentButton.describe_content(definition.id)]
+	var card := PanelContainer.new()
+	card.name = "Offer_%s" % offer.offer_id.validate_node_name()
+	card.set_meta("offer_id", offer.offer_id)
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.add_theme_stylebox_override("panel", _offer_card_style(accent, offer.is_pinned))
+	card.gui_input.connect(_on_market_offer_gui_input.bind(offer.offer_id))
+	card.set_drag_forwarding(_market_card_drag.bind(payload, _market_icon_texture(definition, offer.offer_type)), Callable(), Callable())
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	row.mouse_filter = Control.MOUSE_FILTER_PASS
+	card.add_child(row)
+
+	var icon := ManagementDropSlot.new()
+	icon.name = "Icon"
+	icon.configure(definition, &"item" if definition is ItemDefinition else &"ability", "", false, tooltip)
+	icon.icon = _market_icon_texture(definition, offer.offer_type)
+	icon.custom_minimum_size = Vector2(76, 76)
+	icon.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	icon.accepted_sources = [&"none"]
+	icon.drag_payload = payload
+	icon.gui_input.connect(_on_market_offer_gui_input.bind(offer.offer_id))
+	for state in ["normal", "hover", "pressed"]:
+		icon.add_theme_stylebox_override(state, _icon_frame_style(accent, state != "normal"))
+	row.add_child(icon)
+
+	var info := VBoxContainer.new()
+	info.name = "Info"
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_theme_constant_override("separation", 3)
+	info.mouse_filter = Control.MOUSE_FILTER_PASS
+	row.add_child(info)
+	var title := Label.new()
+	title.name = "Title"
+	title.text = definition.display_name
+	title.theme_type_variation = &"EyebrowLabel"
+	title.add_theme_font_size_override("font_size", 19)
+	title.add_theme_color_override("font_color", CARD_TITLE)
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	info.add_child(title)
+	var tag := Label.new()
+	tag.name = "Tag"
+	tag.text = _offer_tag(offer, definition)
+	tag.add_theme_font_size_override("font_size", 12)
+	tag.add_theme_color_override("font_color", accent.lightened(0.25))
+	tag.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	info.add_child(tag)
+	var description := _offer_description(offer, definition)
+	if not description.is_empty():
+		var body := Label.new()
+		body.name = "Description"
+		body.text = description
+		body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		body.max_lines_visible = 2
+		body.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		body.add_theme_font_size_override("font_size", 14)
+		body.add_theme_color_override("font_color", CARD_BODY)
+		body.custom_minimum_size.x = 200.0
+		info.add_child(body)
+	var stats := HFlowContainer.new()
+	stats.name = "Stats"
+	stats.add_theme_constant_override("h_separation", 14)
+	stats.add_theme_constant_override("v_separation", 2)
+	stats.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fill_offer_stats(stats, offer, definition)
+	if stats.get_child_count() > 0:
+		info.add_child(stats)
+	else:
+		stats.free()
+
+	var actions := VBoxContainer.new()
+	actions.add_theme_constant_override("separation", 6)
+	actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_child(actions)
+	var affordable := run_state.gold >= offer.price
+	var buy := Button.new()
+	buy.name = "BuyButton"
+	buy.theme_type_variation = &"GoldButton"
+	buy.custom_minimum_size = Vector2(108.0, 44.0)
+	buy.text = "%d" % offer.price
+	buy.icon = _ability_icon("gold")
+	buy.add_theme_constant_override("icon_max_width", 20)
+	buy.add_theme_font_size_override("font_size", 20)
+	buy.add_theme_font_override("font", _number_font())
+	if not affordable:
+		buy.add_theme_color_override("font_color", Color(0.9, 0.48, 0.4))
+		buy.add_theme_color_override("font_hover_color", Color(1.0, 0.56, 0.48))
+		buy.tooltip_text = "Need %d more Gold." % (offer.price - run_state.gold)
+	buy.pressed.connect(_buy_market_offer.bind(offer.offer_id))
+	actions.add_child(buy)
+	var pin := Button.new()
+	pin.name = "PinButton"
+	pin.theme_type_variation = &"TabButton"
+	pin.custom_minimum_size = Vector2(108.0, 30.0)
+	pin.toggle_mode = true
+	pin.button_pressed = offer.is_pinned
+	pin.text = "LOCKED" if offer.is_pinned else "LOCK"
+	pin.add_theme_font_size_override("font_size", 13)
+	pin.tooltip_text = "Keep this offer in the same position when the Market refreshes."
+	pin.toggled.connect(_on_market_pin_toggled.bind(offer.offer_id))
+	actions.add_child(pin)
+	return card
+
+
+func _market_card_drag(_position: Vector2, payload: Dictionary, texture: Texture2D) -> Variant:
+	set_drag_preview(ManagementDropSlot.make_icon_preview(texture))
+	return payload.duplicate(true)
+
+
+func _offer_accent(offer: MarketOffer, definition: ContentDefinition) -> Color:
+	if definition is ItemDefinition:
+		var item := definition as ItemDefinition
+		return ITEM_ACCENTS[4] if item.is_unique() else ITEM_ACCENTS[clampi(item.category, 0, 4)]
+	if offer.offer_type == &"job_unlock" and run_state.unlocked_job_ids.has(offer.content_id):
+		return OFFER_ACCENTS[&"job_capacity"]
+	return OFFER_ACCENTS.get(offer.offer_type, UiStyle.BRONZE)
+
+
+## Short kind line: "TANK ITEM  ·  MELEE HEROES", "NEW JOB", "ARCHER SKILL  ·  LEVEL 2  ·  UPGRADE".
+func _offer_tag(offer: MarketOffer, definition: ContentDefinition) -> String:
+	match offer.offer_type:
+		&"hero_item":
+			var item := definition as ItemDefinition
+			var parts: Array[String] = ["UNIQUE ITEM" if item.is_unique() else "%s ITEM" % ItemDefinition.category_name(item.category).to_upper()]
+			parts.append(item.restriction_text(_registry()).to_upper() if not item.restriction_text(_registry()).is_empty() else "ANY HERO")
+			return "  ·  ".join(parts)
+		&"job_unlock":
+			if run_state.unlocked_job_ids.has(offer.content_id):
+				return "+1 JOB PLACE"
+			return "NEW JOB  ·  1 PLACE"
+		&"job_capacity":
+			return "+1 JOB PLACE  ·  %d %s" % [_capacity(offer.content_id), "→ %d" % (_capacity(offer.content_id) + 1)]
+		&"job_ability":
+			var ability := definition as AbilityDefinition
+			var parts: Array[String] = ["%s SKILL" % _display_name(StringName(offer.target_id)).to_upper(), "LEVEL %d" % ability.job_skill_level(_registry())]
+			if not ability.upgrades_ability_id.is_empty():
+				parts.append("UPGRADE")
+			return "  ·  ".join(parts)
+	return _market_offer_type_name(offer.offer_type)
+
+
+func _offer_description(offer: MarketOffer, definition: ContentDefinition) -> String:
+	match offer.offer_type:
+		&"job_ability":
+			return AbilityText.plain(definition as AbilityDefinition)
+		&"job_capacity":
+			return "One more Soldier can take the %s Job." % definition.display_name
+		&"job_unlock":
+			if run_state.unlocked_job_ids.has(offer.content_id):
+				return "One more Soldier can take the %s Job." % definition.display_name
+	return definition.description
+
+
+## Key numbers as icon + value pairs: item bonuses and abilities, a Job's base stats,
+## or a skill's type, cooldown and reach.
+func _fill_offer_stats(stats: HFlowContainer, offer: MarketOffer, definition: ContentDefinition) -> void:
+	if definition is ItemDefinition:
+		var item := definition as ItemDefinition
+		for modifier in item.passive_effects:
+			if modifier == null:
+				continue
+			var value := modifier.display_text()
+			value = value.substr(0, value.find(" ")) if value.find(" ") > 0 else value
+			_stat_chip(stats, _stat_icon(modifier.stat), value, String(STAT_SHORT.get(modifier.stat, modifier.stat)), modifier.value < 0.0 and modifier.stat != "damage_taken")
+		for ability_id in item.ability_ids:
+			var ability := _registry().get_definition(ability_id, false) as AbilityDefinition
+			if ability != null:
+				var passive := ability.kind == AbilityDefinition.AbilityKind.PASSIVE
+				_stat_chip(stats, _ability_icon("passive" if passive else "active"), ability.display_name, "", false)
+	elif definition is JobDefinition:
+		var job := definition as JobDefinition
+		if job.stat_modifiers != null:
+			_stat_chip(stats, _stat_icon("max_hp"), StatModifier.format_number(job.stat_modifiers.max_hp), "HP")
+			_stat_chip(stats, _stat_icon("damage"), StatModifier.format_number(job.stat_modifiers.damage), "DMG")
+			_stat_chip(stats, _stat_icon("armor"), StatModifier.format_number(job.stat_modifiers.armor), "ARMOR")
+			if job.attack_type == &"ranged":
+				_stat_chip(stats, _stat_icon("attack_range"), StatModifier.format_number(job.stat_modifiers.attack_range), "RANGE")
+			else:
+				_stat_chip(stats, _ability_icon("damage"), "MELEE", "")
+	elif definition is AbilityDefinition:
+		var ability := definition as AbilityDefinition
+		var passive := ability.kind == AbilityDefinition.AbilityKind.PASSIVE
+		_stat_chip(stats, _ability_icon("passive" if passive else "active"), "PASSIVE" if passive else "ACTIVE", "")
+		if not passive and ability.cooldown_seconds > 0.0:
+			_stat_chip(stats, _ability_icon("cooldown"), "%ss" % StatModifier.format_number(ability.cooldown_seconds), "")
+		var reach := ability.target_search_radius if ability.target_search_radius > 0.0 else ability.cast_range
+		if reach > 0.0:
+			_stat_chip(stats, _ability_icon("range"), StatModifier.format_number(reach), "")
+		if ability.area_radius > 0.0:
+			_stat_chip(stats, _ability_icon("radius"), StatModifier.format_number(ability.area_radius), "")
+
+
+## One "icon value LABEL" group; groups wrap as a whole inside the stats flow.
+func _stat_chip(stats: HFlowContainer, texture: Texture2D, value: String, label: String, negative := false) -> void:
+	var chip := HBoxContainer.new()
+	chip.add_theme_constant_override("separation", 4)
+	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if texture != null:
+		var image := TextureRect.new()
+		image.texture = texture
+		image.custom_minimum_size = Vector2(20, 20)
+		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		image.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_child(image)
+	var number := Label.new()
+	number.text = value
+	number.add_theme_font_size_override("font_size", 16)
+	number.add_theme_color_override("font_color", Color(1.0, 0.56, 0.48) if negative else Color(0.98, 0.9, 0.72))
+	chip.add_child(number)
+	if not label.is_empty():
+		var caption := Label.new()
+		caption.text = label
+		caption.add_theme_font_size_override("font_size", 11)
+		caption.add_theme_color_override("font_color", CARD_MUTED)
+		caption.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		chip.add_child(caption)
+	stats.add_child(chip)
+
+
+## Lining numerals: the heading font's old-style digits read poorly in prices.
+func _number_font() -> Font:
+	return get_theme_font("font", &"NumberLabel")
+
+
+func _stat_icon(stat: String) -> Texture2D:
+	if STAT_ATLAS_REGIONS.has(stat):
+		var texture := AtlasTexture.new()
+		texture.atlas = ATLAS
+		texture.region = STAT_ATLAS_REGIONS[stat]
+		texture.filter_clip = true
+		return texture
+	return _ability_icon(String(STAT_ICON_NAMES.get(stat, "buff")))
+
+
+func _ability_icon(icon_name: String) -> Texture2D:
+	var path := AbilityText.ICON_DIR + icon_name + ".png"
+	return load(path) as Texture2D if ResourceLoader.exists(path) else null
+
+
+func _offer_card_style(accent: Color, pinned: bool) -> StyleBoxFlat:
+	var style := UiStyle.chamfer_box(
+		Color(0.075, 0.054, 0.04, 0.95),
+		Color(accent.r, accent.g, accent.b, 0.55 if pinned else 0.3),
+		2, 6, Color(0, 0, 0, 0), 0, Vector4(10, 10, 12, 10)
+	)
+	style.border_width_left = 5
+	style.border_color = Color(accent.r, accent.g, accent.b, 0.85 if pinned else 0.55)
+	return style
+
+
+func _icon_frame_style(accent: Color, hover: bool) -> StyleBoxFlat:
+	var style := UiStyle.chamfer_box(
+		Color(accent.r * 0.16, accent.g * 0.16, accent.b * 0.16, 0.98),
+		Color(accent.r, accent.g, accent.b, 0.95 if hover else 0.6),
+		2, 6, Color(accent.r, accent.g, accent.b, 0.3 if hover else 0.12), 8 if hover else 4, Vector4(6, 6, 6, 6)
+	)
+	return style
+
+
 func _refresh_encounter() -> void:
 	%EncounterTitle.text = "ACT %s  /  BATTLE %d" % [_roman(run_state.current_act), run_state.encounter_index + 1]
 	if run_state.available_encounter_ids.is_empty():
@@ -802,7 +1229,7 @@ func _select_encounter(encounter_id: StringName) -> void:
 func _on_management_drop(source: Dictionary, target: Dictionary) -> void:
 	var result := ArmyBuildService.perform_drop(run_state, source, target, _registry())
 	if not result.ok:
-		_set_feedback(result.error, true)
+		_set_feedback(result.error, not result.error.is_empty())
 		return
 	# The drop target is locked until Control._drop_data() returns.
 	call_deferred("_refresh_all")
@@ -835,37 +1262,6 @@ func _select_equipment_slot(index: int) -> void:
 	selected_equipment_slot = index
 	call_deferred("_refresh_selected")
 	_set_feedback("", false)
-
-
-func _on_inventory_item_gui_input(event: InputEvent, instance_id: StringName) -> void:
-	if _is_left_double_click(event):
-		call_deferred("_equip_inventory_item", instance_id)
-
-
-func _equip_inventory_item(instance_id: StringName) -> void:
-	if not _require_preparation():
-		return
-	if selected_kind != "hero" or selected_index < 0:
-		_set_feedback("Select the Hero who should receive this item.", true)
-		return
-	var item_count := run_state.heroes[selected_index].item_ids.size()
-	var max_slots := HeroState.MAX_ITEM_SLOTS
-	var target_slot := item_count if item_count < max_slots else selected_equipment_slot
-	var result := EquipmentService.equip_or_swap(
-		run_state,
-		StringName(selected_kind),
-		selected_index,
-		target_slot,
-		instance_id,
-		_registry()
-	)
-	if not result.ok:
-		_set_feedback(result.error, true)
-		return
-	var swapped := not String(result.replaced_instance_id).is_empty()
-	_refresh_all()
-	_set_feedback("", false)
-	run_state_changed.emit(&"equipment_changed")
 
 
 func _buy_market_offer(offer_id: String) -> void:
@@ -908,24 +1304,18 @@ func _market_offer(offer_id: String) -> MarketOffer:
 
 
 func _automatic_market_target(offer: MarketOffer) -> Dictionary:
-	if selected_kind == "hero" and selected_index >= 0 and selected_index < run_state.heroes.size():
-		var hero := run_state.heroes[selected_index]
-		if offer.offer_type == &"hero_item":
-			var item := _registry().get_definition(offer.content_id, false) as ItemDefinition
-			var hero_definition := _registry().get_definition(hero.definition_id, false) as HeroDefinition
-			if item == null or not item.is_compatible_with_hero(hero_definition):
-				return _target_failure("Select a Hero compatible with this item.")
-			var item_slot := hero.item_ids.size() if hero.item_ids.size() < HeroState.MAX_ITEM_SLOTS else selected_equipment_slot
-			return {"ok": true, "target": {"target": &"equipment", "owner_kind": &"hero", "owner_index": selected_index, "slot_index": item_slot}}
-	if selected_kind == "soldier" and selected_index >= 0 and selected_index < run_state.soldiers.size():
-		var soldier := run_state.soldiers[selected_index]
-		if offer.offer_type == &"job_ability":
-			if offer.target_id != String(soldier.current_job_id):
-				return _target_failure("Select a Soldier with the Job named on this ability offer.")
-			return _automatic_job_ability_target(offer, soldier.current_job_id)
+	if offer.offer_type == &"hero_item":
+		var target := _free_item_slot_hero(offer.content_id)
+		if target >= 0:
+			return {"ok": true, "target": {"target": &"equipment", "owner_kind": &"hero", "owner_index": target, "slot_index": -1}}
+		var item := _registry().get_definition(offer.content_id, false) as ItemDefinition
+		for hero in run_state.heroes:
+			if hero.life_state != HeroState.EXECUTED and item != null and item.is_compatible_with_hero(_registry().get_definition(hero.definition_id, false) as HeroDefinition):
+				return _target_failure("Every Hero who can use this item has six. Sell one by dragging it onto the Market.")
+		return _target_failure("No Hero in the army can use this item.")
+	if selected_kind == "soldier" and selected_index >= 0 and selected_index < run_state.soldiers.size() and offer.offer_type == &"job_ability":
+		return _automatic_job_ability_target(offer, run_state.soldiers[selected_index].current_job_id)
 	if selected_kind == "job" and offer.offer_type == &"job_ability":
-		if offer.target_id != String(selected_job_id):
-			return _target_failure("Select the Job named on this ability offer.")
 		return _automatic_job_ability_target(offer, selected_job_id)
 	return _target_failure("Select the Hero or Job named on this offer.")
 
@@ -1003,16 +1393,6 @@ func _resurrect_selected_hero() -> void:
 	_resurrect_hero(run_state.heroes[selected_index].unique_id)
 
 
-func _sell_inventory_item(instance_id: StringName) -> void:
-	var result := MarketService.sell_item(run_state, instance_id, _registry())
-	if not result.ok:
-		_set_feedback(result.error, true)
-		return
-	_refresh_all()
-	_set_feedback("", false)
-	run_state_changed.emit(&"market_sale")
-
-
 func _on_fight_button_pressed() -> void:
 	combat_requested.emit()
 
@@ -1074,15 +1454,6 @@ func _market_icon_texture(definition: ContentDefinition, offer_type: StringName)
 	return OrnateFrame.gem_texture(_market_offer_gem(offer_type))
 
 
-func _market_offer_icon(offer_type: StringName) -> String:
-	match offer_type:
-		&"hero_item": return "HI"
-		&"job_unlock": return "JU"
-		&"job_capacity": return "JC"
-		&"job_ability": return "JA"
-	return "?"
-
-
 func _market_offer_gem(offer_type: StringName) -> StringName:
 	match offer_type:
 		&"hero_item": return &"amber"
@@ -1094,18 +1465,6 @@ func _market_offer_gem(offer_type: StringName) -> StringName:
 
 func _market_offer_type_name(offer_type: StringName) -> String:
 	return String(offer_type).replace("_", " ").to_upper()
-
-
-func _market_offer_target(offer: MarketOffer) -> String:
-	if offer.offer_type == &"job_ability":
-		var ability := _registry().get_definition(offer.content_id, false) as AbilityDefinition
-		if ability != null:
-			return "%s  /  LEVEL %d%s" % [_display_name(StringName(offer.target_id)), ability.job_skill_level(_registry()), "  /  UPGRADE" if not ability.upgrades_ability_id.is_empty() else ""]
-	if offer.target_type == &"hero":
-		var item := _registry().get_definition(offer.content_id, false) as ItemDefinition
-		if item != null and not item.restriction_text(_registry()).is_empty():
-			return "For %s" % item.restriction_text(_registry())
-	return ""
 
 
 func _encounter_card_text(encounter: EncounterDefinition) -> String:

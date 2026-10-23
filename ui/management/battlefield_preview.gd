@@ -283,6 +283,11 @@ func _draw_zones(rect: Rect2, font: Font) -> void:
 	elif encounter.is_unknown:
 		draw_rect(enemy_rect, Color(0.02, 0.015, 0.012, 0.55))
 		draw_string(font, enemy_rect.get_center() + Vector2(-enemy_rect.size.x * 0.5, 30.0), "?", HORIZONTAL_ALIGNMENT_CENTER, enemy_rect.size.x, 96, Color(1.0, 0.75, 0.6, 0.55))
+	for blocked in FormationService.ARENA_GEOMETRY.blocked_polygons(rect):
+		draw_colored_polygon(blocked, Color(0.025, 0.018, 0.012, 0.72))
+		var outline := blocked.duplicate()
+		outline.append(blocked[0])
+		draw_polyline(outline, Color(0.67, 0.4, 0.24, 0.6), 1.5, true)
 
 
 func _draw_reinforcements(rect: Rect2, font: Font) -> void:

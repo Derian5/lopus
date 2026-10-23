@@ -23,4 +23,5 @@ effects = Array[AbilityEffect]([SubResource("Lifesteal")])
 presentation_color = Color(0.82, 0.22, 0.2, 1)
 presentation_text = "Bloodthirst"
 available_to_heroes = false
+presentation_style = &"drain"
 tags = Array[StringName]([&"ability", &"passive", &"job", &"warrior", &"lifesteal"])

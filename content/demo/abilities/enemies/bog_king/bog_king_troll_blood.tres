@@ -24,3 +24,4 @@ effects = Array[AbilityEffect]([SubResource("Blood")])
 presentation_color = Color(0.36, 0.68, 0.32, 1)
 presentation_text = "Ancient Troll Blood"
 available_to_heroes = false
+presentation_style = &"holy"

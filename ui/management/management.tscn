@@ -178,14 +178,14 @@ size_flags_vertical = 3
 horizontal_scroll_mode = 1
 
 [node name="Columns" type="HBoxContainer" parent="Page/Layout/ColumnsScroll" unique_id=1898566913]
-custom_minimum_size = Vector2(1515, 0)
+custom_minimum_size = Vector2(1590, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 14
 
 [node name="ArmyCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns" unique_id=1788617173]
-custom_minimum_size = Vector2(365, 0)
+custom_minimum_size = Vector2(430, 0)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/ArmyCard" unique_id=1077453677]
@@ -231,7 +231,7 @@ inset = -14.0
 crest_width = 80.0
 
 [node name="InspectorCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns" unique_id=1511195065]
-custom_minimum_size = Vector2(680, 0)
+custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -580,7 +580,7 @@ crest_width = 80.0
 corner_gem = &"gold"
 
 [node name="RightCard" type="PanelContainer" parent="Page/Layout/ColumnsScroll/Columns" unique_id=592696582]
-custom_minimum_size = Vector2(440, 0)
+custom_minimum_size = Vector2(572, 0)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard" unique_id=109119773]
@@ -615,27 +615,7 @@ theme_override_constants/separation = 10
 [node name="MarketRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightLayout/RightScroll/VBox" unique_id=1520341978]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 7
-
-[node name="InventoryDropSlot" type="Button" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightLayout/RightScroll/VBox" unique_id=1409202963]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.46, 1)
-theme_override_font_sizes/font_size = 19
-text = "INVENTORY  /  DROP EQUIPPED HERE"
-script = ExtResource("2_drop")
-
-[node name="InventoryHint" type="Label" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightLayout/RightScroll/VBox" unique_id=1856328352]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.67, 0.58, 0.48, 1)
-text = "Double-click an item to equip it on the selected Hero."
-autowrap_mode = 2
-visible = false
-
-[node name="InventoryRows" type="VBoxContainer" parent="Page/Layout/ColumnsScroll/Columns/RightCard/Margin/RightLayout/RightScroll/VBox" unique_id=1224381699]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 8
 
 [node name="Ornament" type="Control" parent="Page/Layout/ColumnsScroll/Columns/RightCard"]
 layout_mode = 1

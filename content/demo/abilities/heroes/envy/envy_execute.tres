@@ -53,6 +53,7 @@ targeting_policy = 0
 effects = Array[AbilityEffect]([SubResource("Base")])
 priority = 130
 presentation_color = Color(0.18, 0.75, 0.25, 1)
+presentation_style = &"physical"
 allowed_hero_ids = Array[StringName]([&"hero.army_support"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
 tags = Array[StringName]([&"ability", &"active", &"envy", &"execute"])

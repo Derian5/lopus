@@ -48,6 +48,7 @@ kind = 1
 targeting_policy = 0
 effects = Array[AbilityEffect]([SubResource("Base")])
 presentation_color = Color(0.55, 0.95, 0.3, 1)
+presentation_style = &"boon"
 allowed_hero_ids = Array[StringName]([&"hero.army_support"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
 tags = Array[StringName]([&"ability", &"passive", &"envy", &"progression"])

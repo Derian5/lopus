@@ -24,3 +24,4 @@ effects = Array[AbilityEffect]([SubResource("Burst")])
 presentation_color = Color(0.5, 0.62, 0.22, 1)
 presentation_text = "Rotten Burst"
 available_to_heroes = false
+presentation_style = &"poison"

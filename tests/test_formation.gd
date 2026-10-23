@@ -33,7 +33,7 @@ func _test_service_and_serialization() -> void:
 	var bounds := Rect2(Vector2(48, 48), Vector2(1600, 800))
 	var automatic := FormationService.automatic_positions(snapshots, bounds, true)
 	var spawn := FormationService.spawn_positions(snapshots, bounds, true)
-	_check(automatic == spawn, "Without custom positions the spawn layout equals the original automatic formation.")
+	_check(spawn.size() == automatic.size() and spawn.all(func(point: Vector2) -> bool: return FormationService.ARENA_GEOMETRY.contains(point, bounds, Combatant.UNIT_RADIUS)), "Automatic deployment projects every unit onto open ground.")
 
 	var hero_id := run.heroes[0].unique_id
 	var soldier_id := run.soldiers[0].unique_id
@@ -55,7 +55,8 @@ func _test_service_and_serialization() -> void:
 	var hero_index := snapshots.find(hero_snapshot)
 	_check(spawn[hero_index].is_equal_approx(bounds.position + Vector2(0.3, 0.2) * bounds.size), "Combat spawns a unit at its custom normalized position.")
 	var enemy_spawn := FormationService.spawn_positions(snapshots, bounds, false)
-	_check(enemy_spawn == FormationService.automatic_positions(snapshots, bounds, false), "Enemy teams ignore player formation data.")
+	var enemy_automatic := FormationService.automatic_positions(snapshots, bounds, false)
+	_check(enemy_spawn.size() == enemy_automatic.size() and enemy_spawn.all(func(point: Vector2) -> bool: return point.x >= bounds.get_center().x and FormationService.ARENA_GEOMETRY.contains(point, bounds, Combatant.UNIT_RADIUS)), "Enemy teams use open ground on their own side and ignore player formation data.")
 
 	var restored := RunState.from_dictionary(JSON.parse_string(JSON.stringify(run.to_dictionary())))
 	_check(restored.formation_positions.size() == run.formation_positions.size() and Vector2(restored.formation_positions[hero_id]).is_equal_approx(Vector2(0.3, 0.2)), "Formation positions survive Save/Load serialization.")

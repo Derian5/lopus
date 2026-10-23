@@ -1,0 +1,276 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_fire_arrow",
+  "name": "CBO Fire Arrow",
+  "comp": {
+   "w": 256,
+   "h": 128,
+   "dur": 1.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 2,
+   "frames": 8,
+   "cellW": 192,
+   "cellH": 96,
+   "t0": 1.0,
+   "t1": 1.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_farrow_smoke",
+    "name": "Smoke",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "x": 34,
+     "y": 0,
+     "dir": "dir",
+     "angle": 180,
+     "spread": 16,
+     "speed": 150,
+     "speedRnd": 0.3,
+     "rate": 40,
+     "seed": 51,
+     "bursts": []
+    },
+    "pt": {
+     "life": 0.55,
+     "lifeRnd": 0.3,
+     "sprite": {
+      "kind": "shape",
+      "id": "smoke",
+      "p": {}
+     },
+     "size": 34,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.5
+       },
+       {
+        "t": 1,
+        "v": 1.6
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.25,
+        "v": 0.45
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         96,
+         82,
+         74
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         40,
+         34,
+         34
+        ]
+       }
+      ]
+     },
+     "spin": 0,
+     "rotRnd": 1,
+     "drag": 1.2,
+     "glow": 0,
+     "alignVel": false,
+     "stretch": 0,
+     "turbAmp": 60,
+     "turbFreq": 3,
+     "gravY": 0
+    }
+   },
+   {
+    "id": "lr_farrow_head",
+    "name": "Arrow Head",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "poly",
+      "p": {
+       "n": 3
+      }
+     },
+     "size": 22,
+     "x": 60,
+     "y": 0,
+     "scale": 1,
+     "aspect": 0.62,
+     "rot": 90,
+     "color": [
+      150,
+      140,
+      132
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_farrow_shaft",
+    "name": "Charred Shaft",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "square",
+      "p": {}
+     },
+     "size": 6,
+     "x": 4,
+     "y": 0,
+     "scale": 1,
+     "aspect": 27,
+     "rot": 0,
+     "color": [
+      82,
+      56,
+      38
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_farrow_shaft_hot",
+    "name": "Smouldering Shaft",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 0.8,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "square",
+      "p": {}
+     },
+     "size": 3,
+     "x": 20,
+     "y": -1,
+     "scale": 1,
+     "aspect": 40,
+     "rot": 0,
+     "color": [
+      200,
+      110,
+      50
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_farrow_fletch_a",
+    "name": "Fletching A",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {
+       "var": 2
+      }
+     },
+     "size": 20,
+     "x": -50,
+     "y": -4,
+     "scale": 1,
+     "aspect": 1.5,
+     "rot": -70,
+     "color": [
+      150,
+      44,
+      32
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   },
+   {
+    "id": "lr_farrow_fletch_b",
+    "name": "Fletching B",
+    "type": "sprite",
+    "start": 0.0,
+    "blend": "normal",
+    "opacity": 1,
+    "sp": {
+     "sprite": {
+      "kind": "shape",
+      "id": "shard",
+      "p": {
+       "var": 3
+      }
+     },
+     "size": 20,
+     "x": -50,
+     "y": 4,
+     "scale": 1,
+     "aspect": 1.5,
+     "rot": -110,
+     "color": [
+      118,
+      32,
+      26
+     ],
+     "glow": 0.0,
+     "glowSize": 1.6,
+     "glowBlur": 0.15,
+     "squash": 0
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

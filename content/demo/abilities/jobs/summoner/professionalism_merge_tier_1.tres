@@ -23,6 +23,7 @@ presentation_icon = ExtResource("generated_icon")
 presentation_color = Color(0.32, 0.82, 0.4, 1)
 price = 150
 available_to_heroes = false
+presentation_style = &"summon"
 id = &"ability.summoner_professionalism_merge_tier_1"
 display_name = "Convergence I"
 description = "Fuses all owned summons into one (first after {icd}s) for {e0.duration}s with [summon]{e0.stat_multiplier:pct}% of their combined Max HP, damage and armor[/summon] and [buff]+{e0.attack_speed_bonus_per_summon:pct}% attack speed per fused summon[/buff]. Needs {e0.minimum_summons} summons."

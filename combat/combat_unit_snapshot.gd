@@ -21,6 +21,8 @@ var team := Team.PLAYER
 var unit_kind := UnitKind.SOLDIER
 var job_id: StringName
 var veterancy_level := 0
+## Veterancy XP before the battle; battle contribution on top of it ranks Soldiers up mid-fight.
+var veterancy_xp := 0
 var attack_type: StringName = &"melee"
 var targeting_mode: StringName = &"closest"
 var damage_avoidance_override := -1
@@ -61,6 +63,7 @@ func duplicate_snapshot() -> CombatUnitSnapshot:
 	copy.unit_kind = unit_kind
 	copy.job_id = job_id
 	copy.veterancy_level = veterancy_level
+	copy.veterancy_xp = veterancy_xp
 	copy.attack_type = attack_type
 	copy.targeting_mode = targeting_mode
 	copy.damage_avoidance_override = damage_avoidance_override

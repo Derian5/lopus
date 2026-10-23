@@ -23,4 +23,5 @@ priority = 120
 presentation_color = Color(0.38, 0.88, 0.34, 1)
 presentation_text = "Trollish Restoration"
 available_to_heroes = false
+presentation_style = &"holy"
 tags = Array[StringName]([&"ability", &"active", &"heal", &"enemy"])

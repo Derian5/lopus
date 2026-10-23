@@ -53,6 +53,7 @@ targeting_policy = 1
 effects = Array[AbilityEffect]([SubResource("Base")])
 priority = 80
 presentation_color = Color(0.38, 0.5, 0.86, 1)
+presentation_style = &"sleep"
 allowed_hero_ids = Array[StringName]([&"hero.iron_oracle"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
 tags = Array[StringName]([&"ability", &"active", &"despair", &"control"])

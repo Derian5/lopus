@@ -67,6 +67,7 @@ delivery_method = 0
 effects = Array[AbilityEffect]([SubResource("Base")])
 priority = 80
 presentation_color = Color(1, 0.16, 0.08, 1)
+presentation_style = &"fury"
 presentation_text = "Blind Frenzy"
 allowed_hero_ids = Array[StringName]([&"hero.ashen_duelist"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])

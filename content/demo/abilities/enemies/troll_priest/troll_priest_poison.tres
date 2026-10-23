@@ -24,5 +24,6 @@ priority = 100
 presentation_color = Color(0.46, 0.78, 0.18, 1)
 presentation_text = "Troll Venom"
 available_to_heroes = false
+presentation_style = &"poison"
 excluded_target_status_id = &"status.troll_priest_poison"
 tags = Array[StringName]([&"ability", &"active", &"poison", &"enemy"])

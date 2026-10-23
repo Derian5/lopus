@@ -138,29 +138,32 @@ func _test_management_actions(registry: Node) -> void:
 	await process_frame
 	EncounterService.select_encounter(run, run.available_encounter_ids[0])
 	var blade := _instance_for(run, &"item.gravedigger_fang")
-	screen._select_unit("hero", 0)
-	var empty_slot: Button = screen.get_node("%EquipmentRows").get_child(0)
+	var owner := -1
+	for index in run.heroes.size():
+		if run.heroes[index].item_ids.has(blade):
+			owner = index
+	_check(owner >= 0, "Gear without a Hero is equipped on a compatible Hero automatically; there is no Inventory list.")
+	screen._select_unit("hero", owner)
+	await process_frame
+	var empty_slot: Button = screen.get_node("%EquipmentRows").get_child(1)
 	empty_slot.pressed.emit()
 	await process_frame
-	_check(screen.selected_equipment_slot == 0 and screen.get_node("%EquipmentRows").get_child_count() == HeroState.MAX_ITEM_SLOTS and screen.get_node("%EquipmentRows").get_child(0) is ContentIconButton, "All six Hero equipment icon slots remain visible after selection.")
-	_emit_double_click(_inventory_button(screen, blade))
-	await process_frame
-	_check(run.heroes[0].item_ids == [blade], "Double-clicking Inventory equips the selected item without an Equip button.")
-	_check(screen.get_node("%EquipmentRows").get_child_count() >= 2, "Management UI renders occupied and available equipment slots.")
+	_check(screen.selected_equipment_slot == 1 and screen.get_node("%EquipmentRows").get_child_count() == HeroState.MAX_ITEM_SLOTS and screen.get_node("%EquipmentRows").get_child(0) is ContentIconButton, "All six Hero equipment icon slots remain visible after selection.")
 	var occupied_slot := screen.get_node("%EquipmentRows").get_child(0) as ManagementDropSlot
-	var inventory_drop := screen.get_node("%InventoryDropSlot") as ManagementDropSlot
-	inventory_drop._drop_data(Vector2.ZERO, occupied_slot.drag_payload)
-	_check(run.heroes[0].item_ids.is_empty(), "Dragging equipped gear to shared Inventory unequips it.")
-	_check(changed_actions.count(&"equipment_changed") == 2, "Equip and inventory return each request one autosave.")
+	var receiver := -1
+	var blade_item := registry.get_definition(&"item.gravedigger_fang") as ItemDefinition
+	for index in run.heroes.size():
+		if index != owner and blade_item.is_compatible_with_hero(registry.get_definition(run.heroes[index].definition_id) as HeroDefinition):
+			receiver = index
+	if receiver >= 0:
+		screen._on_management_drop(occupied_slot.drag_payload, {"target": &"equipment", "owner_kind": &"hero", "owner_index": receiver, "slot_index": -1})
+		_check(run.heroes[receiver].item_ids == [blade] and run.heroes[owner].item_ids.is_empty(), "Dragging gear onto another Hero moves it between Heroes.")
+		_check(changed_actions.count(&"equipment_changed") == 1, "Moving gear requests one autosave.")
 	screen._select_unit("soldier", 0)
 	await process_frame
 	_check(not screen.get_node("%EquipmentRows").visible and not screen.get_node("%EquipmentCount").visible, "Soldiers expose no equipment section.")
-	_emit_double_click(_inventory_button(screen, blade))
-	await process_frame
-	_check(screen.get_node("%FeedbackLabel").text.contains("Select the Hero"), "Management UI explains that items require a selected Hero.")
 	var tooltip := ContentButton.describe_content(&"item.gravedigger_fang")
 	_check(not tooltip.contains("COMMON") and not tooltip.contains("RARE") and not tooltip.contains("Any Hero") and tooltip.contains("[b]+60[/b] Damage") and tooltip.contains("sells for 125"), "Item tooltips omit rarity and redundant universal Hero compatibility while retaining modifiers and prices.")
-	_check(screen.get_node("%InventoryRows").get_child_count() > 0, "Management Inventory lists available physical item instances.")
 	screen.free()
 
 
@@ -173,14 +176,6 @@ func _instance_for(run: RunState, definition_id: StringName, occurrence := 0) ->
 			return StringName(item.instance_id)
 		found += 1
 	return &""
-
-
-func _inventory_button(screen: Control, instance_id: StringName) -> ManagementDragButton:
-	for row in screen.get_node("%InventoryRows").get_children():
-		var button := row.get_child(0) as ManagementDragButton if row is HBoxContainer and row.get_child_count() > 0 else null
-		if button != null and StringName(button.drag_payload.get("instance_id", "")) == instance_id:
-			return button
-	return null
 
 
 func _emit_double_click(button: Control) -> void:

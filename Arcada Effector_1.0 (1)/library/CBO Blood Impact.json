@@ -1,0 +1,352 @@
+{
+  "app": "arcadia-effects",
+  "v": 2,
+  "doc": {
+    "v": 2,
+    "id": "fx_cbo_blood_impact",
+    "name": "CBO Blood Impact",
+    "comp": {
+      "w": 384,
+      "h": 256,
+      "dur": 0.6,
+      "fps": 60
+    },
+    "cam": {
+      "comp": 0
+    },
+    "exp": {
+      "cols": 4,
+      "rows": 4,
+      "frames": 16,
+      "cellW": 192,
+      "cellH": 128,
+      "t0": 0,
+      "t1": -1,
+      "mode": "rgba",
+      "ss": 2
+    },
+    "layers": [
+      {
+        "id": "lr_blood_drops",
+        "name": "Heavy Falling Droplets",
+        "type": "emitter",
+        "blend": "normal",
+        "start": 0,
+        "end": 0.01,
+        "opacity": 1,
+        "em": {
+          "bursts": [
+            {
+              "t": 0,
+              "n": 24
+            }
+          ],
+          "rate": 0,
+          "seed": 239,
+          "x": -8,
+          "y": 0,
+          "dir": "dir",
+          "angle": -12,
+          "spread": 116,
+          "speed": 265,
+          "speedRnd": 0.65
+        },
+        "pt": {
+          "life": 0.52,
+          "lifeRnd": 0.3,
+          "sprite": {
+            "kind": "shape",
+            "id": "dot",
+            "p": {}
+          },
+          "size": 7,
+          "sizeRnd": 0.65,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 1
+              },
+              {
+                "t": 0.7,
+                "v": 0.65
+              },
+              {
+                "t": 1,
+                "v": 0.1
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.9
+              },
+              {
+                "t": 0.55,
+                "v": 0.85
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  196,
+                  27,
+                  21
+                ]
+              },
+              {
+                "t": 0.35,
+                "c": [
+                  154,
+                  15,
+                  17
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  65,
+                  6,
+                  11
+                ]
+              }
+            ]
+          },
+          "alignVel": true,
+          "stretch": 1.0,
+          "gravY": 420,
+          "drag": 1.1,
+          "glow": 0
+        }
+      },
+      {
+        "id": "lr_blood_strands",
+        "name": "Directional Liquid Strands",
+        "type": "emitter",
+        "blend": "normal",
+        "start": 0,
+        "end": 0.01,
+        "opacity": 1,
+        "em": {
+          "bursts": [
+            {
+              "t": 0,
+              "n": 7
+            }
+          ],
+          "rate": 0,
+          "seed": 211,
+          "x": -14,
+          "y": -4,
+          "dir": "dir",
+          "angle": -8,
+          "spread": 88,
+          "speed": 370,
+          "speedRnd": 0.48
+        },
+        "pt": {
+          "life": 0.33,
+          "lifeRnd": 0.25,
+          "render": "trail",
+          "trailCore": 0,
+          "sprite": {
+            "kind": "shape",
+            "id": "dot",
+            "p": {}
+          },
+          "size": 5.5,
+          "sizeRnd": 0.45,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 1
+              },
+              {
+                "t": 0.65,
+                "v": 0.6
+              },
+              {
+                "t": 1,
+                "v": 0.05
+              }
+            ]
+          },
+          "sizeOT": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.05
+              },
+              {
+                "t": 0.65,
+                "v": 0.35
+              },
+              {
+                "t": 1,
+                "v": 1
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.92
+              },
+              {
+                "t": 0.55,
+                "v": 0.86
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  196,
+                  27,
+                  21
+                ]
+              },
+              {
+                "t": 0.35,
+                "c": [
+                  154,
+                  15,
+                  17
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  65,
+                  6,
+                  11
+                ]
+              }
+            ]
+          },
+          "gravY": 330,
+          "drag": 2.5,
+          "turbAmp": 0,
+          "glow": 0
+        }
+      },
+      {
+        "id": "lr_blood_mist",
+        "name": "Fine Blood Mist",
+        "type": "emitter",
+        "blend": "normal",
+        "start": 0,
+        "end": 0.01,
+        "opacity": 1,
+        "em": {
+          "bursts": [
+            {
+              "t": 0,
+              "n": 10
+            }
+          ],
+          "rate": 0,
+          "seed": 263,
+          "x": -10,
+          "y": -5,
+          "dir": "dir",
+          "angle": -10,
+          "spread": 92,
+          "speed": 135,
+          "speedRnd": 0.6
+        },
+        "pt": {
+          "life": 0.25,
+          "lifeRnd": 0.25,
+          "sprite": {
+            "kind": "shape",
+            "id": "smoke",
+            "p": {}
+          },
+          "size": 27,
+          "sizeRnd": 0.5,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.3
+              },
+              {
+                "t": 0.5,
+                "v": 0.8
+              },
+              {
+                "t": 1,
+                "v": 1.1
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.22
+              },
+              {
+                "t": 0.4,
+                "v": 0.17
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  196,
+                  27,
+                  21
+                ]
+              },
+              {
+                "t": 0.35,
+                "c": [
+                  154,
+                  15,
+                  17
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  65,
+                  6,
+                  11
+                ]
+              }
+            ]
+          },
+          "drag": 3.5,
+          "glow": 0
+        }
+      }
+    ]
+  },
+  "tex": {}
+}

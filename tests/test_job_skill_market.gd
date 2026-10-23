@@ -115,7 +115,7 @@ func _test_management() -> void:
 	var previews := screen.get_node("%AbilityRows").get_children().filter(func(slot: Node) -> bool: return slot is ContentIconButton and slot.content_id in job.available_ability_ids)
 	_check(previews.size() == 2 and previews.all(func(slot: ContentIconButton) -> bool: return slot.locked and slot.badge_text == "NOT BOUGHT" and slot.tooltip_override.contains("NOT PURCHASED")), "Both unpaid levels remain visible with a purchase explanation despite six assignments.")
 	var market_row := screen.get_node("%MarketRows").get_child(2)
-	_check((market_row.get_child(0) as TextureRect).texture == first.presentation_icon, "Market displays the actual skill icon rather than a category gem.")
+	_check((market_row.find_child("Icon", true, false) as Button).icon == first.presentation_icon, "Market displays the actual skill icon rather than a category gem.")
 	screen._select_unit("hero", 0)
 	screen._buy_market_offer("ui-first")
 	_check(_build(run, job.id).active_ability_id == first.id, "Buying a skill applies it to its target Job even while a Hero is selected.")
@@ -123,7 +123,7 @@ func _test_management() -> void:
 	run.market.offers.assign([_offer(second, job.id, "ui-upgrade")])
 	screen._refresh_market()
 	market_row = screen.get_node("%MarketRows").get_child(2)
-	_check((market_row.get_child(1) as Button).text.contains("UPGRADE") and (market_row.get_child(0) as TextureRect).texture == second.presentation_icon, "The Market labels Level II as an upgrade and uses its icon.")
+	_check((market_row.find_child("Tag", true, false) as Label).text.contains("UPGRADE") and (market_row.find_child("Icon", true, false) as Button).icon == second.presentation_icon, "The Market labels Level II as an upgrade and uses its icon.")
 	screen._buy_market_offer("ui-upgrade")
 	await process_frame
 	screen._select_unit("soldier", 0)

@@ -33,6 +33,7 @@ func _ready() -> void:
 	combat_session.combatant_selected.connect(_on_combatant_selected)
 	%PostBattlePanel.continue_requested.connect(_on_management_button_pressed)
 	%RunEventPopup.choice_selected.connect(func(choice_id: StringName) -> void: run_event_choice_requested.emit(choice_id))
+	selected_unit_panel.close_requested.connect(_clear_inspector)
 	player_statistics.setup("ALLIES", CombatUnitSnapshot.Team.PLAYER)
 	enemy_statistics.setup("ENEMIES", CombatUnitSnapshot.Team.ENEMY)
 	player_statistics.unit_requested.connect(_on_statistics_unit_requested)
@@ -49,10 +50,13 @@ func _process(delta: float) -> void:
 	if statistics_refresh_timer < 0.1:
 		return
 	statistics_refresh_timer = 0.0
+	var seconds := int(combat_session.elapsed_time)
+	%BattleClock.text = "%02d:%02d%s" % [seconds / 60, seconds % 60, "  ·  PAUSED" if battle_paused else ""]
 	if statistics_dirty and player_statistics.visible:
 		_refresh_statistics()
 	if selected_unit_panel.visible:
 		selected_unit_panel.refresh()
+		_fit_selected_panel()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -85,6 +89,7 @@ func _start_demo_battle() -> void:
 	var reinforcement_direction := EncounterDefinition.ReinforcementEntryDirection.RIGHT_SIDE
 	if not String(run.selected_encounter_id).is_empty():
 		current_encounter = get_node("/root/ContentRegistry").get_definition(run.selected_encounter_id) as EncounterDefinition
+		$Page/VBox/Header/Title.text = current_encounter.display_name.to_upper()
 		var route_power := CombatDemoFactory.route_enemy_power(run)
 		var battle_number := run.encounter_index + 1
 		enemies = CombatDemoFactory.create_enemy_army_from_encounter(current_encounter, route_power, battle_number)
@@ -189,11 +194,18 @@ func _on_battle_finished(winner: StringName, duration: float, timed_out: bool) -
 func _on_combatant_selected(combatant: Combatant) -> void:
 	inspected_combatant = combatant
 	selected_unit_panel.show_combatant(combatant)
+	call_deferred("_fit_selected_panel")
+
+
+func _fit_selected_panel() -> void:
+	if selected_unit_panel.visible:
+		selected_unit_panel.offset_top = selected_unit_panel.offset_bottom - maxf(180.0, selected_unit_panel.get_combined_minimum_size().y)
 
 
 func _clear_inspector() -> void:
 	inspected_combatant = null
 	selected_unit_panel.clear()
+	combat_session._select_combatant(null)
 
 
 func _on_combat_event_emitted(_event: CombatEvent) -> void:

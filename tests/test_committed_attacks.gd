@@ -207,7 +207,7 @@ func _test_late_render_starts_held_attack() -> void:
 	unit._start_attack()
 	unit._physics_process(0.15)
 	unit._process(0.0)
-	_check(unit.state == Combatant.State.ATTACK_RECOVERY and unit.unit_sprite.animation == &"attack" and unit.unit_sprite.is_playing(), "Pride starts the aiming animation even when rendering misses the brief windup.")
+	_check(unit.state == Combatant.State.ATTACK_RECOVERY and unit.unit_sprite.animation == &"attack" and unit.unit_sprite.frame == unit.attack_hold_frames.y, "Pride shows its release pose even when rendering misses the brief windup.")
 	session.free()
 
 

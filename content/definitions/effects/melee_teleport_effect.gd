@@ -6,7 +6,8 @@ extends AbilityEffect
 @export_range(0.0, 3600.0, 0.1, "or_greater") var cooldown_seconds := 15.0
 
 
-func apply(_source, target, _ability: AbilityDefinition) -> void:
+func apply(_source, target, ability: AbilityDefinition) -> void:
 	if is_instance_valid(target):
 		target.melee_teleport_distance = maxf(target.melee_teleport_distance, distance)
 		target.melee_teleport_cooldown = cooldown_seconds
+		target.melee_teleport_ability_id = ability.id if ability != null else &""

@@ -2,3 +2,8 @@
 .godot/
 /android/
 /build/
+
+# Generated local diagnostics and Python bytecode
+/_md5.txt
+__pycache__/
+*.py[cod]

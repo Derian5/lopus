@@ -16,7 +16,6 @@ armor = 10.0
 script = ExtResource("1")
 base_stats = SubResource("Stats")
 ability_ids = Array[StringName]([&"ability.troll_blood", &"ability.troll_berserk"])
-targeting_mode = "back_line"
 placeholder_color = Color(0.3, 0.55, 0.36, 1)
 id = &"enemy.troll_berserker"
 display_name = "Troll Berserker"

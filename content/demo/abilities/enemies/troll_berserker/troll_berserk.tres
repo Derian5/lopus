@@ -33,3 +33,4 @@ effects = Array[AbilityEffect]([SubResource("Haste")])
 presentation_color = Color(0.82, 0.24, 0.16, 1)
 presentation_text = "Berserk"
 available_to_heroes = false
+presentation_style = &"fury"

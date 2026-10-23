@@ -38,20 +38,23 @@ func _run() -> void:
 	_check(not screen.get_node("%Roster").get_children().any(func(row: Node) -> bool: return row is ManagementDropSlot and row.target_payload.get("job_id", &"") == &"job.warrior"), "Management hides the Warrior 0 / 0 row while the Job is locked.")
 	_check(screen.get_node("%EncounterLabel").text.contains("OGRES ON THE ROAD") and not screen.get_node("%FightButton").disabled, "The fixed tutorial encounter appears compactly in the header and enables preparation.")
 	_check(run.market.offers.size() >= 5 and run.market.offers.size() <= 7, "Market generates five to seven offers.")
-	_check(screen.get_node("%MarketRows").get_child_count() == run.market.offers.size() + 2, "Market shows every offer and its reroll action.")
-	var first_market_row := screen.get_node("%MarketRows").get_child(2) as HBoxContainer
-	var first_pin := first_market_row.get_child(2) as Button
+	_check(screen.get_node("%MarketRows").get_child_count() == run.market.offers.size() + 2, "Market shows every offer below its reroll / sell toolbar and hint.")
+	var first_market_row := screen.get_node("%MarketRows").get_child(2) as Control
+	var first_pin := first_market_row.find_child("PinButton", true, false) as Button
 	first_pin.toggled.emit(true)
 	await process_frame
 	_check(run.market.offers[0].is_pinned and changed_actions.has(&"market_pin_changed"), "The Market lock control persists its position and requests autosave.")
-	first_market_row = screen.get_node("%MarketRows").get_child(2) as HBoxContainer
-	_check((first_market_row.get_child(2) as Button).text == "LOCKED", "A locked Market position is visibly marked.")
+	first_market_row = screen.get_node("%MarketRows").get_child(2) as Control
+	_check((first_market_row.find_child("PinButton", true, false) as Button).text == "LOCKED", "A locked Market position is visibly marked.")
+	_check(first_market_row.find_child("Description", true, false) != null or first_market_row.find_child("Stats", true, false) != null, "Market cards show a short description or stat line next to the icon.")
 	_check(screen.find_child("MarketFilters", true, false) == null, "Market shows all offer types in one list without category filters.")
 	var item_offer := _offer("test-item-tooltip", &"hero_item", &"item.gravedigger_fang", 1, &"hero", "")
 	run.market.offers.append(item_offer)
 	screen._refresh_market()
-	var item_row: HBoxContainer = screen.get_node("%MarketRows").get_child(screen.get_node("%MarketRows").get_child_count() - 1)
-	var item_content := item_row.get_child(1) as ContentButton
+	var item_row: Control = screen.get_node("%MarketRows").get_child(screen.get_node("%MarketRows").get_child_count() - 1)
+	var item_content := item_row.find_child("Icon", true, false) as ContentButton
+	var item_stats := item_row.find_child("Stats", true, false)
+	_check(item_stats != null and item_stats.get_child_count() > 0 and item_stats.get_child(0).get_child(0) is TextureRect, "Market item cards list their stat bonuses with icons.")
 	var item_tooltip := item_content._create_content_tooltip(item_content._content_tooltip_text()) if item_content != null else null
 	_check(item_content != null and item_content.content_id == &"item.gravedigger_fang" and item_tooltip is ContentTooltip and item_content.has_meta("disable_auto_motion") and item_content.tooltip_text.is_empty(), "Market item names expose only the owner-managed hover tooltip without transform animation.")
 	if item_tooltip != null:
@@ -131,25 +134,28 @@ func _run() -> void:
 	screen._refresh_selected()
 	_check(screen.get_node("%AbilityRows").get_child(0).get_child(0).badge_text == "L1", "Management displays the persisted Hero ability level on its icon.")
 	_check(screen.get_node("%AbilityRows").get_children().all(func(cell: Node) -> bool: return cell.get_child_count() == 1), "Hero ability slots expose no manual order controls.")
+	var items_before := run.heroes[0].item_ids.size()
+	_check(items_before == 1 and EquipmentService.get_unequipped_items(run).is_empty(), "Spare gear goes onto a Hero with room instead of waiting in an Inventory.")
+	_check(screen.find_child("InventoryRows", true, false) == null and screen.find_child("InventoryDropSlot", true, false) == null, "Management has no separate Inventory section.")
 	var gold_before_direct_item := run.gold
 	screen._buy_market_offer(item_offer.offer_id)
-	_check(run.gold == gold_before_direct_item - 1 and run.heroes[0].item_ids.size() == 1, "A purchased item automatically equips on the selected Hero.")
+	_check(run.gold == gold_before_direct_item - 1 and run.heroes[0].item_ids.size() == items_before + 1, "A purchased item automatically equips on the selected Hero.")
 	await process_frame
 	screen._select_unit("hero", 0)
 	_check((screen.get_node("%StatsGrid").get_node("DamageStat").get_meta("stat_tooltip_binding") as StatTooltipBinding).text.contains("Item:"), "Management stat hover attributes equipped item modifiers.")
-	screen._select_equipment_slot(5)
 	await process_frame
-	var seal_instance := _inventory_instance(run, &"item.bone_bell")
-	var seal_button := _inventory_item_button(screen, seal_instance)
-	_emit_double_click(seal_button)
+	var first_card := screen.get_node("%Roster").find_child("HeroCard0", false, false) as Control
+	var moved_slot := first_card.find_child("ItemSlots", true, false).get_child(0) as ManagementDropSlot
+	var moved_instance := StringName(moved_slot.drag_payload.get("instance_id", ""))
+	screen._hero_card_drop(Vector2.ZERO, moved_slot.drag_payload, 1)
+	_check(run.heroes[1].item_ids.has(moved_instance) and not run.heroes[0].item_ids.has(moved_instance), "Dragging gear onto another Hero's card in the roster moves it to that Hero.")
 	await process_frame
-	_check(run.heroes[0].item_ids.size() == 2 and run.heroes[0].item_ids[1] == seal_instance, "Double-clicking Inventory fills the first free slot without selecting an inventory item or equipment slot.")
-	_check(screen.find_child("UnequipItemButton", true, false) == null and screen.find_child("SellItemButton", true, false) == null, "Management removes selected-item and selected-slot inventory actions.")
-	var equipped_slot := screen.get_node("%EquipmentRows").get_child(0) as ManagementDropSlot
-	var returned_instance := StringName(equipped_slot.drag_payload.get("instance_id", ""))
-	var inventory_drop := screen.get_node("%InventoryDropSlot") as ManagementDropSlot
-	inventory_drop._drop_data(Vector2.ZERO, equipped_slot.drag_payload)
-	_check(not run.heroes[0].item_ids.has(returned_instance) and not EquipmentService.is_instance_equipped(run, returned_instance), "Dragging equipped gear onto shared Inventory returns it without an Unequip button.")
+	var second_card := screen.get_node("%Roster").find_child("HeroCard1", false, false) as Control
+	var sold_slot := second_card.find_child("ItemSlots", true, false).get_child(0) as ManagementDropSlot
+	var gold_before_sale := run.gold
+	(screen.get_node("%MarketRows").find_child("SellDropSlot", true, false) as ManagementDropSlot)._drop_data(Vector2.ZERO, sold_slot.drag_payload)
+	_check(not run.inventory.has_instance(moved_instance) and run.gold == gold_before_sale + 100 and changed_actions.has(&"market_sale"), "Dropping equipped gear onto the Market sells it.")
+	await process_frame
 	var blocked_item := _offer("test-blocked-direct-item", &"hero_item", &"item.bone_bell", 1, &"hero", "")
 	run.market.offers.append(blocked_item)
 	var gold_before_blocked_item := run.gold
@@ -254,11 +260,10 @@ func _test_roster_market_icons() -> void:
 		if job_id == &"job.militia" or icon == null:
 			continue
 		var market_button := _market_offer_button(screen, "roster-icon-%s" % job_id)
-		var market_icon := market_button.get_parent().get_child(0) as TextureRect
-		_check(_same_texture(icon.texture, market_icon.texture), "%s uses the same icon in the roster and Market." % job_id)
+		_check(market_button != null and _same_texture(icon.texture, market_button.icon), "%s uses the same icon in the roster and Market." % job_id)
 		for heading in screen.get_node("%Roster").get_children():
 			if heading is ManagementDropSlot and heading.target_payload.get("job_id", &"") == job_id:
-				_check(_same_texture(heading.icon, market_icon.texture), "The Job heading also uses the Market's icon.")
+				_check(_same_texture(heading.icon, market_button.icon), "The Job heading also uses the Market's icon.")
 	warrior.icon = previous_icon
 	screen.free()
 
@@ -286,20 +291,10 @@ func _emit_double_click(button: Control) -> void:
 	button.gui_input.emit(event)
 
 
-func _market_offer_button(screen: Control, offer_id: String) -> ManagementDragButton:
-	for row in screen.get_node("%MarketRows").get_children():
-		if row is HBoxContainer and row.get_child_count() > 1:
-			var button := row.get_child(1) as ManagementDragButton
-			if button != null and button.drag_payload.get("offer_id", "") == offer_id:
-				return button
-	return null
-
-
-func _inventory_item_button(screen: Control, instance_id: StringName) -> ManagementDragButton:
-	for row in screen.get_node("%InventoryRows").get_children():
-		var button := row.get_child(0) as ManagementDragButton if row is HBoxContainer and row.get_child_count() > 0 else null
-		if button != null and StringName(button.drag_payload.get("instance_id", "")) == instance_id:
-			return button
+func _market_offer_button(screen: Control, offer_id: String) -> ManagementDropSlot:
+	for card in screen.get_node("%MarketRows").get_children():
+		if card.has_meta("offer_id") and card.get_meta("offer_id") == offer_id:
+			return card.find_child("Icon", true, false) as ManagementDropSlot
 	return null
 
 

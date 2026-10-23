@@ -22,7 +22,10 @@ const BOSS_RADIUS := BOSS_VISUAL_RADIUS * COLLISION_SCALE
 const UNIT_SPRITE_HEIGHT := 128.0
 const HERO_SPRITE_HEIGHT := 156.0
 const SUMMON_SPRITE_HEIGHT := 64.0
+const OGRE_VISUAL_SCALE := 1.5
+const SUMMON_VISUAL_SCALE := 1.3
 const UNIT_VISIBLE_SIZES := preload("res://combat/unit_visible_sizes.json")
+const ARENA_GEOMETRY := preload("res://combat/arena_geometry.gd")
 const STUCK_TIMEOUT := 3.0
 const RANGED_ATTACK_PAUSE := 0.1
 ## Simulation-defined standstill; presentation fits the swing to this interval.
@@ -74,20 +77,28 @@ const UNIT_ANIMATION_CONFIGS := {
 		"chroma_key": true,
 		"health_bar_offset": 72.0,
 	},
-	&"job.archer": {"frame_directory": "res://graphics/units/player/units/archer", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.17, "reference_height": 356.0, "ground_offset": 52.0, "health_bar_offset": 62.0},
-	&"job.priest": {"frame_directory": "res://graphics/units/player/units/priest", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "skill_frames": 16, "skill_speed": 16.0, "scale": 0.22, "reference_height": 276.0, "ground_offset": 52.0, "health_bar_offset": 62.0},
-	&"job.summoner": {"frame_directory": "res://graphics/units/player/units/summoner", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "skill_frames": 16, "skill_speed": 16.0, "scale": 0.20, "reference_height": 312.0, "ground_offset": 52.0, "health_bar_offset": 64.0},
+	&"job.archer": {"frame_directory": "res://graphics/units/player/units/archer", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.17, "reference_height": 356.0, "ground_offset": 52.0, "health_bar_offset": 62.0, "attack_impact_frame": 8, "projectile_tip": Vector2(514, 263)},
+	&"job.priest": {"frame_directory": "res://graphics/units/player/units/priest", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "skill_frames": 16, "skill_speed": 16.0, "scale": 0.22, "reference_height": 276.0, "ground_offset": 52.0, "health_bar_offset": 62.0, "attack_impact_frame": 9, "projectile_tip": Vector2(490, 260)},
+	&"job.summoner": {"frame_directory": "res://graphics/units/player/units/summoner", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "skill_frames": 16, "skill_speed": 16.0, "scale": 0.20, "reference_height": 312.0, "ground_offset": 52.0, "health_bar_offset": 64.0, "attack_impact_frame": 8, "projectile_tip": Vector2(203, 184)},
 	&"job.warrior": {"frame_directory": "res://graphics/units/player/units/warrior", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.23, "reference_height": 256.0, "ground_offset": 52.0, "health_bar_offset": 62.0},
 	&"job.shieldbearer": {"frame_directory": "res://graphics/units/player/units/shieldbearer", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.22, "reference_height": 268.0, "ground_offset": 52.0, "health_bar_offset": 62.0},
 	&"enemy.summoned_brawler": {"frame_directory": "res://graphics/units/player/units/creature", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.19, "reference_height": 216.0, "ground_offset": 32.0, "health_bar_offset": 46.0},
-	&"enemy.summoned_shooter": {"frame_directory": "res://graphics/units/player/units/creature", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.17, "reference_height": 216.0, "ground_offset": 30.0, "health_bar_offset": 44.0},
+	&"enemy.summoned_shooter": {"frame_directory": "res://graphics/units/player/units/creature", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.17, "reference_height": 216.0, "ground_offset": 30.0, "health_bar_offset": 44.0, "attack_impact_frame": 6, "projectile_tip": Vector2(520, 311)},
 	&"enemy.summoned_amalgam": {"frame_directory": "res://graphics/units/player/units/creature", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.29, "reference_height": 216.0, "ground_offset": 52.0, "health_bar_offset": 62.0},
-	&"hero.iron_oracle": {"frame_directory": "res://graphics/units/player/hero/Despair", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.17, "reference_height": 452.0, "chroma_key": true, "health_bar_offset": 78.0},
-	&"hero.army_support": {"frame_directory": "res://graphics/units/player/hero/Envy", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "attack_hold": [4, 13], "scale": 0.15, "reference_height": 505.0, "chroma_key": true, "health_bar_offset": 78.0},
-	&"hero.thorn_warden": {"frame_directory": "res://graphics/units/player/hero/gluttony", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.15, "reference_height": 505.0, "animation_scales": {&"attack": 2.0}, "chroma_key": true, "crop_green_canvas": true, "health_bar_offset": 78.0},
+	&"enemy.raider": {"frame_directory": "res://graphics/units/enemies/brute", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 20},
+	&"enemy.troll_berserker": {"frame_directory": "res://graphics/units/enemies/berserker", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 16},
+	&"enemy.ogre_bonebreaker": {"frame_directory": "res://graphics/units/enemies/bonebreaker", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 20},
+	&"enemy.summoner": {"frame_directory": "res://graphics/units/enemies/hexer", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 22, "projectile_tip": Vector2(424, 100)},
+	&"enemy.troll_priest": {"frame_directory": "res://graphics/units/enemies/witch doctor", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 22, "projectile_tip": Vector2(702, 300)},
+	&"enemy.bog_spawn": {"frame_directory": "res://graphics/units/enemies/bog spawn", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 18},
+	&"enemy.iron_warden": {"frame_directory": "res://graphics/units/enemies/iron_warden", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "skill_frames": 30, "skill_directory": "spell", "skill_speed": 20.0, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 20, "reactive_skill": true},
+	&"enemy.bog_king": {"frame_directory": "res://graphics/units/enemies/mugrot", "move_frames": 30, "attack_frames": 30, "death_frames": 30, "move_speed": 20.0, "death_speed": 15.0, "despill_edges": true, "attack_impact_frame": 20},
+	&"hero.iron_oracle": {"frame_directory": "res://graphics/units/player/hero/Despair", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.17, "reference_height": 452.0, "chroma_key": true, "health_bar_offset": 78.0, "attack_impact_frame": 9, "projectile_tip": Vector2(417, 110)},
+	&"hero.army_support": {"frame_directory": "res://graphics/units/player/hero/Envy", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "attack_hold": [4, 13], "scale": 0.15, "reference_height": 505.0, "chroma_key": true, "despill_green_edges": true, "health_bar_offset": 78.0, "projectile_frame": 13, "projectile_tip": Vector2(670, 126)},
+	&"hero.thorn_warden": {"frame_directory": "res://graphics/units/player/hero/gluttony", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.15, "reference_height": 505.0, "animation_scales": {&"attack": 2.2}, "chroma_key": true, "crop_green_canvas": true, "health_bar_offset": 78.0},
 	&"hero.test_vanguard": {"frame_directory": "res://graphics/units/player/hero/greed", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.095, "reference_height": 800.0, "chroma_key": true, "reverse_attack_recovery": true, "health_bar_offset": 78.0},
-	&"hero.glass_arcanist": {"frame_directory": "res://graphics/units/player/hero/lust", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.078, "reference_height": 977.0, "animation_scales": {&"attack": 3.8}, "chroma_key": true, "health_bar_offset": 78.0},
-	&"hero.control_savant": {"frame_directory": "res://graphics/units/player/hero/Pride", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "attack_hold": [4, 13], "scale": 0.22, "reference_height": 344.0, "chroma_key": true, "health_bar_offset": 78.0},
+	&"hero.glass_arcanist": {"frame_directory": "res://graphics/units/player/hero/lust", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.078, "reference_height": 977.0, "animation_scales": {&"attack": 4.15}, "chroma_key": true, "health_bar_offset": 78.0},
+	&"hero.control_savant": {"frame_directory": "res://graphics/units/player/hero/Pride", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "attack_hold": [4, 13], "scale": 0.22, "reference_height": 344.0, "chroma_key": true, "health_bar_offset": 78.0, "projectile_frame": 13, "projectile_tip": Vector2(464, 210)},
 	&"hero.ashen_duelist": {"frame_directory": "res://graphics/units/player/hero/Wrath", "move_frames": 16, "attack_frames": 16, "death_frames": 16, "scale": 0.125, "reference_height": 625.0, "chroma_key": true, "crop_green_canvas": true, "health_bar_offset": 78.0},
 }
 
@@ -98,10 +109,32 @@ const FACING_DEAD_ZONE := 6.0
 const FACING_MIN_SPEED := 8.0
 const FRAME_OFFSETS_PATH := "res://combat/unit_frame_offsets.json"
 const ALLIED_FRAME_OFFSETS_PATH := "res://combat/allied_frame_offsets.json"
+const ENEMY_FRAME_OFFSETS_PATH := "res://combat/enemy_frame_offsets.json"
+const ALPHA_SPRITE_SHADER := preload("res://combat/unit_alpha_sprite.gdshader")
+var unit_sprite_uses_alpha_shader := false
+var unit_sprite_attack_impact_frame := -1
+var unit_sprite_skill_overrides_attack := false
+var queued_reactive_skill := false
 static var unit_sprite_frames: Dictionary = {}
 static var authored_frame_offsets: Dictionary = {}
 static var authored_frame_offsets_loaded := false
 static var chroma_frame_offsets: Dictionary = {}
+
+const GROUND_MARKER := preload("res://combat/unit_ground_marker.gd")
+const STATUS_VFX := preload("res://combat/vfx/unit_status_vfx.gd")
+const ENEMY_MEDALLION := preload("res://ui/encounter_choice/enemy_token.gd")
+var ground_marker: Node2D
+var status_vfx: Node2D
+## Condition look written by status_vfx (presentation only): burning glow and the
+## drained, heartbeat-red look of a badly hurt unit (0..1 each).
+var condition_burn := 0.0
+var condition_hurt := 0.0
+var condition_phase := 0.0
+var placeholder_medallion: Control
+## Damage trail belongs to presentation only and never feeds the simulation.
+var health_trail_ratio := -1.0
+var health_trail_delay := 0.0
+var last_visual_health_ratio := -1.0
 
 @export var damage_flash_color := Color.WHITE
 @export_range(0.0, 10.0, 0.01, "or_greater") var damage_flash_duration := 0.1
@@ -168,6 +201,9 @@ var shields: Array[Dictionary] = []
 var pending_ability: AbilityDefinition
 var boss_phase := 1
 var phase_banner_timer := 0.0
+## Seconds left of the "RANK UP" banner after a mid-battle Veterancy gain.
+var veterancy_banner_timer := 0.0
+const VETERANCY_BANNER_TIME := 1.6
 var last_stand_aura_duration := 0.0
 var last_stand_remaining := 0.0
 var basic_attack_range_bonus := 0.0
@@ -186,6 +222,7 @@ var prefers_farthest_enemy := false
 var melee_teleport_distance := 0.0
 var melee_teleport_cooldown := 0.0
 var melee_teleport_cooldown_remaining := 0.0
+var melee_teleport_ability_id: StringName
 var enemy_attack_speed_aura_radius := 0.0
 var enemy_attack_speed_aura_multiplier := 1.0
 var stealth_remaining := 0.0
@@ -411,6 +448,14 @@ func _physics_process(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_update_visual_layers()
+	if queued_reactive_skill:
+		if state == State.DEAD:
+			queued_reactive_skill = false
+		elif velocity.length_squared() <= 1.0:
+			queued_reactive_skill = false
+			play_ability_animation(self, session.get_ability_definition(threshold_guard_ability_id), true)
+	if session != null and session.vfx_enabled:
+		_update_health_trail(delta)
 	initial_walk_delay_remaining = maxf(0.0, initial_walk_delay_remaining - delta)
 	skill_animation_remaining = maxf(0.0, skill_animation_remaining - delta)
 	attack_hold_grace = maxf(0.0, attack_hold_grace - delta)
@@ -457,6 +502,19 @@ func _setup_ground_shadow() -> void:
 	ground_shadow.scale = Vector2(width, width * 0.3) / 128.0
 	ground_shadow.position = feet_offset()
 	add_child(ground_shadow)
+	ground_marker = GROUND_MARKER.new()
+	ground_marker.name = "GroundMarker"
+	ground_marker.z_as_relative = false
+	ground_marker.z_index = 1
+	var unshaded := CanvasItemMaterial.new()
+	unshaded.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	ground_marker.material = unshaded
+	add_child(ground_marker)
+	status_vfx = STATUS_VFX.new()
+	status_vfx.name = "StatusVfx"
+	status_vfx.unit = self
+	status_vfx.z_index = 16
+	add_child(status_vfx)
 
 
 ## Finds where the feet of the idle pose are drawn: the lowest rows of opaque (and,
@@ -467,9 +525,9 @@ func _measure_ground_feet() -> void:
 	var texture := unit_sprite.sprite_frames.get_frame_texture(&"move", 0)
 	if texture == null:
 		return
-	var key: Variant = texture.resource_path if not texture.resource_path.is_empty() else texture.get_instance_id()
+	var key := feet_cache_key(texture, unit_sprite_uses_chroma_key)
 	if not feet_cache.has(key):
-		feet_cache[key] = _scan_feet(texture)
+		feet_cache[key] = _scan_feet(texture, unit_sprite_uses_chroma_key)
 	var measured: Array = feet_cache[key]
 	if measured.is_empty():
 		return
@@ -481,7 +539,21 @@ func _measure_ground_feet() -> void:
 	ground_stance = float(measured[1]) * sprite_scale
 
 
-static func _scan_feet(texture: Texture2D) -> Array:
+## Drawn body height used to size effects on this unit (feet to the top of the head).
+func visual_height() -> float:
+	return maxf(health_bar_offset / 0.65, 48.0)
+
+
+## Effect scale for this unit's size (1 for an ordinary Soldier).
+func vfx_size() -> float:
+	return clampf(visual_height() / 96.0, 0.7, 2.4)
+
+
+static func feet_cache_key(texture: Texture2D, chroma_key: bool) -> String:
+	return "%s:%s" % [texture.resource_path if not texture.resource_path.is_empty() else texture.get_instance_id(), chroma_key]
+
+
+static func _scan_feet(texture: Texture2D, chroma_key := false) -> Array:
 	var image := texture.get_image()
 	if image == null:
 		return []
@@ -497,7 +569,7 @@ static func _scan_feet(texture: Texture2D) -> Array:
 		var solid := 0
 		for x in range(0, width, step):
 			var color := image.get_pixel(x, y)
-			if color.a > 0.5 and color.g - maxf(color.r, color.b) < 0.08:
+			if color.a > 0.5 and (not chroma_key or color.g - maxf(color.r, color.b) < 0.08):
 				solid += 1
 		if solid >= 2:
 			if top < 0:
@@ -514,7 +586,7 @@ static func _scan_feet(texture: Texture2D) -> Array:
 	for y in range(band_top, bottom + 1, step):
 		for x in range(0, width, step):
 			var color := image.get_pixel(x, y)
-			if color.a > 0.5 and color.g - maxf(color.r, color.b) < 0.08:
+			if color.a > 0.5 and (not chroma_key or color.g - maxf(color.r, color.b) < 0.08):
 				min_x = mini(min_x, x)
 				max_x = maxi(max_x, x)
 				sum_x += x
@@ -535,7 +607,7 @@ func feet_offset() -> Vector2:
 		var frame_texture := unit_sprite.sprite_frames.get_frame_texture(unit_sprite.animation, unit_sprite.frame)
 		if frame_texture != null:
 			return Vector2(0.0, unit_sprite.position.y + frame_texture.get_height() * absf(unit_sprite.scale.y) * 0.46)
-	return Vector2(0.0, body_radius * 0.8)
+	return Vector2(0.0, visual_radius)
 
 
 func feet_position() -> Vector2:
@@ -548,6 +620,11 @@ func _update_visual_layers() -> void:
 	if ground_shadow != null:
 		ground_shadow.modulate.a = 0.45 if state == State.DEAD else 1.0
 		ground_shadow.position = feet_offset()
+	if ground_marker != null:
+		ground_marker.position = feet_offset()
+		ground_marker.queue_redraw()
+	if placeholder_medallion != null:
+		placeholder_medallion.modulate = Color.WHITE.darkened(0.65) if state == State.DEAD else Color.WHITE.lerp(flash_color, 0.35 if flash_remaining > 0.0 else 0.0)
 	overhead.visible = state != State.DEAD
 	overhead.queue_redraw()
 
@@ -555,15 +632,32 @@ func _update_visual_layers() -> void:
 func _setup_unit_sprite() -> void:
 	var animation_id := snapshot.job_id if UNIT_ANIMATION_CONFIGS.has(snapshot.job_id) else snapshot.definition_id
 	unit_sprite.visible = UNIT_ANIMATION_CONFIGS.has(animation_id)
+	var registry := get_node_or_null("/root/ContentRegistry")
+	var definition := registry.get_definition(snapshot.definition_id, false) as EnemyDefinition if registry != null else null
+	var is_troll := definition != null and definition.tags.has(&"troll")
 	var display_height := UNIT_SPRITE_HEIGHT
 	if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO:
 		display_height = HERO_SPRITE_HEIGHT
 	elif snapshot.unit_kind == CombatUnitSnapshot.UnitKind.SUMMON:
-		display_height = SUMMON_SPRITE_HEIGHT
+		# Trolls retain their existing size, including summoned Bog Spawn.
+		display_height = SUMMON_SPRITE_HEIGHT * (1.0 if is_troll else SUMMON_VISUAL_SCALE)
+	elif snapshot.unit_kind == CombatUnitSnapshot.UnitKind.ENEMY and definition != null and definition.tags.has(&"ogre") and not is_troll:
+		display_height *= OGRE_VISUAL_SCALE
 	if not unit_sprite.visible:
 		base_visual_radius = display_height * 0.5
 		visual_radius = base_visual_radius
 		health_bar_offset = display_height * 0.65
+		if definition != null and session != null and session.vfx_enabled:
+			placeholder_medallion = ENEMY_MEDALLION.new()
+			placeholder_medallion.name = "PlaceholderMedallion"
+			add_child(placeholder_medallion)
+			placeholder_medallion.setup(definition, 1, false, false, false)
+			placeholder_medallion.size = placeholder_medallion.custom_minimum_size
+			placeholder_medallion.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			placeholder_medallion.tooltip_text = ""
+			var medallion_scale := display_height / (ENEMY_MEDALLION.SIZE - 4.0)
+			placeholder_medallion.scale = Vector2.ONE * medallion_scale
+			placeholder_medallion.position = -Vector2(placeholder_medallion.size.x * 0.5, ENEMY_MEDALLION.SIZE * 0.5 + 1.0) * medallion_scale
 		return
 	var config: Dictionary = UNIT_ANIMATION_CONFIGS[animation_id]
 	if not unit_sprite_frames.has(animation_id):
@@ -574,6 +668,8 @@ func _setup_unit_sprite() -> void:
 	unit_sprite_base_scale = display_height / reference_height
 	unit_sprite_ground_offset = Vector2(0.0, float(config.get("ground_offset", 0.0)))
 	unit_sprite_animation_scales = config.get("animation_scales", {})
+	unit_sprite_attack_impact_frame = int(config.get("attack_impact_frame", -1))
+	unit_sprite_skill_overrides_attack = bool(config.get("reactive_skill", false))
 	unit_sprite.scale = Vector2.ONE * unit_sprite_base_scale
 	health_bar_offset = float(config.get("health_bar_offset", 0.0))
 	if display_height > 0.0:
@@ -582,10 +678,22 @@ func _setup_unit_sprite() -> void:
 	unit_sprite_reverses_attack_recovery = bool(config.get("reverse_attack_recovery", false))
 	var hold: Array = config.get("attack_hold", [])
 	attack_hold_frames = Vector2i(int(hold[0]), int(hold[1])) if hold.size() == 2 else Vector2i(-1, -1)
-	if unit_sprite_uses_chroma_key:
+	if unit_sprite_uses_chroma_key and bool(config.get("despill_green_edges", false)):
+		# Frames already carry real alpha and the costume itself is green (Envy): the
+		# chroma key would bleach it. Only clean the green fringe along the cut-out edges.
+		var edge_material := ShaderMaterial.new()
+		edge_material.shader = ALPHA_SPRITE_SHADER
+		edge_material.set_shader_parameter("despill_green", true)
+		unit_sprite.material = edge_material
+	elif unit_sprite_uses_chroma_key:
 		var chroma_material := ShaderMaterial.new()
 		chroma_material.shader = CHROMA_KEY_SHADER
 		unit_sprite.material = chroma_material
+	elif bool(config.get("despill_edges", false)):
+		unit_sprite_uses_alpha_shader = true
+		var alpha_material := ShaderMaterial.new()
+		alpha_material.shader = ALPHA_SPRITE_SHADER
+		unit_sprite.material = alpha_material
 	unit_sprite_legacy_offsets = config.get("frame_offsets", {})
 	unit_sprite_frame_offsets = config.get("frame_offsets", _authored_offsets(String(config.get("frame_directory", ""))))
 	unit_sprite.frame_changed.connect(_update_unit_sprite_offset)
@@ -602,14 +710,24 @@ func _setup_unit_sprite() -> void:
 		_update_unit_sprite_offset()
 
 
+static func animation_names_for(config: Dictionary) -> Array[StringName]:
+	var names: Array[StringName] = [&"move", &"attack"]
+	if int(config.get("death_frames", 0)) > 0:
+		names.append(&"death")
+	if int(config.get("skill_frames", 0)) > 0:
+		names.append(&"skill")
+	return names
+
+
+static func animation_frame_path(config: Dictionary, animation: StringName, frame: int) -> String:
+	var folder: String = config.get("%s_directory" % animation, String(animation) if animation != &"move" else "walk")
+	return "%s/%s/frame_%04d.png" % [config["frame_directory"], folder, frame]
+
+
 func _build_unit_sprite_frames(config: Dictionary) -> SpriteFrames:
 	var frames := SpriteFrames.new()
 	frames.remove_animation(&"default")
-	var animation_names: Array[StringName] = [&"move", &"attack"]
-	if int(config.get("death_frames", 0)) > 0:
-		animation_names.append(&"death")
-	if int(config.get("skill_frames", 0)) > 0:
-		animation_names.append(&"skill")
+	var animation_names := animation_names_for(config)
 	for row in animation_names.size():
 		var animation_name := animation_names[row]
 		var frame_count := int(config["%s_frames" % animation_name])
@@ -618,7 +736,7 @@ func _build_unit_sprite_frames(config: Dictionary) -> SpriteFrames:
 		frames.set_animation_speed(animation_name, ANIMATION_SPEED * float(config.get("%s_speed" % animation_name, 10.0 if animation_name == &"move" else 12.0)))
 		for column in frame_count:
 			if config.has("frame_directory"):
-				var path := "%s/%s/frame_%04d.png" % [config["frame_directory"], animation_name if animation_name != &"move" else &"walk", column]
+				var path := animation_frame_path(config, animation_name, column)
 				var texture := load(path) as Texture2D
 				if bool(config.get("crop_green_canvas", false)):
 					texture = _crop_to_green_canvas(texture)
@@ -642,7 +760,7 @@ func _update_unit_sprite() -> void:
 	var is_moving := state != State.DEAD and velocity.length_squared() > 1.0
 	if is_moving:
 		skill_animation_remaining = 0.0
-	var is_casting := state != State.DEAD and not is_moving and not is_attacking and skill_animation_remaining > 0.0
+	var is_casting := state != State.DEAD and not is_moving and (not is_attacking or unit_sprite_skill_overrides_attack) and skill_animation_remaining > 0.0
 	if presented_attack_serial != attack_serial:
 		sprite_was_attacking = false
 		sprite_was_attack_recovery = false
@@ -661,8 +779,10 @@ func _update_unit_sprite() -> void:
 		if initial_walk_delay_remaining <= 0.0 and (unit_sprite.animation != &"move" or not unit_sprite.is_playing()):
 			unit_sprite.speed_scale = 1.0
 			unit_sprite.play(&"move")
-	elif is_attacking:
-		if attack_hold_frames.x >= 0:
+	elif is_attacking and not is_casting:
+		if unit_sprite_attack_impact_frame >= 0:
+			_update_split_attack_sprite()
+		elif attack_hold_frames.x >= 0:
 			_update_held_attack_sprite()
 		elif unit_sprite_reverses_attack_recovery:
 			if state == State.ATTACK_WINDUP and not sprite_was_attacking:
@@ -701,17 +821,43 @@ func _update_unit_sprite() -> void:
 		sprite_color.a = 0.35
 	if state == State.DEAD:
 		sprite_color = sprite_color.darkened(0.25 if unit_sprite.sprite_frames.has_animation(&"death") else 0.65)
-	if flash_remaining > 0.0 and not unit_sprite_uses_chroma_key:
+	if flash_remaining > 0.0 and not unit_sprite_uses_chroma_key and not unit_sprite_uses_alpha_shader:
 		sprite_color = flash_color
-	if unit_sprite_uses_chroma_key:
+	if unit_sprite_uses_chroma_key or unit_sprite_uses_alpha_shader:
 		var chroma_material := unit_sprite.material as ShaderMaterial
 		chroma_material.set_shader_parameter("flash_color", flash_color)
 		chroma_material.set_shader_parameter("flash_amount", 1.0 if flash_remaining > 0.0 else 0.0)
+		chroma_material.set_shader_parameter("burn_amount", condition_burn)
+		chroma_material.set_shader_parameter("hurt_amount", condition_hurt)
+		chroma_material.set_shader_parameter("pulse_phase", condition_phase)
+	elif flash_remaining <= 0.0:
+		sprite_color = sprite_color.lerp(Color(1.25, 0.72, 0.5, sprite_color.a), condition_burn * 0.45)
+		sprite_color = sprite_color.lerp(Color(1.0, 0.6, 0.6, sprite_color.a), condition_hurt * 0.3)
 	unit_sprite.modulate = sprite_color
 	sprite_was_attacking = is_attacking and not is_casting and not is_moving
 	sprite_was_attack_recovery = state == State.ATTACK_RECOVERY and sprite_was_attacking
 	sprite_was_windup = state == State.ATTACK_WINDUP and sprite_was_attacking
 	_update_unit_sprite_offset()
+
+
+## Enemy windup reaches the authored impact pose when the simulation delivers the
+## blow. Finish the recovery in the remaining planted interval, without changing AI.
+func _update_split_attack_sprite() -> void:
+	var frame_count := unit_sprite.sprite_frames.get_frame_count(&"attack")
+	var impact := clampi(unit_sprite_attack_impact_frame, 0, frame_count - 1)
+	var fps := unit_sprite.sprite_frames.get_animation_speed(&"attack")
+	if state == State.ATTACK_WINDUP:
+		if not sprite_was_attacking or unit_sprite.animation != &"attack":
+			unit_sprite.play(&"attack")
+			unit_sprite.frame = 0
+			unit_sprite.speed_scale = float(impact + 1) / (fps * maxf(state_timer, 0.01))
+		elif unit_sprite.frame >= impact:
+			unit_sprite.frame = impact
+			unit_sprite.pause()
+	elif not sprite_was_attack_recovery or not sprite_was_attacking:
+		unit_sprite.play(&"attack")
+		unit_sprite.frame = impact
+		unit_sprite.speed_scale = float(frame_count - impact) / (fps * maxf(attack_motion_lock_remaining, 0.05))
 
 
 ## Envy and Pride: the first shot raises the weapon (frames 0..hold), every next shot
@@ -723,11 +869,17 @@ func _update_held_attack_sprite() -> void:
 	var hold_frame := attack_hold_frames.y
 	if (state == State.ATTACK_WINDUP and not sprite_was_windup) or not sprite_was_attacking:
 		var first := attack_hold_frames.x if attack_hold_raised and unit_sprite.animation == &"attack" else 0
-		var duration := attack_motion_lock_remaining * ANIMATION_SPEED if attack_motion_lock_remaining > 0.0 else attack_animation_duration
-		unit_sprite.speed_scale = _attack_animation_speed_scale(duration, hold_frame + 1 - first)
+		var fps := unit_sprite.sprite_frames.get_animation_speed(&"attack")
+		unit_sprite.speed_scale = float(hold_frame + 1 - first) / (fps * maxf(state_timer if state == State.ATTACK_WINDUP else windup_duration, 0.01))
 		unit_sprite.play(&"attack")
 		unit_sprite.frame = first
 		attack_hold_raised = true
+		if state != State.ATTACK_WINDUP:
+			unit_sprite.frame = hold_frame
+			unit_sprite.pause()
+	elif state == State.ATTACK_RECOVERY and not sprite_was_attack_recovery:
+		unit_sprite.frame = hold_frame
+		unit_sprite.pause()
 	else:
 		_pause_on_hold_frame()
 
@@ -761,8 +913,8 @@ func _pause_on_hold_frame() -> void:
 
 
 ## Presentation only: casting frames must never delay effects, cooldowns or the AI.
-func play_ability_animation(ability_target: Combatant, ability: AbilityDefinition) -> void:
-	if state == State.DEAD or not unit_sprite.visible or ability.kind != AbilityDefinition.AbilityKind.ACTIVE:
+func play_ability_animation(ability_target: Combatant, ability: AbilityDefinition, allow_passive := false) -> void:
+	if state == State.DEAD or not unit_sprite.visible or ability == null or (ability.kind != AbilityDefinition.AbilityKind.ACTIVE and not allow_passive):
 		return
 	if not unit_sprite.sprite_frames.has_animation(&"skill"):
 		return
@@ -797,11 +949,30 @@ func _update_sprite_facing(is_attacking: bool) -> void:
 func _update_unit_sprite_offset() -> void:
 	var offset := _sprite_offset_from(unit_sprite_frame_offsets)
 	var legacy_offset := _sprite_offset_from(unit_sprite_legacy_offsets) if unit_sprite_legacy_offsets != unit_sprite_frame_offsets else offset
+	var anchor_correction := _scaled_animation_anchor_correction(offset)
 	if unit_sprite.flip_h:
 		offset.x = -offset.x
 		legacy_offset.x = -legacy_offset.x
-	unit_sprite.position = offset * unit_sprite.scale + unit_sprite_ground_offset
-	unit_sprite_legacy_position = legacy_offset * unit_sprite.scale + unit_sprite_ground_offset
+		anchor_correction.x = -anchor_correction.x
+	unit_sprite.position = offset * unit_sprite.scale + unit_sprite_ground_offset + anchor_correction
+	unit_sprite_legacy_position = legacy_offset * unit_sprite.scale + unit_sprite_ground_offset + anchor_correction
+
+
+## Canvas scale compensation must not lift or shift the standing body anchor.
+## These tables are premeasured; no image scanning is needed during playback.
+func _scaled_animation_anchor_correction(authored_offset: Vector2) -> Vector2:
+	if not unit_sprite_animation_scales.has(unit_sprite.animation):
+		return Vector2.ZERO
+	var anchors: Array = unit_sprite_frame_offsets.get(StringName(String(unit_sprite.animation) + "_anchor"), [])
+	var move_anchors: Array = unit_sprite_frame_offsets.get(&"move_anchor", [])
+	var move_offsets: Array = unit_sprite_frame_offsets.get(&"move", [])
+	if unit_sprite.frame >= anchors.size() or move_anchors.is_empty() or move_offsets.is_empty():
+		return Vector2.ZERO
+	var frames := unit_sprite.sprite_frames
+	var standing_anchor: Vector2 = move_anchors[0] - frames.get_frame_texture(&"move", 0).get_size() * 0.5 + move_offsets[0]
+	var current_anchor: Vector2 = anchors[unit_sprite.frame] - frames.get_frame_texture(unit_sprite.animation, unit_sprite.frame).get_size() * 0.5 + authored_offset
+	var standing_scale := unit_sprite_base_scale * float(unit_sprite_animation_scales.get(&"move", 1.0))
+	return standing_anchor * standing_scale - current_anchor * unit_sprite.scale
 
 
 func _sprite_offset_from(offset_table: Dictionary) -> Vector2:
@@ -820,7 +991,7 @@ static func _authored_offsets(frame_directory: String) -> Dictionary:
 		return {}
 	if not authored_frame_offsets_loaded:
 		authored_frame_offsets_loaded = true
-		for path in [FRAME_OFFSETS_PATH, ALLIED_FRAME_OFFSETS_PATH]:
+		for path in [FRAME_OFFSETS_PATH, ALLIED_FRAME_OFFSETS_PATH, ENEMY_FRAME_OFFSETS_PATH]:
 			var file := FileAccess.open(path, FileAccess.READ)
 			if file != null:
 				var parsed = JSON.parse_string(file.get_as_text())
@@ -988,6 +1159,7 @@ func _ensure_approach_goal(reach: float) -> void:
 		and goal_distance >= body_radius + target.body_radius - 0.1
 		and goal_distance <= maxf(reach - 4.0, body_radius + target.body_radius)
 		and is_basic_attack_side_position(target, approach_goal)
+		and ARENA_GEOMETRY.contains(approach_goal, arena_bounds, body_radius)
 	):
 		return
 	if snapshot.attack_type == &"melee":
@@ -1012,8 +1184,7 @@ func _navigation_side() -> float:
 
 
 func _clamp_navigation_point(point: Vector2) -> Vector2:
-	var inset := arena_bounds.grow(-body_radius)
-	return point.clamp(inset.position, inset.end)
+	return ARENA_GEOMETRY.clamp_point(point, arena_bounds, body_radius)
 
 
 func _stop_navigation() -> void:
@@ -1024,11 +1195,20 @@ func _stop_navigation() -> void:
 
 func _move_to_navigation_point(goal: Vector2, delta: float, avoid_target: Combatant = null) -> void:
 	goal = _clamp_navigation_point(goal)
+	var destination := goal
+	# Extra clearance keeps corner waypoints away from wall collision epsilon.
+	goal = ARENA_GEOMETRY.next_waypoint(position, goal, arena_bounds, body_radius + 1.0)
+	var routing := goal.distance_squared_to(destination) > 4.0
 	var offset := goal - position
 	var distance := offset.length()
-	var arrival_distance := MOVEMENT_ARRIVAL_DISTANCE
-	if is_instance_valid(avoid_target) and not is_basic_attack_side_position(avoid_target, position):
-		arrival_distance = 0.1
+	var arrival_distance := 0.001 if routing else MOVEMENT_ARRIVAL_DISTANCE
+	if is_instance_valid(avoid_target) and distance <= arrival_distance:
+		# A cached goal can still be valid after a small target movement while
+		# our arrival circle extends past attack reach. Stopping there deadlocks
+		# MOVE_INTO_RANGE: neither an attack nor the stuck timer can advance.
+		var within_reach := position.distance_to(avoid_target.position) <= basic_attack_reach(avoid_target)
+		if not within_reach or not is_basic_attack_side_position(avoid_target, position):
+			arrival_distance = 0.1
 	if distance <= arrival_distance or delta <= 0.0:
 		_stop_navigation()
 		return
@@ -1153,6 +1333,10 @@ func basic_attack_reach(other: Combatant) -> float:
 
 
 func basic_projectile_origin(projectile_target: Combatant) -> Vector2:
+	var animation_id := snapshot.job_id if UNIT_ANIMATION_CONFIGS.has(snapshot.job_id) else snapshot.definition_id
+	var config: Dictionary = UNIT_ANIMATION_CONFIGS.get(animation_id, {})
+	if config.has("projectile_tip") and unit_sprite.sprite_frames != null:
+		return _calibrated_projectile_origin(config, projectile_target)
 	if not HERO_PROJECTILE_TIPS.has(snapshot.definition_id) or not unit_sprite.visible:
 		return position
 	if HERO_PROJECTILE_FRAME_TIPS.has(snapshot.definition_id) and unit_sprite.animation == &"attack":
@@ -1174,6 +1358,28 @@ func basic_projectile_origin(projectile_target: Combatant) -> Vector2:
 	if faces_left:
 		local_tip.x = -local_tip.x
 	return position + sprite_anchor + local_tip
+
+
+## Sample an authored release pose, never the renderer's current frame/facing.
+## Live battles and manual/headless simulation therefore launch identical shots.
+func _calibrated_projectile_origin(config: Dictionary, projectile_target: Combatant) -> Vector2:
+	var frame := int(config.get("projectile_frame", config.get("attack_impact_frame", 0)))
+	var texture := unit_sprite.sprite_frames.get_frame_texture(&"attack", frame)
+	var offsets: Array = unit_sprite_frame_offsets.get(&"attack", [])
+	var offset: Vector2 = offsets[frame] if frame < offsets.size() else Vector2.ZERO
+	var scale := unit_sprite_base_scale * float(unit_sprite_animation_scales.get(&"attack", 1.0))
+	var local: Vector2 = (Vector2(config.projectile_tip) - texture.get_size() * 0.5 + offset) * scale + unit_sprite_ground_offset
+	if is_instance_valid(projectile_target) and projectile_target.position.x < position.x:
+		local.x = -local.x
+	var origin := position + local
+	if is_instance_valid(projectile_target):
+		var direction := (projectile_target.position - position).normalized()
+		var distance := position.distance_to(projectile_target.position)
+		var forward := local.dot(direction)
+		if forward > distance and forward > 0.01:
+			# Avoid a backwards flight when the target overlaps the extended weapon.
+			origin = position + local * maxf(0.0, distance - projectile_target.body_radius * 0.25) / forward
+	return origin
 
 
 func _update_attack_windup(delta: float) -> void:
@@ -1514,10 +1720,7 @@ func _apply_damage_knockback(source: Combatant, damage: float) -> void:
 	var direction := (position - source.position).normalized()
 	if direction.is_zero_approx():
 		direction = Vector2.RIGHT if snapshot.runtime_id > source.snapshot.runtime_id else Vector2.LEFT
-	position += direction * distance
-	var bounds := arena_bounds.grow(-body_radius)
-	position.x = clampf(position.x, bounds.position.x, bounds.end.x)
-	position.y = clampf(position.y, bounds.position.y, bounds.end.y)
+	position = ARENA_GEOMETRY.move_point(position, position + direction * distance, arena_bounds, body_radius)
 
 
 func is_alive() -> bool:
@@ -2483,6 +2686,8 @@ func _update_runtime(delta: float) -> void:
 	if phase_banner_timer > 0.0:
 		phase_banner_timer = maxf(0.0, phase_banner_timer - delta)
 		queue_redraw()
+	if veterancy_banner_timer > 0.0:
+		veterancy_banner_timer = maxf(0.0, veterancy_banner_timer - delta)
 	for ability_id in ability_cooldowns:
 		ability_cooldowns[ability_id] = maxf(0.0, float(ability_cooldowns[ability_id]) - delta)
 	for index in range(statuses.size() - 1, -1, -1):
@@ -2535,6 +2740,43 @@ func _update_runtime(delta: float) -> void:
 			_apply_despair_growth_tick()
 	_update_focused_damage_stacks(delta)
 	items.update(delta)
+
+
+## Mid-battle Veterancy rank up: the growth of the new rank is applied to the
+## battle stats (same per-rank multipliers as CombatSnapshotBuilder), the extra max HP
+## is granted as health, and Veterancy-scaled heals grow too.
+func gain_veterancy_level(progression: ProgressionDefinition) -> void:
+	var old_level := snapshot.veterancy_level
+	var new_level := old_level + 1
+	var old_max_hp := get_effective_stat(&"max_hp")
+	var growth := {
+		&"max_hp": progression.veterancy_max_hp_growth_per_level,
+		&"damage": progression.veterancy_damage_growth_per_level,
+		&"attack_speed": progression.veterancy_attack_speed_growth_per_level,
+		&"movement_speed": progression.veterancy_movement_speed_growth_per_level,
+		&"attack_range": progression.veterancy_attack_range_growth_per_level,
+		&"armor": progression.veterancy_armor_growth_per_level,
+	}
+	for stat in growth:
+		var rate := float(growth[stat])
+		var multiplier := (1.0 + new_level * rate) / maxf(1.0 + old_level * rate, 0.001)
+		var before := float(snapshot.stats.get(stat))
+		snapshot.stats.set(stat, before * multiplier)
+		snapshot.stats.record_change(stat, "Veterancy %d (gained in battle)" % new_level, &"multiply", multiplier, before, before * multiplier)
+	for index in snapshot.abilities.size():
+		var ability := snapshot.abilities[index]
+		if not ability.effects.any(func(effect: AbilityEffect) -> bool: return effect is HealEffect and effect.veterancy_bonus_percent_per_level > 0.0):
+			continue
+		var scaled := ability.duplicate(true) as AbilityDefinition
+		for effect in scaled.effects:
+			if effect is HealEffect and effect.veterancy_bonus_percent_per_level > 0.0:
+				var bonus: float = effect.veterancy_bonus_percent_per_level / 100.0
+				effect.amount *= (1.0 + new_level * bonus) / (1.0 + old_level * bonus)
+		snapshot.abilities[index] = scaled
+	snapshot.veterancy_level = new_level
+	current_hp = minf(current_hp + maxf(0.0, get_effective_stat(&"max_hp") - old_max_hp), get_effective_stat(&"max_hp"))
+	veterancy_banner_timer = VETERANCY_BANNER_TIME
+	queue_redraw()
 
 
 func _apply_despair_growth_tick() -> void:
@@ -2682,6 +2924,8 @@ func _try_threshold_guard() -> void:
 	armor_modifier.value = threshold_guard_armor_multiplier
 	add_temporary_modifier(armor_modifier, threshold_guard_duration, self, threshold_guard_ability_id, threshold_guard_effect_id)
 	threshold_guard_cooldown_remaining = threshold_guard_cooldown
+	if unit_sprite_skill_overrides_attack:
+		queued_reactive_skill = true
 
 
 func _try_melee_teleport(attacker: Combatant) -> void:
@@ -2691,11 +2935,9 @@ func _try_melee_teleport(attacker: Combatant) -> void:
 	if direction.is_zero_approx():
 		direction = Vector2.LEFT if snapshot.team == CombatUnitSnapshot.Team.PLAYER else Vector2.RIGHT
 	var destination := position + direction * melee_teleport_distance
-	var inset_bounds := arena_bounds.grow(-body_radius)
-	position = Vector2(
-		clampf(destination.x, inset_bounds.position.x, inset_bounds.end.x),
-		clampf(destination.y, inset_bounds.position.y, inset_bounds.end.y)
-	)
+	var previous_feet := feet_position()
+	position = _clamp_navigation_point(destination)
+	session.spawn_blink_vfx(self, previous_feet, melee_teleport_ability_id)
 	melee_teleport_cooldown_remaining = melee_teleport_cooldown
 	pending_ability = null
 	target = null
@@ -2711,11 +2953,7 @@ func _refresh_body_radius() -> void:
 	var collision_shape := $CollisionShape2D.shape as CircleShape2D
 	if collision_shape != null:
 		collision_shape.radius = body_radius
-	var inset_bounds := arena_bounds.grow(-body_radius)
-	position = Vector2(
-		clampf(position.x, inset_bounds.position.x, inset_bounds.end.x),
-		clampf(position.y, inset_bounds.position.y, inset_bounds.end.y)
-	)
+	position = _clamp_navigation_point(position)
 	queue_redraw()
 
 
@@ -2725,11 +2963,13 @@ func _apply_modifier(base_value: float, modifier: StatModifier, stack_count: int
 	return modifier.apply_to(base_value, stack_count)
 
 
-## Moves by velocity for one simulation step. Units never collide (collision layers are 0),
-## so this matches move_and_slide() but uses the step's own delta, which keeps headless
-## simulations (tools/balance) frame-rate independent.
+## Step-driven movement with terrain collision. Never use renderer/physics frame
+## time here: Balance Lab advances the same movement manually at a fixed delta.
 func _slide(delta: float) -> void:
-	position += velocity * delta
+	var before := position
+	position = ARENA_GEOMETRY.move_point(position, position + velocity * delta, arena_bounds, body_radius)
+	if delta > 0.0:
+		velocity = (position - before) / delta
 
 
 func _update_stuck_state(delta: float) -> void:
@@ -2780,17 +3020,17 @@ func _draw() -> void:
 	if flash_remaining > 0.0:
 		color = flash_color
 
-	if not unit_sprite.visible:
+	if not unit_sprite.visible and placeholder_medallion == null:
 		if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO:
 			draw_circle(Vector2.ZERO, visual_radius, color)
 			draw_arc(Vector2.ZERO, visual_radius, 0.0, TAU, 32, Color.WHITE, 2.0)
 		else:
 			draw_rect(Rect2(Vector2(-visual_radius, -visual_radius), Vector2.ONE * visual_radius * 2.0), color)
-	if snapshot.is_boss:
+	if snapshot.is_boss and ground_marker == null:
 		draw_arc(Vector2.ZERO, visual_radius + 5.0, 0.0, TAU, 40, snapshot.boss_telegraph_color, 3.0)
 		for phase_ring in range(1, boss_phase):
 			draw_arc(Vector2.ZERO, visual_radius + 5.0 + phase_ring * 4.0, 0.0, TAU, 40, snapshot.boss_telegraph_color.lightened(0.2), 2.0)
-	if selected:
+	if selected and ground_marker == null:
 		draw_arc(Vector2.ZERO, visual_radius + 7.0, 0.0, TAU, 32, Color(1.0, 0.86, 0.35), 3.0)
 
 	if state == State.DEAD:
@@ -2798,9 +3038,37 @@ func _draw() -> void:
 			draw_line(Vector2(-10, -10), Vector2(10, 10), Color.WHITE, 3.0)
 			draw_line(Vector2(10, -10), Vector2(-10, 10), Color.WHITE, 3.0)
 		return
-	if snapshot.is_boss and state == State.ATTACK_WINDUP:
+	if snapshot.is_boss and state == State.ATTACK_WINDUP and ground_marker == null:
 		var progress := 1.0 - state_timer / maxf(windup_duration, 0.01)
 		draw_arc(Vector2.ZERO, visual_radius + 13.0, -PI * 0.5, -PI * 0.5 + TAU * progress, 48, snapshot.boss_telegraph_color, 5.0)
+
+
+func _update_health_trail(delta: float) -> void:
+	var ratio := clampf(current_hp / maxf(get_effective_stat(&"max_hp"), 1.0), 0.0, 1.0)
+	if last_visual_health_ratio < 0.0 or ratio > last_visual_health_ratio:
+		health_trail_ratio = ratio
+		health_trail_delay = 0.0
+	elif ratio < last_visual_health_ratio:
+		health_trail_delay = 0.3
+	else:
+		health_trail_delay = maxf(0.0, health_trail_delay - delta)
+	if health_trail_delay <= 0.0:
+		health_trail_ratio = move_toward(health_trail_ratio, ratio, delta * 0.8)
+	last_visual_health_ratio = ratio
+
+
+func overhead_bar_rect() -> Rect2:
+	var width := 72.0 if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO else 56.0
+	if snapshot.is_boss:
+		width = 96.0
+	elif snapshot.unit_kind == CombatUnitSnapshot.UnitKind.SUMMON:
+		width = 36.0
+	var y := -health_bar_offset if health_bar_offset > 0.0 else -visual_radius - 11.0
+	return Rect2(Vector2(-width * 0.5, y), Vector2(width, 6.0))
+
+
+func overhead_health_color() -> Color:
+	return Color(0.28, 0.86, 0.38) if snapshot.team == CombatUnitSnapshot.Team.PLAYER else Color(0.9, 0.31, 0.25)
 
 
 func draw_overhead(canvas: Node2D) -> void:
@@ -2812,11 +3080,51 @@ func draw_overhead(canvas: Node2D) -> void:
 	if snapshot.is_boss and phase_banner_timer > 0.0:
 		canvas.draw_string(ThemeDB.get_project_theme().default_font, Vector2(-visual_radius * 3.0, visual_radius + 30.0), snapshot.boss_phase_telegraph_text, HORIZONTAL_ALIGNMENT_CENTER, visual_radius * 6.0, 13, snapshot.boss_telegraph_color)
 
-	var health_ratio := current_hp / maxf(get_effective_stat(&"max_hp"), 1.0)
-	var bar_y := -health_bar_offset if health_bar_offset > 0.0 else -visual_radius - 11.0
-	var bar_rect := Rect2(Vector2(-visual_radius, bar_y), Vector2(visual_radius * 2.0, 5.0))
-	canvas.draw_rect(bar_rect, Color(0.08, 0.08, 0.08, 0.9))
-	canvas.draw_rect(Rect2(bar_rect.position, Vector2(bar_rect.size.x * health_ratio, bar_rect.size.y)), Color(0.28, 0.86, 0.38))
+	var max_hp := maxf(get_effective_stat(&"max_hp"), 1.0)
+	var health_ratio := clampf(current_hp / max_hp, 0.0, 1.0)
+	var bar_rect := overhead_bar_rect()
+	var rim := Color(0.72, 0.57, 0.31, 0.9) if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO or snapshot.is_boss else Color(0.03, 0.025, 0.02, 0.95)
+	canvas.draw_rect(bar_rect.grow(2.0), Color(0.015, 0.012, 0.01, 0.8))
+	canvas.draw_rect(bar_rect.grow(1.0), rim, false, 1.0)
+	canvas.draw_rect(bar_rect, Color(0.07, 0.045, 0.035, 0.95))
+	if health_trail_ratio > health_ratio:
+		canvas.draw_rect(Rect2(bar_rect.position, Vector2(bar_rect.size.x * health_trail_ratio, bar_rect.size.y)), Color(0.85, 0.63, 0.3, 0.75))
+	var fill := Rect2(bar_rect.position, Vector2(bar_rect.size.x * health_ratio, bar_rect.size.y))
+	canvas.draw_rect(fill, overhead_health_color())
+	if fill.size.x > 0.0:
+		canvas.draw_line(fill.position, fill.position + Vector2(fill.size.x, 0), Color(1.0, 1.0, 1.0, 0.3), 1.0)
+	var shield_total := 0.0
+	for shield in shields:
+		shield_total += maxf(0.0, float(shield.amount))
+	if shield_total > 0.0:
+		var shield_rect := Rect2(bar_rect.position + Vector2(0, -5), Vector2(bar_rect.size.x, 3))
+		canvas.draw_rect(shield_rect.grow(1.0), Color(0.015, 0.025, 0.04, 0.95))
+		canvas.draw_rect(Rect2(shield_rect.position, Vector2(shield_rect.size.x * minf(1.0, shield_total / max_hp), 3)), Color(0.45, 0.8, 1.0))
+	var control_text := "STUN" if is_stunned() else ("FEAR" if is_feared() else ("ROOT" if is_rooted() else ""))
+	if not control_text.is_empty():
+		var font := ThemeDB.get_project_theme().default_font
+		var label_width := font.get_string_size(control_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x + 10.0
+		var label_rect := Rect2(Vector2(-label_width * 0.5, bar_rect.position.y - 23.0), Vector2(label_width, 15.0))
+		canvas.draw_rect(label_rect, Color(0.035, 0.025, 0.055, 0.92))
+		canvas.draw_string(font, label_rect.position + Vector2(5, 11), control_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(0.88, 0.77, 1.0))
 	if snapshot.unit_kind == CombatUnitSnapshot.UnitKind.SOLDIER and snapshot.veterancy_level >= 0:
 		# Rank chevrons just left of the health bar, readable without selecting the unit.
-		VeterancyInsignia.draw_insignia(canvas, Vector2(bar_rect.position.x - 9.0, bar_rect.get_center().y), snapshot.veterancy_level, 13.0)
+		var pulse := 0.0
+		if veterancy_banner_timer > 0.0:
+			pulse = sin(clampf(1.0 - veterancy_banner_timer / VETERANCY_BANNER_TIME, 0.0, 1.0) * PI)
+		VeterancyInsignia.draw_insignia(canvas, Vector2(bar_rect.position.x - 9.0, bar_rect.get_center().y), snapshot.veterancy_level, 13.0 + 9.0 * pulse)
+	if veterancy_banner_timer > 0.0:
+		_draw_veterancy_banner(canvas, bar_rect)
+
+
+## "RANK UP" rising above the health bar, fading in and out.
+func _draw_veterancy_banner(canvas: Node2D, bar_rect: Rect2) -> void:
+	var t := 1.0 - veterancy_banner_timer / VETERANCY_BANNER_TIME
+	var alpha := clampf(t / 0.12, 0.0, 1.0) * clampf((1.0 - t) / 0.3, 0.0, 1.0)
+	var font := ThemeDB.get_project_theme().default_font
+	var text := "RANK UP"
+	var size := 15
+	var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	var origin := Vector2(-width * 0.5, bar_rect.position.y - 14.0 - 26.0 * t)
+	canvas.draw_string_outline(font, origin, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 4, Color(0.12, 0.06, 0.0, 0.85 * alpha))
+	canvas.draw_string(font, origin, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color(1.0, 0.86, 0.42, alpha))

@@ -1,0 +1,230 @@
+{
+  "app": "arcadia-effects",
+  "v": 2,
+  "doc": {
+    "v": 2,
+    "id": "fx_cbo_bleeding_drips",
+    "name": "CBO Bleeding Drips",
+    "comp": {
+      "w": 256,
+      "h": 320,
+      "dur": 3.6,
+      "fps": 60
+    },
+    "cam": {
+      "comp": 0
+    },
+    "exp": {
+      "cols": 6,
+      "rows": 4,
+      "frames": 24,
+      "cellW": 128,
+      "cellH": 160,
+      "t0": 1.8,
+      "t1": 3.0,
+      "mode": "rgba",
+      "ss": 2
+    },
+    "layers": [
+      {
+        "id": "lr_bleed_drips",
+        "name": "Continuous Wound Drops",
+        "type": "emitter",
+        "blend": "normal",
+        "start": 0,
+        "end": 3.6,
+        "opacity": 1,
+        "em": {
+          "bursts": [],
+          "rate": 24,
+          "seed": 307,
+          "x": 0,
+          "y": -76,
+          "shape": "box",
+          "sx": 74,
+          "sy": 20,
+          "dir": "dir",
+          "angle": 90,
+          "spread": 40,
+          "speed": 28,
+          "speedRnd": 0.65
+        },
+        "pt": {
+          "life": 0.85,
+          "lifeRnd": 0.3,
+          "sprite": {
+            "kind": "shape",
+            "id": "dot",
+            "p": {}
+          },
+          "size": 6,
+          "sizeRnd": 0.65,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.85
+              },
+              {
+                "t": 0.6,
+                "v": 1
+              },
+              {
+                "t": 1,
+                "v": 0.3
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.25
+              },
+              {
+                "t": 0.15,
+                "v": 0.9
+              },
+              {
+                "t": 0.75,
+                "v": 0.8
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  181,
+                  20,
+                  24
+                ]
+              },
+              {
+                "t": 0.5,
+                "c": [
+                  133,
+                  10,
+                  16
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  67,
+                  5,
+                  10
+                ]
+              }
+            ]
+          },
+          "alignVel": true,
+          "stretch": 1.25,
+          "gravY": 265,
+          "drag": 0.15,
+          "glow": 0
+        }
+      },
+      {
+        "id": "lr_bleed_small",
+        "name": "Small Secondary Drops",
+        "type": "emitter",
+        "blend": "normal",
+        "start": 0,
+        "end": 3.6,
+        "opacity": 1,
+        "em": {
+          "bursts": [],
+          "rate": 12,
+          "seed": 331,
+          "x": 0,
+          "y": -68,
+          "shape": "box",
+          "sx": 86,
+          "sy": 28,
+          "dir": "dir",
+          "angle": 90,
+          "spread": 65,
+          "speed": 40,
+          "speedRnd": 0.5
+        },
+        "pt": {
+          "life": 0.65,
+          "lifeRnd": 0.35,
+          "sprite": {
+            "kind": "shape",
+            "id": "dot",
+            "p": {}
+          },
+          "size": 3.5,
+          "sizeRnd": 0.6,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 1
+              },
+              {
+                "t": 1,
+                "v": 0.1
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.6
+              },
+              {
+                "t": 0.6,
+                "v": 0.65
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  181,
+                  20,
+                  24
+                ]
+              },
+              {
+                "t": 0.5,
+                "c": [
+                  133,
+                  10,
+                  16
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  67,
+                  5,
+                  10
+                ]
+              }
+            ]
+          },
+          "gravY": 280,
+          "drag": 0.2,
+          "glow": 0
+        }
+      }
+    ]
+  },
+  "tex": {}
+}

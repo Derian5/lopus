@@ -1,0 +1,226 @@
+{
+  "app": "arcadia-effects",
+  "v": 2,
+  "doc": {
+    "v": 2,
+    "id": "fx_cbo_blood_ground",
+    "name": "CBO Blood Ground",
+    "comp": {
+      "w": 320,
+      "h": 192,
+      "dur": 1.6,
+      "fps": 60
+    },
+    "cam": {
+      "comp": 60
+    },
+    "exp": {
+      "cols": 4,
+      "rows": 3,
+      "frames": 12,
+      "cellW": 160,
+      "cellH": 96,
+      "t0": 0,
+      "t1": -1,
+      "mode": "rgba",
+      "ss": 2
+    },
+    "layers": [
+      {
+        "id": "lr_blood_speckles",
+        "name": "Scattered Ground Speckles",
+        "type": "emitter",
+        "blend": "normal",
+        "start": 0,
+        "end": 0.01,
+        "opacity": 1,
+        "em": {
+          "bursts": [
+            {
+              "t": 0,
+              "n": 18
+            }
+          ],
+          "rate": 0,
+          "seed": 367,
+          "x": 0,
+          "y": 0,
+          "shape": "circle",
+          "sx": 62,
+          "sy": 20,
+          "dir": "out",
+          "speed": 20,
+          "speedRnd": 0.6
+        },
+        "pt": {
+          "life": 1.5,
+          "lifeRnd": 0.1,
+          "sprite": {
+            "kind": "shape",
+            "id": "dot",
+            "p": {}
+          },
+          "size": 10,
+          "sizeRnd": 0.7,
+          "sizeOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.4
+              },
+              {
+                "t": 0.08,
+                "v": 1
+              },
+              {
+                "t": 1,
+                "v": 1.05
+              }
+            ]
+          },
+          "opacityOL": {
+            "pts": [
+              {
+                "t": 0,
+                "v": 0.5
+              },
+              {
+                "t": 0.6,
+                "v": 0.6
+              },
+              {
+                "t": 1,
+                "v": 0
+              }
+            ]
+          },
+          "grad": {
+            "stops": [
+              {
+                "t": 0,
+                "c": [
+                  122,
+                  10,
+                  17
+                ]
+              },
+              {
+                "t": 1,
+                "c": [
+                  63,
+                  6,
+                  11
+                ]
+              }
+            ]
+          },
+          "squash": 1,
+          "drag": 8,
+          "glow": 0
+        }
+      },
+      {
+        "id": "lr_blood_stain",
+        "name": "Irregular Ground Stain",
+        "type": "sprite",
+        "blend": "normal",
+        "start": 0,
+        "opacity": {
+          "keys": [
+            {
+              "t": 0,
+              "v": 0,
+              "i": {
+                "m": "ease"
+              },
+              "o": {
+                "m": "ease"
+              }
+            },
+            {
+              "t": 0.08,
+              "v": 0.55,
+              "i": {
+                "m": "ease"
+              },
+              "o": {
+                "m": "ease"
+              }
+            },
+            {
+              "t": 0.65,
+              "v": 0.5,
+              "i": {
+                "m": "ease"
+              },
+              "o": {
+                "m": "ease"
+              }
+            },
+            {
+              "t": 1.6,
+              "v": 0,
+              "i": {
+                "m": "ease"
+              },
+              "o": {
+                "m": "ease"
+              }
+            }
+          ]
+        },
+        "sp": {
+          "sprite": {
+            "kind": "shape",
+            "id": "smoke",
+            "p": {}
+          },
+          "size": 76,
+          "color": [
+            91,
+            8,
+            13
+          ],
+          "scale": {
+            "keys": [
+              {
+                "t": 0,
+                "v": 0.2,
+                "i": {
+                  "m": "ease"
+                },
+                "o": {
+                  "m": "ease"
+                }
+              },
+              {
+                "t": 0.12,
+                "v": 1.0,
+                "i": {
+                  "m": "ease"
+                },
+                "o": {
+                  "m": "ease"
+                }
+              },
+              {
+                "t": 1.6,
+                "v": 1.08,
+                "i": {
+                  "m": "ease"
+                },
+                "o": {
+                  "m": "ease"
+                }
+              }
+            ]
+          },
+          "aspect": 2.2,
+          "squash": 1,
+          "rot": 13
+        }
+      }
+    ]
+  },
+  "tex": {}
+}

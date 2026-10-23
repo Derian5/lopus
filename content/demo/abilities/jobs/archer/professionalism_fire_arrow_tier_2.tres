@@ -27,6 +27,7 @@ periodic_effects = Array[ExtResource("1_es7m4")]([SubResource("BurnDamage")])
 polarity = 2
 id = &"status.archer_professionalism_burn"
 display_name = "Fire Arrow Burn"
+presentation_style = &"fire"
 description = "A nonstacking burn refreshed by another fire arrow."
 
 [sub_resource type="Resource" id="ApplyBurn"]
@@ -45,6 +46,8 @@ delivery_method = 2
 effects = Array[ExtResource("1_es7m4")]([SubResource("ImpactDamage"), SubResource("ApplyBurn")])
 area_radius = 150.0
 presentation_color = Color(1, 0.16, 0.02, 1)
+presentation_style = &"fire"
+projectile_vfx = &"fire_arrow"
 available_to_heroes = false
 id = &"ability.archer_professionalism_fire_arrow_tier_2"
 display_name = "Fire Arrow II"

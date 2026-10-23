@@ -23,6 +23,7 @@ priority = 100
 presentation_icon = ExtResource("generated_icon")
 presentation_color = Color(0.46, 0.7, 0.38, 1)
 available_to_heroes = false
+presentation_style = &"summon"
 id = &"ability.summoner_job_summon"
 display_name = "Raise Brawler"
 description = "Raises a [summon]Brawler[/summon] near the caster, up to {e0.max_active_summons} at once."

@@ -1,0 +1,117 @@
+{
+ "app": "arcadia-effects",
+ "v": 2,
+ "doc": {
+  "v": 2,
+  "id": "fx_cbo_burn_smoke",
+  "name": "CBO Burn Smoke",
+  "comp": {
+   "w": 256,
+   "h": 320,
+   "dur": 2.6,
+   "fps": 60
+  },
+  "cam": {
+   "comp": 0
+  },
+  "exp": {
+   "cols": 4,
+   "rows": 4,
+   "frames": 16,
+   "cellW": 192,
+   "cellH": 240,
+   "t0": 1.4,
+   "t1": 2.4,
+   "mode": "rgba",
+   "thr": 0,
+   "ss": 2
+  },
+  "layers": [
+   {
+    "id": "lr_bsmoke",
+    "name": "Smoke",
+    "type": "emitter",
+    "start": 0.0,
+    "blend": "normal",
+    "em": {
+     "y": 10,
+     "shape": "box",
+     "sx": 50,
+     "sy": 20,
+     "dir": "dir",
+     "angle": -90,
+     "spread": 12,
+     "speed": 95,
+     "speedRnd": 0.3,
+     "rate": 16,
+     "seed": 34,
+     "bursts": []
+    },
+    "pt": {
+     "life": 1.25,
+     "lifeRnd": 0.25,
+     "sprite": {
+      "kind": "shape",
+      "id": "smoke",
+      "p": {}
+     },
+     "size": 74,
+     "sizeRnd": 0.35,
+     "sizeOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0.45
+       },
+       {
+        "t": 1,
+        "v": 1.8
+       }
+      ]
+     },
+     "opacityOL": {
+      "pts": [
+       {
+        "t": 0,
+        "v": 0
+       },
+       {
+        "t": 0.25,
+        "v": 0.32
+       },
+       {
+        "t": 1,
+        "v": 0
+       }
+      ]
+     },
+     "grad": {
+      "stops": [
+       {
+        "t": 0,
+        "c": [
+         70,
+         58,
+         52
+        ]
+       },
+       {
+        "t": 1,
+        "c": [
+         36,
+         32,
+         32
+        ]
+       }
+      ]
+     },
+     "drag": 0.6,
+     "turbAmp": 70,
+     "turbFreq": 1.5,
+     "spin": 40
+    }
+   }
+  ]
+ },
+ "tex": {}
+}

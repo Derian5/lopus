@@ -53,6 +53,7 @@ targeting_policy = 0
 effects = Array[ExtResource("1_b54pb")]([SubResource("EffectBase")])
 priority = 70
 presentation_color = Color(0.48, 0.2, 0.72, 1)
+presentation_style = &"boon"
 allowed_hero_ids = Array[StringName]([&"hero.control_savant"])
 hero_levels = Array[ExtResource("2")]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
 id = &"ability.pride_attack_speed_aura"

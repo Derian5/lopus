@@ -54,6 +54,7 @@ targeting_policy = 4
 effects = Array[ExtResource("1_8r7ph")]([SubResource("EffectBase")])
 priority = 120
 presentation_color = Color(0.82, 0.68, 1, 1)
+presentation_style = &"holy"
 allowed_hero_ids = Array[StringName]([&"hero.control_savant"])
 hero_levels = Array[ExtResource("2")]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3"), SubResource("Level4")])
 id = &"ability.pride_cleanse"

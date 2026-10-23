@@ -3,6 +3,7 @@ extends Node2D
 
 ## Preloaded rather than used by class name, so headless runs work before the editor scans new classes.
 const VFX := preload("res://combat/vfx/combat_vfx.gd")
+const TRAIL := preload("res://combat/vfx/projectile_trail.gd")
 
 
 var source: Combatant
@@ -52,9 +53,10 @@ func setup_ability(
 	target = projectile_target
 	ability = ability_definition
 	color = projectile_color
-	position = source.position
+	position = source.basic_projectile_origin(target)
 	last_target_position = target.position
-	_start_visual(&"magic_orb", projectile_color.lerp(Color.WHITE, 0.2))
+	var effect_id := ability_definition.projectile_vfx if not ability_definition.projectile_vfx.is_empty() else VFX.projectile_for(source.snapshot.definition_id, source.snapshot.job_id)
+	_start_visual(effect_id, projectile_color.lerp(Color.WHITE, 0.1))
 
 
 func setup_envy_dart(
@@ -73,31 +75,54 @@ func setup_envy_dart(
 	dart_ability_id = ability_id
 	dart_effect_id = effect_id
 	color = projectile_color
-	position = source.position
+	position = source.basic_projectile_origin(target)
 	last_target_position = target.position
 	_start_visual(&"venom_bolt")
 
 
 func _start_visual(effect_id: StringName, tint := Color.WHITE) -> void:
 	vfx_id = effect_id
-	vfx_tint = tint
+	vfx_tint = VFX.PROJECTILE_COLORS.get(effect_id, Color.WHITE) if tint.is_equal_approx(Color.WHITE) else tint
 	_update_travel_direction()
 	var session = source.session if is_instance_valid(source) else null
 	if session == null or not session.vfx_enabled:
 		return
-	var sprite_scale := 0.8 if effect_id == &"arrow" else (0.85 if effect_id == &"venom_bolt" else 1.0)
-	vfx_sprite = VFX.make_projectile_sprite(effect_id, tint, sprite_scale)
+	var sprite_scale := 0.8 if effect_id == &"arrow" else (0.85 if effect_id == &"venom_bolt" else (1.05 if effect_id == &"fire_arrow" else 0.8))
+	var sprite_tint := Color.WHITE if effect_id in [&"arrow", &"fire_arrow"] else vfx_tint
+	vfx_sprite = VFX.make_projectile_sprite(effect_id, sprite_tint, sprite_scale)
 	if vfx_sprite != null:
 		add_child(vfx_sprite)
 		vfx_sprite.rotation = travel_direction.angle()
+		if effect_id == &"fire_arrow":
+			# The blazing head, flame tail and embers, drawn additively over the arrow.
+			var glow := VFX.make_projectile_sprite(&"fire_arrow_glow", Color.WHITE, sprite_scale)
+			if glow != null:
+				glow.name = "FireGlow"
+				glow.frame = vfx_sprite.frame
+				vfx_sprite.add_child(glow)
+				# The fire burns bigger than the arrow it rides on.
+				glow.scale = Vector2.ONE * 1.3
+				glow.position = Vector2.ZERO
 		if VFX.SHOT_LIGHTS.has(effect_id):
 			var light_config: Array = VFX.SHOT_LIGHTS[effect_id]
-			add_child(VFX.make_light(Color(light_config[0]) * tint, float(light_config[1]), float(light_config[2])))
+			add_child(VFX.make_light(Color(light_config[0]), float(light_config[1]), float(light_config[2])))
+		var effects: Node = session.get_node("Effects")
+		if effects.get_child_count() < VFX.MAX_ACTIVE:
+			var trail := TRAIL.new()
+			trail.name = "ShotTrail_%s" % effect_id
+			trail.projectile = self
+			trail.effect_id = effect_id
+			trail.tint = vfx_tint
+			trail.z_index = 19
+			effects.add_child(trail)
 		# Launch flash at the weapon (arrows and bolts just fly).
-		if effect_id != &"arrow" and effect_id != &"venom_bolt":
-			var flash_color: Color = VFX.PROJECTILE_COLORS.get(effect_id, Color.WHITE) * tint
-			VFX.spawn(session.get_node("Effects"), &"magic_burst", position, 0.4, flash_color, 0.0, VFX.IMPACT_Z, true)
-			VFX.flash_light(session.light_layer, position, flash_color, 1.2, 1.4, 0.25)
+		if effect_id == &"fire_arrow":
+			# The arrow catches fire on the bowstring: a puff of flame and firelight.
+			VFX.spawn(session.get_node("Effects"), &"fire_burst", position - Vector2(0.0, 18.0), 0.3, Color.WHITE, 0.0, VFX.IMPACT_Z, true)
+			VFX.flash_light(session.light_layer, position, VFX.FIRE_LIGHT, 1.2, 0.9, 0.3)
+		elif effect_id not in [&"arrow", &"venom_bolt"]:
+			VFX.spawn(session.get_node("Effects"), &"magic_burst", position, 0.18, vfx_tint, 0.0, VFX.IMPACT_Z, true)
+			VFX.flash_light(session.light_layer, position, vfx_tint, 0.65, 0.75, 0.16)
 
 
 func _spawn_hit_visual(at: Vector2) -> void:

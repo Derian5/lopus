@@ -58,6 +58,7 @@ kind = 1
 targeting_policy = 0
 effects = Array[AbilityEffect]([SubResource("Base")])
 presentation_color = Color(0.3, 0.42, 0.72, 1)
+presentation_style = &"shadow"
 allowed_hero_ids = Array[StringName]([&"hero.iron_oracle"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])
 tags = Array[StringName]([&"ability", &"passive", &"despair", &"slow"])

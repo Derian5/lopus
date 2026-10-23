@@ -65,6 +65,7 @@ priority = 90
 area_radius = 200.0
 cast_range = 250.0
 presentation_color = Color(0.76, 0.65, 0.18, 1)
+presentation_style = &"smoke"
 presentation_text = "Grease Spill"
 allowed_hero_ids = Array[StringName]([&"hero.thorn_warden"])
 hero_levels = Array[AbilityLevelDefinition]([SubResource("L1"), SubResource("L2"), SubResource("L3"), SubResource("L4")])

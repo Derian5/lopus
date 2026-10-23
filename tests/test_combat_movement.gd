@@ -15,6 +15,7 @@ func _run() -> void:
 	_test_melee_approach_positions()
 	_test_side_attack_start()
 	_test_deliberate_small_pursuit()
+	_test_arrival_still_requires_attack_reach()
 	_test_rooted_fighter_can_attack()
 	_test_ranged_retreat_hysteresis()
 	_test_target_commitment()
@@ -172,6 +173,30 @@ func _test_deliberate_small_pursuit() -> void:
 	session.free()
 
 
+func _test_arrival_still_requires_attack_reach() -> void:
+	var session := _session([_unit("arrival-fighter")], [_unit("arrival-target", CombatUnitSnapshot.Team.ENEMY)])
+	var unit := session.get_combatant_by_runtime_id("arrival-fighter")
+	var target := session.get_combatant_by_runtime_id("arrival-target")
+	target.position = Vector2(600, 400)
+	var reach := unit.basic_attack_reach(target)
+	unit.position = target.position + Vector2(reach + 1.0, 0)
+	unit.target = target
+	unit.state = Combatant.State.MOVE_INTO_RANGE
+	unit.approach_target = target
+	unit.approach_target_position = target.position
+	unit.approach_reach = reach
+	unit.approach_goal = target.position + Vector2(reach - 6.0, 0)
+	unit.approach_slot_index = 0
+	unit.approach_committed = true
+	var before := unit.position
+	for step in 120:
+		unit._move_toward_target(1.0 / 60.0)
+		if unit.attack_committed:
+			break
+	_check(unit.position.distance_to(before) > 0.5 and unit.attack_committed, "A melee fighter within arrival tolerance but outside attack reach closes the remaining gap instead of standing idle forever.")
+	session.free()
+
+
 func _test_rooted_fighter_can_attack() -> void:
 	var session := _session([_unit("rooted")], [_unit("target", CombatUnitSnapshot.Team.ENEMY)])
 	var unit := session.get_combatant_by_runtime_id("rooted")
@@ -218,6 +243,7 @@ func _test_ranged_retreat_hysteresis() -> void:
 		unit._move_ranged_during_recovery(0.2)
 		_check(unit.position == settled, "The distance band between retreat thresholds does not cause back-and-forth movement.")
 	unit.position.x = unit.arena_bounds.position.x + unit.body_radius
+	unit.position.y = unit.arena_bounds.get_center().y
 	target.position = unit.position + Vector2(130, 0)
 	unit.ranged_retreat_retry_remaining = 0.0
 	unit._move_ranged_during_recovery(0.1)

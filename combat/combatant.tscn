@@ -6,6 +6,9 @@
 [sub_resource type="CircleShape2D" id="CircleShape_placeholder"]
 radius = 16.0
 
+[sub_resource type="CanvasItemMaterial" id="MaterialOverhead"]
+light_mode = 1
+
 [node name="Combatant" type="CharacterBody2D" unique_id=2009262975]
 script = ExtResource("1_combatant")
 
@@ -15,6 +18,7 @@ show_behind_parent = true
 texture_filter = 1
 
 [node name="Overhead" type="Node2D" parent="."]
+material = SubResource("MaterialOverhead")
 z_index = 100
 script = ExtResource("2_overhead")
 

@@ -21,3 +21,4 @@ targeting_policy = 0
 effects = Array[AbilityEffect]([SubResource("Reflect")])
 presentation_color = Color(0.45, 0.65, 0.82, 1)
 available_to_heroes = false
+presentation_style = &"ward"

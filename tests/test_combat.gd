@@ -347,7 +347,7 @@ func _test_hero_attack_effects() -> void:
 		var source := session.get_combatant_by_runtime_id(heroes[index].runtime_id)
 		source.position = Vector2(300.0, 120.0 + index * 45.0)
 		var effect := session.spawn_hit_vfx(source, target.position, Vector2.RIGHT)
-		_check(effect != null and effect.is_playing() and effect.sprite_frames.get_frame_count(&"play") >= 8 and effect.modulate == CombatVfx.HERO_COLORS[hero_ids[index]], "%s basic attacks use the heavy impact in the colour of the sin." % hero_ids[index])
+		_check(effect != null and effect.is_playing() and effect.sprite_frames.get_frame_count(&"play") >= 8 and Color(effect.modulate, 1.0) == CombatVfx.HERO_COLORS[hero_ids[index]] and effect.modulate.a > 0.0, "%s basic attacks use the heavy impact in the colour of the sin." % hero_ids[index])
 	_check(session.get_node("Effects").get_child_count() == hero_ids.size(), "Hero impacts spawn on the dedicated effects layer.")
 	var wrath := session.get_combatant_by_runtime_id("hero.ashen_duelist-vfx")
 	target.position = wrath.position + Vector2(20.0, 0.0)
@@ -356,8 +356,9 @@ func _test_hero_attack_effects() -> void:
 	wrath.windup_duration = 0.1
 	wrath.state_timer = 0.0
 	var effect_count_before_melee := session.get_node("Effects").get_child_count()
+	var stains_before_melee := session.decal_layer.get_child_count()
 	wrath._update_attack_windup(0.0)
-	_check(session.get_node("Effects").get_child_count() == effect_count_before_melee + 1, "A Hero melee hit automatically spawns its themed impact.")
+	_check(session.get_node("Effects").get_child_count() == effect_count_before_melee + 2 and session.decal_layer.get_child_count() > stains_before_melee, "A damaging Hero melee hit spawns its themed impact, a blood spray and lasting ground stains.")
 	var first_ranged_projectile: CombatProjectile
 	for hero_id in ranged_ids:
 		var source := session.get_combatant_by_runtime_id("%s-vfx" % hero_id)

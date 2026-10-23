@@ -28,3 +28,5 @@ enum Polarity {
 ## The unit takes no damage from any source.
 @export var grants_invulnerability := false
 @export var polarity := Polarity.NEUTRAL
+## Persistent visual profile (e.g. fire), independent of damage and stacking.
+@export var presentation_style: StringName

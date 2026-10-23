@@ -1,6 +1,8 @@
 class_name SelectedUnitPanel
 extends PanelContainer
 
+signal close_requested
+
 
 const UI_ATLAS := preload("res://graphics/ui/atlas_ui.png")
 const STAT_SPECS := [
@@ -23,6 +25,7 @@ const STAT_LOWERED_COLOR := Color(0.95, 0.5, 0.42)
 
 func _ready() -> void:
 	_build_stat_grid()
+	%CloseButton.pressed.connect(func() -> void: close_requested.emit())
 
 
 func show_combatant(value: Combatant) -> void:
@@ -70,8 +73,17 @@ func refresh() -> void:
 	var target_name := "none"
 	if is_instance_valid(combatant.target):
 		target_name = combatant.target.snapshot.display_name
-	%Runtime.text = "STATE  %s    TARGET  %s" % [
-		Combatant.State.keys()[combatant.state],
+	var state_names := ["Idle", "Choosing a target", "Moving", "Attacking", "Recovering", "Defeated"]
+	var activity: String = state_names[combatant.state]
+	if combatant.is_alive():
+		if combatant.is_stunned():
+			activity = "Stunned"
+		elif combatant.is_feared():
+			activity = "Feared"
+		elif combatant.is_rooted() and combatant.state == Combatant.State.MOVE_INTO_RANGE:
+			activity = "Rooted"
+	%Runtime.text = "%s  ·  Target: %s" % [
+		activity,
 		target_name,
 	]
 	var extra := secondary_stats_text(func(stat: StringName) -> float: return combatant.get_effective_stat(stat))
@@ -91,6 +103,33 @@ func refresh_cooldowns() -> void:
 		var remaining := float(combatant.ability_cooldowns.get(ability.id, 0.0))
 		var total := maxf(maxf(ability.cooldown_seconds, ability.initial_cooldown_seconds), remaining)
 		slot.set_cooldown(remaining if ability.kind == AbilityDefinition.AbilityKind.ACTIVE else 0.0, total)
+	for raw_slot in %ItemIcons.get_children():
+		var slot := raw_slot as AbilityCooldownIcon
+		var item := _registry().get_definition(slot.content_id, false) as ItemDefinition if not slot.content_id.is_empty() else null
+		var cooldown := _item_cooldown(item)
+		slot.set_cooldown(cooldown.x, cooldown.y)
+
+
+## Read the item's actual battle timers; this inspector never advances them.
+## Multiple item abilities share one icon, which shows the longest remaining timer.
+func _item_cooldown(item: ItemDefinition) -> Vector2:
+	var result := Vector2.ZERO
+	if item == null:
+		return result
+	for ability_id in item.ability_ids:
+		var ability := _registry().get_definition(ability_id, false) as AbilityDefinition
+		if ability != null and ability.kind == AbilityDefinition.AbilityKind.ACTIVE:
+			var remaining := maxf(0.0, float(combatant.ability_cooldowns.get(ability_id, 0.0)))
+			if remaining > result.x or result.y <= 0.0:
+				var total := maxf(maxf(combatant.cooldown_for(ability), ability.initial_cooldown_seconds), remaining)
+				result = Vector2(remaining, total)
+		# Periodic item effects have an interval timer rather than an AI cooldown.
+		for pulse in combatant.items.pulse_heals:
+			if StringName(pulse.ability_id) == ability_id:
+				var remaining := maxf(0.0, float(pulse.remaining))
+				if remaining > result.x or result.y <= 0.0:
+					result = Vector2(remaining, maxf(float(pulse.interval), remaining))
+	return result
 
 
 ## Item abilities are shown on their item slots, not in the ability row.
@@ -117,28 +156,34 @@ func _refresh_content_slots() -> void:
 			else:
 				badge = "A"
 		var slot := %AbilityIcons.get_child(index) as ContentIconButton
+		slot.visible = ability != null
 		var ability_id: StringName = ability.id if ability != null else &""
 		if slot.content_id != ability_id or slot.custom_minimum_size == Vector2.ZERO:
 			slot.configure(ability, &"ability", badge, false, ContentButton.describe_ability_definition(ability) if ability != null else "")
 		else:
 			slot.set_badge(badge)
 		slot.custom_minimum_size = ContentIconButton.SLOT_SIZE
-	refresh_cooldowns()
 
-	var show_items := combatant.snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO or not combatant.snapshot.equipped_item_definition_ids.is_empty()
+	%Abilities.get_node("Title").text = "ABILITIES" if not abilities.is_empty() else "NO ABILITIES"
+	var show_items := not combatant.snapshot.equipped_item_definition_ids.is_empty()
+	if combatant.snapshot.unit_kind == CombatUnitSnapshot.UnitKind.HERO:
+		_ensure_icon_slots(%ItemIcons, HeroState.MAX_ITEM_SLOTS, true)
 	%Equipment.visible = show_items
 	if not show_items:
+		refresh_cooldowns()
 		return
-	_ensure_icon_slots(%ItemIcons, HeroState.MAX_ITEM_SLOTS)
+	_ensure_icon_slots(%ItemIcons, HeroState.MAX_ITEM_SLOTS, true)
 	for index in HeroState.MAX_ITEM_SLOTS:
 		var definition: ItemDefinition
 		if index < combatant.snapshot.equipped_item_definition_ids.size():
 			definition = _registry().get_definition(combatant.snapshot.equipped_item_definition_ids[index], false) as ItemDefinition
 		var slot := %ItemIcons.get_child(index) as ContentIconButton
+		slot.visible = definition != null
 		var item_id: StringName = definition.id if definition != null else &""
 		if slot.content_id != item_id or slot.custom_minimum_size == Vector2.ZERO:
 			slot.configure(definition, &"item", str(index + 1))
 		slot.custom_minimum_size = ContentIconButton.SLOT_SIZE
+	refresh_cooldowns()
 
 
 ## One line with every non-zero secondary stat: "Crit 25% (x2.5)  Lifesteal 25%  ...".
